@@ -33,13 +33,13 @@ public class ImageLayeringPanel extends JPanel {
         // Dessiner la deuxième image avec opacité 100%
         if (img2 != null) {
             g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1.0f)); // Opacité 100%
-            g2d.drawImage(img2, 0, 0, this); 
+            g2d.drawImage(img2, 0, 0, this);
         }
 
         // Dessiner la troisième image avec opacité 100%
         if (img3 != null) {
             g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1.0f)); // Opacité 100%
-            g2d.drawImage(img3, 0, 0, this); 
+            g2d.drawImage(img3, 0, 0, this);
         }
     }
 
