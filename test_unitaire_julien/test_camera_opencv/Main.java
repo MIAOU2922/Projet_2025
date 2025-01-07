@@ -5,6 +5,9 @@ import org.opencv.core.Mat;
 import org.opencv.highgui.HighGui;
 import org.opencv.videoio.VideoCapture;
 
+import java.util.Scanner;
+ // comantaire 
+ 
 public class Main {
     static {
         System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
