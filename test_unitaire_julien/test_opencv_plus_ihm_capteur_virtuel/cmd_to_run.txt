@@ -1,0 +1,2 @@
+javac -cp lib/opencv-4100.jar -d bin src/Main.java
+java -cp lib/opencv-4100.jar;bin Main

@@ -9,15 +9,18 @@ import org.opencv.highgui.HighGui;
 public class Main {
     static {
         System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
+        System.out.println("OpenCV library loaded successfully.");
     }
     public static void main(String[] args) {
         // Ouvrir la caméra vidéo par défaut
         VideoCapture capture = new VideoCapture(0);
+        System.out.println("Attempting to open the video camera...");
         // Vérifier si la caméra s'est ouverte avec succès
         if (!capture.isOpened()) {
             System.out.println("Erreur : Impossible d'ouvrir la caméra vidéo");
             return;
         }
+        System.out.println("Video camera opened successfully.");
         // Créer un cadre pour contenir la vidéo
         Mat frame = new Mat();
         Mat displayFrame = new Mat();
@@ -31,7 +34,7 @@ public class Main {
             capture.read(frame);
             // Si le cadre est vide, sortir de la boucle
             if (frame.empty()) {
-                System.out.println("Erreur : Cadre vide capturé");
+                System.out.println("Erreur : Impossible de capturer un cadre vidéo");
                 break;
             }
             // Redimensionner le cadre au format 16:9

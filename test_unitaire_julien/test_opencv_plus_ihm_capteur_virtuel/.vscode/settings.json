@@ -1,0 +1,9 @@
+{
+    "java.home": "C:\\Program Files\\Java\\jdk-23",
+    "java.project.referencedLibraries": [
+    "lib/**/*.jar"
+    ],
+    "java.project.sourcePaths": [
+        "src"
+    ]
+}

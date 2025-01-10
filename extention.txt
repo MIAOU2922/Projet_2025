@@ -1,0 +1,25 @@
+Pour exporter la liste des extensions actives dans Visual Studio Code et les importer sur un autre ordinateur, vous pouvez suivre ces étapes :
+
+Exporter les extensions
+Ouvrez le terminal intégré dans VS Code (Ctrl+`).
+
+Exécutez la commande suivante pour lister toutes les extensions installées et les enregistrer dans un fichier extensions-list.txt :
+----------
+
+code --list-extensions > extensions-list.txt
+
+----------
+Copiez le fichier extensions-list.txt sur l'autre ordinateur.
+
+Importer les extensions
+Copiez le fichier extensions-list.txt sur l'autre ordinateur.
+
+Ouvrez le terminal intégré dans VS Code sur l'autre ordinateur.
+
+Exécutez la commande suivante pour installer toutes les extensions listées dans le fichier extensions-list.txt :
+----------
+
+cat extensions-list.txt | xargs -n 1 code --install-extension
+
+----------
+Cela installera toutes les extensions listées dans le fichier sur l'autre ordinateur.
