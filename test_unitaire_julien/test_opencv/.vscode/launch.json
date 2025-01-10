@@ -1,0 +1,16 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Launch Main",
+            "request": "launch",
+            "mainClass": "Main",
+            "classPaths": [
+                "lib/opencv-4100.jar",
+                "bin"
+            ],
+            "preLaunchTask": "build"
+        }
+    ]
+}

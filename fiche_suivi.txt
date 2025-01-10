@@ -1,0 +1,36 @@
+----------------------
+janvier :
+semaine 2 :
+-debut projet
+-decouverte du sujet et tépartition des tache
+-création des diagrame sysml
+-debut de quelque test unitaire 
+-probleme d'import de lib 
+
+semaine 3 :
+semaine 4 :
+----------------------
+fevrier :
+semaine 1 :
+semaine 2 :
+semaine 3 :
+semaine 4 :
+----------------------
+mars :
+semaine 1 :
+semaine 2 :
+semaine 3 :
+semaine 4 :
+----------------------
+avril
+semaine 1 :
+semaine 2 :
+semaine 3 :
+semaine 4 :
+----------------------
+mai
+semaine 1 :
+semaine 2 :
+semaine 3 :
+semaine 4 :
+
