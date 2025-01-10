@@ -4,8 +4,8 @@ semaine 2 :
 -debut projet
 -decouverte du sujet et tépartition des tache
 -création des diagrame sysml
--debut de quelque test unitaire 
--probleme d'import de lib 
+-debut de quelque test unitaire
+--recup image avec opencv
 
 semaine 3 :
 semaine 4 :

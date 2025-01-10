@@ -7,8 +7,8 @@
             "request": "launch",
             "mainClass": "Main",
             "classPaths": [
-                "lib/opencv-4100.jar",
-                "bin"
+                "${workspaceFolder}/lib/opencv-4100.jar",
+                "${workspaceFolder}/bin"
             ],
             "preLaunchTask": "build"
         }

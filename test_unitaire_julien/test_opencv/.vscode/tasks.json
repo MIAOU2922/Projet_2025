@@ -7,10 +7,10 @@
             "command": "javac",
             "args": [
                 "-cp",
-                "lib/opencv-4100.jar",
+                "${workspaceFolder}/lib/opencv-4100.jar",
                 "-d",
-                "bin",
-                "src/Main.java"
+                "${workspaceFolder}/bin",
+                "${workspaceFolder}/src/Main.java"
             ],
             "group": {
                 "kind": "build",

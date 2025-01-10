@@ -1,5 +1,7 @@
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
+import org.opencv.core.Rect;
+import org.opencv.core.Size;
 import org.opencv.videoio.VideoCapture;
 import org.opencv.imgproc.Imgproc;
 import org.opencv.highgui.HighGui;
@@ -8,44 +10,46 @@ public class Main {
     static {
         System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
     }
-
     public static void main(String[] args) {
-        // Open the default video camera
+        // Ouvrir la caméra vidéo par défaut
         VideoCapture capture = new VideoCapture(0);
-
-        // Check if camera opened successfully
+        // Vérifier si la caméra s'est ouverte avec succès
         if (!capture.isOpened()) {
-            System.out.println("Error: Could not open video camera");
+            System.out.println("Erreur : Impossible d'ouvrir la caméra vidéo");
             return;
         }
-
-        // Create a frame to hold the video
+        // Créer un cadre pour contenir la vidéo
         Mat frame = new Mat();
-
-        // Loop to continuously get frames from the video
+        Mat displayFrame = new Mat();
+        // Taille de la boîte 16:9
+        int boxWidth = 640;
+        int boxHeight = 360;
+        int offsetX = 250;
+        // Boucle pour obtenir continuellement des cadres de la vidéo
         while (true) {
-            // Capture a new frame
+            // Capturer un nouveau cadre
             capture.read(frame);
-
-            // If the frame is empty, break the loop
+            // Si le cadre est vide, sortir de la boucle
             if (frame.empty()) {
-                System.out.println("Error: Empty frame captured");
+                System.out.println("Erreur : Cadre vide capturé");
                 break;
             }
-
-            // Display the frame
-            HighGui.imshow("Video Capture", frame);
-
-            // Wait for 33 milliseconds and check if the user pressed the 'q' key
+            // Redimensionner le cadre au format 16:9
+            Imgproc.resize(frame, frame, new Size(boxWidth, boxHeight));
+            // Créer une nouvelle image avec un espace de 150 pixels à gauche
+            displayFrame = Mat.zeros(boxHeight, boxWidth + offsetX, frame.type());
+            // Copier le cadre redimensionné dans la nouvelle image
+            frame.copyTo(displayFrame.colRange(offsetX, offsetX + boxWidth));
+            // Afficher le cadre
+            HighGui.imshow("Capture Vidéo", displayFrame);
+            // Attendre 33 millisecondes et vérifier si l'utilisateur a appuyé sur la touche 'q'
             if (HighGui.waitKey(33) == 'q') {
                 break;
             }
         }
-
-        // Release the video capture object
+        // Libérer l'objet de capture vidéo
         capture.release();
-
-        // Close all OpenCV windows
+        // Fermer toutes les fenêtres OpenCV
         HighGui.destroyAllWindows();
     }
 }
