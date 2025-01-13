@@ -19,7 +19,7 @@ public class Main {
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(1200, 800);
         frame.setLayout(new BorderLayout());
-        frame.setResizable(false); // Désactiver le redimensionnement
+        frame.setResizable(true); // Désactiver le redimensionnement
 
         // Créer le panneau IHM
         JPanel ihmPanel = createIHMPanel();
@@ -55,10 +55,10 @@ public class Main {
         panel.add(randomGlobalCheckBox);
 
         int yPosition = 40; // Position verticale initiale
-        int ySpacing = 70; // Espacement entre les lignes
+        int ySpacing = 40; // Espacement entre les lignes
 
         // Ajout des sliders, checkboxes et labels
-        for (int i = 0; i < 9; i++) {
+        for (int i = 0; i < 15; i++) {
             JSlider slider = createSlider(panel, "Capteur " + (i + 1) + ":", yPosition);
             JCheckBox checkBox = createCheckBox(panel, "random:", yPosition);
             JLabel valueLabel = createValueLabel(panel, yPosition);
@@ -70,6 +70,7 @@ public class Main {
     }
 
     private static JSlider createSlider(JPanel panel, String label, int y) {
+        
         JLabel sliderLabel = new JLabel(label);
         sliderLabel.setBounds(10, y, 100, 20);
         sliderLabel.setHorizontalAlignment(SwingConstants.RIGHT);
@@ -80,7 +81,7 @@ public class Main {
         slider.setMajorTickSpacing(500);
         slider.setMinorTickSpacing(100);
         slider.setPaintTicks(true);
-        slider.setPaintLabels(true);
+        slider.setPaintLabels(false);
         panel.add(slider);
 
         return slider;

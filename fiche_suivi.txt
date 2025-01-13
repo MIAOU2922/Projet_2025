@@ -6,8 +6,12 @@ semaine 2 :
 -création des diagrame sysml
 -debut de quelque test unitaire
 --recup image avec opencv
-
+--ihm capteur virtuel
 semaine 3 :
+-
+-
+-
+-
 semaine 4 :
 ----------------------
 fevrier :
