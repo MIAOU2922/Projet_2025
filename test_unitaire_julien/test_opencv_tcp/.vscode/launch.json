@@ -6,7 +6,7 @@
             "name": "Launch Main",
             "request": "launch",
             "mainClass": "Main",
-            "vmArgs": "-Djava.library.path=${workspaceFolder}/lib"
+            "vmArgs": "-Djava.library.path=${workspaceFolder}/lib",
             "classPaths": [
                 "${workspaceFolder}/lib/opencv-4100.jar",
                 "${workspaceFolder}/bin"

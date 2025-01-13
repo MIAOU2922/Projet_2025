@@ -1,0 +1,47 @@
+Exemple trame Status Drone : mid:-1;x:-100;y:-100;z:-100;mpry:0,0,0;pitch:0;roll:0;yaw:22;vgx:0;vgy:0;vgz:0;templ:50;temph:53;tof:10;h:0;bat:68;baro:-19.53;time:0;agx:0.00;agy:-3.00;agz:-999.00;
+
+
+Exemple trame Status Drone :
+
+//useless
+mid:-1;
+x:-100;
+y:-100;
+z:-100;
+mpry:0,0,0;
+
+//axe rota
+pitch:0;
+roll:0;
+yaw:22;
+
+//axe vitesse
+vgx:0;
+vgy:0;
+vgz:0;
+
+// temperature min
+templ:50;
+
+// temperature max
+temph:53;
+
+// distance par rapport au sol
+tof:10;
+
+// distance relative au point de décolage
+h:0;
+
+//batterie
+bat:68;
+
+//baromettre
+baro:-19.53;
+
+//temps d'utilisation moteurs
+time:0;
+
+//acceleration
+agx:0.00;
+agy:-3.00;
+agz:-999.00;
