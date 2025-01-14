@@ -161,7 +161,7 @@ public class ImageSender {
             //System.out.println("Number of frames recorded: " + frameCount + ", Frequency: " + formattedFrequency + " frames per second");
 
             // Wait 20 milliseconds to allow OpenCV to refresh the window
-            if (HighGui.waitKey(20) == 27) { // 27 corresponds to the 'ESC' key
+            if (HighGui.waitKey(1) == 27) { // 27 corresponds to the 'ESC' key
                 break;
             }
         }

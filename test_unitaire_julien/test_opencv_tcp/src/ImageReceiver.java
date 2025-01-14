@@ -47,132 +47,151 @@ public class ImageReceiver {
         byte[] infoBuffer = new byte[65536]; // Buffer to hold incoming info data
         byte[] telemetryBuffer = new byte[65536]; // Buffer to hold incoming telemetry data
 
-        try (DatagramSocket imageSocket = new DatagramSocket(imagePort);
-            DatagramSocket infoSocket = new DatagramSocket(infoPort);
-            DatagramSocket telemetrySocket = new DatagramSocket(telemetryPort)) {
+        ImageReceiver receiver = new ImageReceiver();
 
-            System.out.println(ANSI_CYAN + "Listening on port " + imagePort + " for incoming images..." + ANSI_RESET);
-            System.out.println(ANSI_YELLOW + "Listening on port " + infoPort + " for incoming info..." + ANSI_RESET);
-            System.out.println(ANSI_PURPLE + "Listening on port " + telemetryPort + " for incoming telemetry..." + ANSI_RESET);
+        Thread imageThread = new Thread(new UdpListener(imagePort, imageBuffer, receiver));
+        Thread infoThread = new Thread(new UdpListener(infoPort, infoBuffer, receiver));
+        Thread telemetryThread = new Thread(new UdpListener(telemetryPort, telemetryBuffer, receiver));
 
-            // Create a non-resizable window
-            HighGui.namedWindow("Receiver", HighGui.WINDOW_NORMAL);
+        imageThread.start();
+        infoThread.start();
+        telemetryThread.start();
 
-            while (true) {
-                // Receive image data
-                DatagramPacket imagePacket = new DatagramPacket(imageBuffer, imageBuffer.length);
-                imageSocket.receive(imagePacket);
-                System.out.println(ANSI_CYAN + "Image frame received." + ANSI_RESET);
+        // Create a non-resizable window
+        HighGui.namedWindow("Receiver", HighGui.WINDOW_NORMAL);
 
-                // Save the received data to a file
-                String filePath = "received_image.jpg";
-                try (FileOutputStream fos = new FileOutputStream(filePath)) {
-                    fos.write(imagePacket.getData(), 0, imagePacket.getLength());
-                }
-
-                // Load the image using OpenCV
-                Mat receivedImage = Imgcodecs.imread(filePath);
-
-                if (!receivedImage.empty()) {
-                    // Resize the image for display at half size
-                    Mat displayFrameHalfSize = new Mat();
-                    Imgproc.resize(receivedImage, displayFrameHalfSize, new Size(receivedImage.width() / 2, receivedImage.height() / 2));
-
-                    // Receive info text
-                    DatagramPacket infoPacket = new DatagramPacket(infoBuffer, infoBuffer.length);
-                    infoSocket.receive(infoPacket);
-                    System.out.println(ANSI_YELLOW + "Info frame received." + ANSI_RESET);
-                    String infoText = new String(infoPacket.getData(), 0, infoPacket.getLength());
-
-                    // Extract frameCount, formattedFrequency, and sendTime from infoText
-                    String[] infoParts = infoText.split("; ");
-                    if (infoParts.length == 3) {
-                        int sentFrameCount = Integer.parseInt(infoParts[0].split(": ")[1]);
-                        double sentFrequency = Double.parseDouble(infoParts[1].split(": ")[1].replace(',', '.'));
-                        long sendTime = Long.parseLong(infoParts[2].split(": ")[1]);
-
-                        // Initialize the initial frame count on the first received frame
-                        if (initialFrameCount == -1) {
-                            initialFrameCount = sentFrameCount;
-                            startTime = System.currentTimeMillis();
-                        }
-
-                        // Increment the received frame count
-                        receivedFrameCount++;
-
-                        // Calculate the frequency of received frames
-                        long currentTime = System.currentTimeMillis();
-                        double duration = (currentTime - startTime) / 1000.0;
-                        double receivedFrequency = receivedFrameCount / duration;
-
-                        // Calculate the differences based on the initial frame count
-                        int frameCountDifference = (sentFrameCount - initialFrameCount) - receivedFrameCount;
-                        double frequencyDifference = sentFrequency - receivedFrequency;
-                        if (frequencyDifference < 0) {
-                            frequencyDifference = 0;
-                        }
-
-                        // Calculate the latency
-                        long latency = currentTime - sendTime;
-                        if (latency < 0) {
-                            latency = 0;
-                        }
-
-                        // Create the infoText strings
-                        String infoTextFrameCount = "Frame count: " + sentFrameCount;
-                        String infoTextFPS = "FPS: " + String.format("%.2f", sentFrequency);
-                        String recalculatedFrameCount = "Recalculated Frame count: " + receivedFrameCount;
-                        String recalculatedFPS = "Recalculated FPS: " + String.format("%.2f", receivedFrequency);
-                        String frameCountDiffText = "Frame count difference: " + frameCountDifference;
-                        String frequencyDiffText = "FPS difference: " + String.format("%.2f", frequencyDifference);
-                        String latencyText = "Latency: " + latency + " ms";
-
-                        // Display the received information in red on the image
-                        Imgproc.putText(displayFrameHalfSize, infoTextFrameCount, new Point(10, 30), Imgproc.FONT_HERSHEY_SIMPLEX, 0.5, new Scalar(0, 0, 255), 2);
-                        Imgproc.putText(displayFrameHalfSize, infoTextFPS, new Point(10, 50), Imgproc.FONT_HERSHEY_SIMPLEX, 0.5, new Scalar(0, 0, 255), 2);
-
-                        // Display the recalculated information in green on the image
-                        Imgproc.putText(displayFrameHalfSize, recalculatedFrameCount, new Point(10, 70), Imgproc.FONT_HERSHEY_SIMPLEX, 0.5, new Scalar(0, 255, 0), 2);
-                        Imgproc.putText(displayFrameHalfSize, recalculatedFPS, new Point(10, 90), Imgproc.FONT_HERSHEY_SIMPLEX, 0.5, new Scalar(0, 255, 0), 2);
-
-                        // Display the differences in blue on the image
-                        Imgproc.putText(displayFrameHalfSize, frameCountDiffText, new Point(10, 110), Imgproc.FONT_HERSHEY_SIMPLEX, 0.5, new Scalar(255, 0, 0), 2);
-                        Imgproc.putText(displayFrameHalfSize, frequencyDiffText, new Point(10, 130), Imgproc.FONT_HERSHEY_SIMPLEX, 0.5, new Scalar(255, 0, 0), 2);
-
-                        // Display the latency in yellow on the image
-                        Imgproc.putText(displayFrameHalfSize, latencyText, new Point(10, 150), Imgproc.FONT_HERSHEY_SIMPLEX, 0.5, new Scalar(0, 255, 255), 2);
-                    } else {
-                        System.out.println(ANSI_RED + "Received malformed info text: " + infoText + ANSI_RESET);
-                    }
-
-                    // Receive telemetry data
-                    DatagramPacket telemetryPacket = new DatagramPacket(telemetryBuffer, telemetryBuffer.length);
-                    telemetrySocket.receive(telemetryPacket);
-                    System.out.println(ANSI_PURPLE + "Telemetry frame received." + ANSI_RESET);
-                    String telemetryData = new String(telemetryPacket.getData(), 0, telemetryPacket.getLength()).trim();
-
-                    // Split telemetry data and display each on a new line
-                    String[] telemetryParts = telemetryData.split(";");
-                    // Display the telemetry data on the right side of the image, spanning the entire height
-                    for (int i = 0; i < telemetryParts.length; i++) {
-                        Imgproc.putText(displayFrameHalfSize, telemetryParts[i], new Point(displayFrameHalfSize.width() - 200, 30 + (i * 20)), Imgproc.FONT_HERSHEY_SIMPLEX, 0.5, new Scalar(0, 0, 255), 2);
-                    }
-
-                    // Display the resized image with the information
-                    HighGui.imshow("Receiver", displayFrameHalfSize);
-                } else {
-                    System.out.println(ANSI_RED + "Failed to load the received image." + ANSI_RESET);
-                }
-
-                // Wait 20 milliseconds to allow OpenCV to refresh the window
-                if (HighGui.waitKey(20) == 27) { // 27 corresponds to the 'ESC' key
-                    break;
-                }
+        // Main loop to keep the window open
+        while (true) {
+            // Wait 20 milliseconds to allow OpenCV to refresh the window
+            if (HighGui.waitKey(20) == 27) { // 27 corresponds to the 'ESC' key
+                break;
             }
-        } catch (SocketException e) {
-            System.err.println("Socket error: " + e.getMessage());
+        }
+    }
+
+    public synchronized void processPacket(DatagramPacket packet, int port) {
+        try {
+            if (port == 12345) { // Replace with your actual image port
+                processImagePacket(packet);
+            } else if (port == 12346) { // Replace with your actual info port
+                processInfoPacket(packet);
+            } else if (port == 12347) { // Replace with your actual telemetry port
+                processTelemetryPacket(packet);
+            }
         } catch (IOException e) {
-            System.err.println("IO error: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    private void processImagePacket(DatagramPacket packet) throws IOException {
+        System.out.println(ANSI_CYAN + "Image frame received." + ANSI_RESET);
+
+        // Save the received data to a file
+        String filePath = "received_image.jpg";
+        try (FileOutputStream fos = new FileOutputStream(filePath)) {
+            fos.write(packet.getData(), 0, packet.getLength());
+        }
+
+        // Load the image using OpenCV
+        Mat receivedImage = Imgcodecs.imread(filePath);
+
+        if (!receivedImage.empty()) {
+            // Resize the image for display at half size
+            Mat displayFrameHalfSize = new Mat();
+            Imgproc.resize(receivedImage, displayFrameHalfSize, new Size(receivedImage.width() / 2, receivedImage.height() / 2));
+
+            // Display the resized image with the information
+            HighGui.imshow("Receiver", displayFrameHalfSize);
+        } else {
+            System.out.println(ANSI_RED + "Failed to load the received image." + ANSI_RESET);
+        }
+    }
+
+    private void processInfoPacket(DatagramPacket packet) {
+        System.out.println(ANSI_YELLOW + "Info frame received." + ANSI_RESET);
+        String infoText = new String(packet.getData(), 0, packet.getLength());
+
+        // Extract frameCount, formattedFrequency, and sendTime from infoText
+        String[] infoParts = infoText.split("; ");
+        if (infoParts.length == 3) {
+            int sentFrameCount = Integer.parseInt(infoParts[0].split(": ")[1]);
+            double sentFrequency = Double.parseDouble(infoParts[1].split(": ")[1].replace(',', '.'));
+            long sendTime = Long.parseLong(infoParts[2].split(": ")[1]);
+
+            // Initialize the initial frame count on the first received frame
+            if (initialFrameCount == -1) {
+                initialFrameCount = sentFrameCount;
+                startTime = System.currentTimeMillis();
+            }
+
+            // Increment the received frame count
+            receivedFrameCount++;
+
+            // Calculate the frequency of received frames
+            long currentTime = System.currentTimeMillis();
+            double duration = (currentTime - startTime) / 1000.0;
+            double receivedFrequency = receivedFrameCount / duration;
+
+            // Calculate the differences based on the initial frame count
+            int frameCountDifference = (sentFrameCount - initialFrameCount) - receivedFrameCount;
+            double frequencyDifference = sentFrequency - receivedFrequency;
+            if (frequencyDifference < 0) {
+                frequencyDifference = 0;
+            }
+
+            // Calculate the latency
+            long latency = currentTime - sendTime;
+            if (latency < 0) {
+                latency = 0;
+            }
+
+            // Create the infoText strings
+            String infoTextFrameCount = "Frame count: " + sentFrameCount;
+            String infoTextFPS = "FPS: " + String.format("%.2f", sentFrequency);
+            String recalculatedFrameCount = "Recalculated Frame count: " + receivedFrameCount;
+            String recalculatedFPS = "Recalculated FPS: " + String.format("%.2f", receivedFrequency);
+            String frameCountDiffText = "Frame count difference: " + frameCountDifference;
+            String frequencyDiffText = "FPS difference: " + String.format("%.2f", frequencyDifference);
+            String latencyText = "Latency: " + latency + " ms";
+
+            // Display the received information in red on the image
+            Mat displayFrameHalfSize = HighGui.getWindowImage("Receiver");
+            if (displayFrameHalfSize != null) {
+                Imgproc.putText(displayFrameHalfSize, infoTextFrameCount, new Point(10, 30), Imgproc.FONT_HERSHEY_SIMPLEX, 0.5, new Scalar(0, 0, 255), 2);
+                Imgproc.putText(displayFrameHalfSize, infoTextFPS, new Point(10, 50), Imgproc.FONT_HERSHEY_SIMPLEX, 0.5, new Scalar(0, 0, 255), 2);
+
+                // Display the recalculated information in green on the image
+                Imgproc.putText(displayFrameHalfSize, recalculatedFrameCount, new Point(10, 70), Imgproc.FONT_HERSHEY_SIMPLEX, 0.5, new Scalar(0, 255, 0), 2);
+                Imgproc.putText(displayFrameHalfSize, recalculatedFPS, new Point(10, 90), Imgproc.FONT_HERSHEY_SIMPLEX, 0.5, new Scalar(0, 255, 0), 2);
+
+                // Display the differences in blue on the image
+                Imgproc.putText(displayFrameHalfSize, frameCountDiffText, new Point(10, 110), Imgproc.FONT_HERSHEY_SIMPLEX, 0.5, new Scalar(255, 0, 0), 2);
+                Imgproc.putText(displayFrameHalfSize, frequencyDiffText, new Point(10, 130), Imgproc.FONT_HERSHEY_SIMPLEX, 0.5, new Scalar(255, 0, 0), 2);
+
+                // Display the latency in yellow on the image
+                Imgproc.putText(displayFrameHalfSize, latencyText, new Point(10, 150), Imgproc.FONT_HERSHEY_SIMPLEX, 0.5, new Scalar(0, 255, 255), 2);
+
+                HighGui.imshow("Receiver", displayFrameHalfSize);
+            }
+        } else {
+            System.out.println(ANSI_RED + "Received malformed info text: " + infoText + ANSI_RESET);
+        }
+    }
+
+    private void processTelemetryPacket(DatagramPacket packet) {
+        System.out.println(ANSI_PURPLE + "Telemetry frame received." + ANSI_RESET);
+        String telemetryData = new String(packet.getData(), 0, packet.getLength()).trim();
+
+        // Split telemetry data and display each on a new line
+        String[] telemetryParts = telemetryData.split(";");
+        Mat displayFrameHalfSize = HighGui.getWindowImage("Receiver");
+        if (displayFrameHalfSize != null) {
+            // Display the telemetry data on the right side of the image, spanning the entire height
+            for (int i = 0; i < telemetryParts.length; i++) {
+                Imgproc.putText(displayFrameHalfSize, telemetryParts[i], new Point(displayFrameHalfSize.width() - 200, 30 + (i * 20)), Imgproc.FONT_HERSHEY_SIMPLEX, 0.5, new Scalar(0, 0, 255), 2);
+            }
+
+            HighGui.imshow("Receiver", displayFrameHalfSize);
         }
     }
 }

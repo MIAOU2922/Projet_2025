@@ -19,7 +19,7 @@ public class telemetrieSender {
 
     private static String address;
     private static int port_telemetry;
-
+    private static String[] labels = {"mid", "x", "y", "z", "mpry", "pitch", "roll", "yaw", "vgx", "vgy", "vgz", "templ", "temph", "tof", "h", "bat", "baro", "agx", "agy", "agz"};
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
 
@@ -134,8 +134,7 @@ public class telemetrieSender {
         frame.setVisible(true);
 
         // Start telemetry sending timer
-        Timer telemetryTimer = new Timer(100, e -> {
-            String[] labels = {"mid", "x", "y", "z", "mpry", "pitch", "roll", "yaw", "vgx", "vgy", "vgz", "templ", "temph", "tof", "h", "bat", "baro", "agx", "agy", "agz"};
+        Timer telemetryTimer = new Timer(1, e -> {
             String telemetryData = generateTelemetryData(
                 labels,
                 midSlider.getValue(), xSlider.getValue(), ySlider.getValue(), zSlider.getValue(), mprySlider.getValue(), pitchSlider.getValue(), rollSlider.getValue(), yawSlider.getValue(), vgxSlider.getValue(), vgySlider.getValue(), vgzSlider.getValue(), templSlider.getValue(), temphSlider.getValue(), tofSlider.getValue(), hSlider.getValue(), batSlider.getValue(), baroSlider.getValue(), agxSlider.getValue(), agySlider.getValue(), agzSlider.getValue()
@@ -181,7 +180,7 @@ public class telemetrieSender {
     }
 
     private static void initializeTimers(JSlider slider, JCheckBox randomCheckBox, JCheckBox randomGlobalCheckBox) {
-        Timer timer = new Timer(50, e -> {
+        Timer timer = new Timer(1, e -> {
             if (randomGlobalCheckBox.isSelected() || randomCheckBox.isSelected()) {
                 slider.setValue((int) (generateRandomValue() * 100));
             }
