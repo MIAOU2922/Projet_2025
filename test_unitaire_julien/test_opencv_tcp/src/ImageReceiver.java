@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.SocketException;
+import java.util.Scanner;
 
 public class ImageReceiver {
     static {
@@ -24,8 +25,15 @@ public class ImageReceiver {
     private static long startTime = System.currentTimeMillis();
 
     public static void main(String[] args) {
-        int imagePort = 4903;
-        int infoPort = 4904;
+        Scanner scanner = new Scanner(System.in);
+
+        // Ask for the reference port
+        System.out.print("Enter the reference port: ");
+        int referencePort = scanner.nextInt();
+        scanner.nextLine(); // Consume newline
+
+        int imagePort = referencePort;
+        int infoPort = referencePort + 1;
         byte[] buffer = new byte[65536]; // Buffer to hold incoming data
 
         try (DatagramSocket imageSocket = new DatagramSocket(imagePort);
@@ -90,6 +98,9 @@ public class ImageReceiver {
 
                         // Calculate the latency
                         long latency = currentTime - sendTime;
+                        if (latency < 0) {
+                            latency = 0;
+                        }
 
                         // Create the infoText strings
                         String infoTextFrameCount = "Frame count: " + sentFrameCount;

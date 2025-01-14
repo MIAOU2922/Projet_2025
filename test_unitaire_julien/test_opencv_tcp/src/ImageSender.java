@@ -15,6 +15,7 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.util.Scanner;
 
 public class ImageSender {
     static {
@@ -31,15 +32,37 @@ public class ImageSender {
     private static String imgDirPath = "img";
     private static String filePath = imgDirPath + "/frame_quality70.jpg";
 
-    private static String address = "localhost";
-    private static int port_image = 4903;
-    private static int port_info = 4904;
+    private static String address;
+    private static int port_image;
+    private static int port_info;
 
     private static double frequency, duration;
     private static long currentTime , sendTime;
     private static String formattedFrequency, infoTextFPS, infoTextFrameCount, infoText;
 
     public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+
+        // Ask if broadcast mode is to be used
+        System.out.print("Use broadcast mode? (yes/no): ");
+        String broadcastMode = scanner.nextLine().trim().toLowerCase();
+        boolean isBroadcast = broadcastMode.equals("yes");
+
+        // Ask for the reference port
+        System.out.print("Enter the reference port: ");
+        int referencePort = scanner.nextInt();
+        scanner.nextLine(); // Consume newline
+
+        port_image = referencePort;
+        port_info = referencePort + 1;
+
+        if (isBroadcast) {
+            address = "172.29.255.255"; // Replace with your network's broadcast address
+        } else {
+            System.out.print("Enter the receiver's IP address: ");
+            address = scanner.nextLine().trim();
+        }
+
         // Create the img directory if it doesn't exist
         File imgDir = new File(imgDirPath);
         if (!imgDir.exists()) {
@@ -104,7 +127,7 @@ public class ImageSender {
 
             // Send the image via UDP
             try {
-                sendImageUDP(filePath, address,port_image);
+                sendImageUDP(filePath, address, port_image);
                 //System.out.println("Image sent via UDP");
             } catch (IOException e) {
                 e.printStackTrace();
