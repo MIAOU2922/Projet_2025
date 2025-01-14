@@ -15,6 +15,8 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.util.LinkedList;
+import java.util.Queue;
 import java.util.Scanner;
 
 public class ImageSender {
@@ -22,6 +24,14 @@ public class ImageSender {
         System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
         System.out.println("OpenCV library loaded successfully.");
     }
+    private static final String ANSI_RESET = "\u001B[0m";
+    private static final String ANSI_RED = "\u001B[31m";
+    private static final String ANSI_GREEN = "\u001B[32m";
+    private static final String ANSI_YELLOW = "\u001B[33m";
+    private static final String ANSI_BLUE = "\u001B[34m";
+    private static final String ANSI_PURPLE = "\u001B[35m";
+    private static final String ANSI_CYAN = "\u001B[36m";
+    private static final String ANSI_WHITE = "\u001B[37m";
 
     // Variable declarations
     private static int boxWidth = 1280;
@@ -39,6 +49,9 @@ public class ImageSender {
     private static double frequency, duration;
     private static long currentTime , sendTime;
     private static String formattedFrequency, infoTextFPS, infoTextFrameCount, infoText;
+
+    private static Queue<Long> frameTimes = new LinkedList<>();
+    private static final int MAX_FRAMES = 100;
 
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
@@ -73,10 +86,10 @@ public class ImageSender {
         VideoCapture capture = new VideoCapture(0);
         System.out.println("Attempting to open the video camera...");
         if (!capture.isOpened()) {
-            System.out.println("Error: Unable to open the video camera");
+            System.out.println(ANSI_RED +"Error: Unable to open the video camera" + ANSI_RESET);
             return;
         }
-        System.out.println("Video camera opened successfully.");
+        System.out.println(ANSI_GREEN + "Video camera opened successfully."+ ANSI_RESET);
 
         // Create a frame to hold the video
         Mat frame = new Mat();
@@ -91,7 +104,7 @@ public class ImageSender {
             // Capture a new frame
             capture.read(frame);
             if (frame.empty()) {
-                System.out.println("Error: Unable to capture a video frame");
+                System.out.println(ANSI_RED + "Error: Unable to capture a video frame"+ ANSI_RESET);
                 break;
             }
 
@@ -128,7 +141,7 @@ public class ImageSender {
             // Send the image via UDP
             try {
                 sendImageUDP(filePath, address, port_image);
-                //System.out.println("Image sent via UDP");
+                System.out.println(ANSI_YELLOW +"Image sent via UDP"+ANSI_RESET);
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -140,7 +153,7 @@ public class ImageSender {
             // Send the information via UDP
             try {
                 sendInfoUDP(infoText, address, port_info);
-                //System.out.println("Information sent via UDP");
+                System.out.println(ANSI_BLUE+"Information sent via UDP"+ANSI_RESET);
             } catch (IOException e) {
                 e.printStackTrace();
             }

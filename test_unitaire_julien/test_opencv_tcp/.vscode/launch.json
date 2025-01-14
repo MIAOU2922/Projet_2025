@@ -3,6 +3,27 @@
     "configurations": [
         {
             "type": "java",
+            "name": "cmd",
+            "request": "launch",
+            "mainClass": "cmd",
+            "projectName": "test_opencv_tcp_b4929c88"
+        },
+        {
+            "type": "java",
+            "name": "ihm3",
+            "request": "launch",
+            "mainClass": "ihm3",
+            "projectName": "test_opencv_tcp_b4929c88"
+        },
+        {
+            "type": "java",
+            "name": "telemetrieSender",
+            "request": "launch",
+            "mainClass": "telemetrieSender",
+            "projectName": "test_opencv_tcp_b4929c88"
+        },
+        {
+            "type": "java",
             "name": "ImageReceiver",
             "request": "launch",
             "mainClass": "ImageReceiver",

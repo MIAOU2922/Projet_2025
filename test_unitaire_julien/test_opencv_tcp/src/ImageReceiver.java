@@ -19,6 +19,14 @@ public class ImageReceiver {
         System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
         System.out.println("OpenCV library loaded successfully.");
     }
+    private static final String ANSI_RESET = "\u001B[0m";
+    private static final String ANSI_RED = "\u001B[31m";
+    private static final String ANSI_GREEN = "\u001B[32m";
+    private static final String ANSI_YELLOW = "\u001B[33m";
+    private static final String ANSI_BLUE = "\u001B[34m";
+    private static final String ANSI_PURPLE = "\u001B[35m";
+    private static final String ANSI_CYAN = "\u001B[36m";
+    private static final String ANSI_WHITE = "\u001B[37m";
 
     private static int receivedFrameCount = 0;
     private static int initialFrameCount = 0;
@@ -34,20 +42,27 @@ public class ImageReceiver {
 
         int imagePort = referencePort;
         int infoPort = referencePort + 1;
-        byte[] buffer = new byte[65536]; // Buffer to hold incoming data
+        int telemetryPort = referencePort + 2;
+        byte[] imageBuffer = new byte[65536]; // Buffer to hold incoming image data
+        byte[] infoBuffer = new byte[65536]; // Buffer to hold incoming info data
+        byte[] telemetryBuffer = new byte[65536]; // Buffer to hold incoming telemetry data
 
         try (DatagramSocket imageSocket = new DatagramSocket(imagePort);
-            DatagramSocket infoSocket = new DatagramSocket(infoPort)) {
-            System.out.println("Listening on port " + imagePort + " for incoming images...");
-            System.out.println("Listening on port " + infoPort + " for incoming info...");
+            DatagramSocket infoSocket = new DatagramSocket(infoPort);
+            DatagramSocket telemetrySocket = new DatagramSocket(telemetryPort)) {
+
+            System.out.println(ANSI_CYAN + "Listening on port " + imagePort + " for incoming images..." + ANSI_RESET);
+            System.out.println(ANSI_YELLOW + "Listening on port " + infoPort + " for incoming info..." + ANSI_RESET);
+            System.out.println(ANSI_PURPLE + "Listening on port " + telemetryPort + " for incoming telemetry..." + ANSI_RESET);
 
             // Create a non-resizable window
             HighGui.namedWindow("Receiver", HighGui.WINDOW_NORMAL);
 
             while (true) {
                 // Receive image data
-                DatagramPacket imagePacket = new DatagramPacket(buffer, buffer.length);
+                DatagramPacket imagePacket = new DatagramPacket(imageBuffer, imageBuffer.length);
                 imageSocket.receive(imagePacket);
+                System.out.println(ANSI_CYAN + "Image frame received." + ANSI_RESET);
 
                 // Save the received data to a file
                 String filePath = "received_image.jpg";
@@ -64,8 +79,9 @@ public class ImageReceiver {
                     Imgproc.resize(receivedImage, displayFrameHalfSize, new Size(receivedImage.width() / 2, receivedImage.height() / 2));
 
                     // Receive info text
-                    DatagramPacket infoPacket = new DatagramPacket(buffer, buffer.length);
+                    DatagramPacket infoPacket = new DatagramPacket(infoBuffer, infoBuffer.length);
                     infoSocket.receive(infoPacket);
+                    System.out.println(ANSI_YELLOW + "Info frame received." + ANSI_RESET);
                     String infoText = new String(infoPacket.getData(), 0, infoPacket.getLength());
 
                     // Extract frameCount, formattedFrequency, and sendTime from infoText
@@ -126,13 +142,26 @@ public class ImageReceiver {
                         // Display the latency in yellow on the image
                         Imgproc.putText(displayFrameHalfSize, latencyText, new Point(10, 150), Imgproc.FONT_HERSHEY_SIMPLEX, 0.5, new Scalar(0, 255, 255), 2);
                     } else {
-                        System.out.println("Received malformed info text: " + infoText);
+                        System.out.println(ANSI_RED + "Received malformed info text: " + infoText + ANSI_RESET);
+                    }
+
+                    // Receive telemetry data
+                    DatagramPacket telemetryPacket = new DatagramPacket(telemetryBuffer, telemetryBuffer.length);
+                    telemetrySocket.receive(telemetryPacket);
+                    System.out.println(ANSI_PURPLE + "Telemetry frame received." + ANSI_RESET);
+                    String telemetryData = new String(telemetryPacket.getData(), 0, telemetryPacket.getLength()).trim();
+
+                    // Split telemetry data and display each on a new line
+                    String[] telemetryParts = telemetryData.split(";");
+                    // Display the telemetry data on the right side of the image, spanning the entire height
+                    for (int i = 0; i < telemetryParts.length; i++) {
+                        Imgproc.putText(displayFrameHalfSize, telemetryParts[i], new Point(displayFrameHalfSize.width() - 200, 30 + (i * 20)), Imgproc.FONT_HERSHEY_SIMPLEX, 0.5, new Scalar(0, 0, 255), 2);
                     }
 
                     // Display the resized image with the information
                     HighGui.imshow("Receiver", displayFrameHalfSize);
                 } else {
-                    System.out.println("Failed to load the received image.");
+                    System.out.println(ANSI_RED + "Failed to load the received image." + ANSI_RESET);
                 }
 
                 // Wait 20 milliseconds to allow OpenCV to refresh the window
