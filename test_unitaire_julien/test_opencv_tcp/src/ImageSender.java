@@ -1,104 +1,138 @@
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfInt;
+import org.opencv.core.Point;
+import org.opencv.core.Scalar;
 import org.opencv.core.Size;
 import org.opencv.videoio.VideoCapture;
 import org.opencv.imgproc.Imgproc;
 import org.opencv.highgui.HighGui;
 import org.opencv.imgcodecs.Imgcodecs;
+
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
-import java.io.FileInputStream;
 
 public class ImageSender {
     static {
         System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
         System.out.println("OpenCV library loaded successfully.");
     }
-    public static void main(String[] args) {
 
-        // Créer le dossier img s'il n'existe pas
-        File imgDir = new File("img");
+    // Variable declarations
+    private static int boxWidth = 1280;
+    private static int boxHeight = 720;
+    private static int offsetX = 0;
+    private static int frameCount = 0;
+    private static long startTime = System.currentTimeMillis();
+    private static String imgDirPath = "img";
+    private static String filePath = imgDirPath + "/frame_quality70.jpg";
+
+    private static String address = "localhost";
+    private static int port_image = 4903;
+    private static int port_info = 4904;
+
+    private static double frequency, duration;
+    private static long currentTime , sendTime;
+    private static String formattedFrequency, infoTextFPS, infoTextFrameCount, infoText;
+
+    public static void main(String[] args) {
+        // Create the img directory if it doesn't exist
+        File imgDir = new File(imgDirPath);
         if (!imgDir.exists()) {
             imgDir.mkdir();
         }
 
-        // Ouvrir la caméra vidéo par défaut
+        // Open the default video camera
         VideoCapture capture = new VideoCapture(0);
         System.out.println("Attempting to open the video camera...");
-        // Vérifier si la caméra s'est ouverte avec succès
         if (!capture.isOpened()) {
-            System.out.println("Erreur : Impossible d'ouvrir la caméra vidéo");
+            System.out.println("Error: Unable to open the video camera");
             return;
         }
         System.out.println("Video camera opened successfully.");
-        // Créer un cadre pour contenir la vidéo
+
+        // Create a frame to hold the video
         Mat frame = new Mat();
         Mat displayFrame = new Mat();
-        // Taille de la boîte 16:9
-        int boxWidth = 1280;
-        int boxHeight = 720;
-        int offsetX = 0;
-        // Initialiser le compteur d'images et le temps de départ
-        int frameCount = 0;
-        long startTime = System.currentTimeMillis();
-        
-        // Créer une fenêtre non redimensionnable
+
+        // Create a non-resizable window
         HighGui.namedWindow("Sender", HighGui.WINDOW_NORMAL);
         HighGui.resizeWindow("Sender", boxWidth / 2, boxHeight / 2);
-        
-        // Boucle pour obtenir continuellement des cadres de la vidéo
+
+        // Loop to continuously get frames from the video
         while (true) {
-            // Capturer un nouveau cadre
+            // Capture a new frame
             capture.read(frame);
-            // Si le cadre est vide, sortir de la boucle
             if (frame.empty()) {
-                System.out.println("Erreur : Impossible de capturer un cadre vidéo");
+                System.out.println("Error: Unable to capture a video frame");
                 break;
             }
-            // Redimensionner le cadre au format 16:9
+
+            // Resize the frame to 16:9 format
             Imgproc.resize(frame, frame, new Size(boxWidth, boxHeight));
-            // Créer une nouvelle image
             displayFrame = Mat.zeros(boxHeight, boxWidth + offsetX, frame.type());
-            // Copier le cadre redimensionné dans la nouvelle image
             frame.copyTo(displayFrame.colRange(offsetX, offsetX + boxWidth));
-            
-            // Redimensionner l'image pour l'affichage à la moitié de la taille
+
+            // Resize the image for display at half size
             Mat displayFrameHalfSize = new Mat();
             Imgproc.resize(displayFrame, displayFrameHalfSize, new Size(boxWidth / 2, boxHeight / 2));
-            
-            // Afficher le cadre
+
+            // Calculate the frame rate
+            frameCount++;
+            currentTime = System.currentTimeMillis();
+            duration = (currentTime - startTime) / 1000.0;
+            frequency = frameCount / duration;
+            formattedFrequency = String.format("%.2f", frequency);
+
+            // Display information in green on the image
+            infoTextFrameCount = "Frame count: " + frameCount;
+            infoTextFPS = "FPS: " + formattedFrequency;
+            Imgproc.putText(displayFrameHalfSize, infoTextFrameCount, new Point(10, 30), Imgproc.FONT_HERSHEY_SIMPLEX, 0.5, new Scalar(0, 255, 0), 2);
+            Imgproc.putText(displayFrameHalfSize, infoTextFPS, new Point(10, 50), Imgproc.FONT_HERSHEY_SIMPLEX, 0.5, new Scalar(0, 255, 0), 2);
+
+            // Display the frame
             HighGui.imshow("Sender", displayFrameHalfSize);
-            // Redimensionner l'image avant de l'enregistrer
+
+            // Resize the image before saving
             Mat resizedFrame = new Mat();
             Imgproc.resize(displayFrame, resizedFrame, new Size(boxWidth, boxHeight));
-            // Enregistrer le cadre en tant qu'image JPEG dans le dossier img avec un nom basé sur la date et l'heure
-            String filePath = "img/frame_quality70" + ".jpg";
-            Imgcodecs.imwrite(filePath, resizedFrame,new MatOfInt(Imgcodecs.IMWRITE_JPEG_QUALITY, 70)); // Qualité à 70%
+            Imgcodecs.imwrite(filePath, resizedFrame, new MatOfInt(Imgcodecs.IMWRITE_JPEG_QUALITY, 70));
 
-            // Envoyer l'image en UDP
+            // Send the image via UDP
             try {
-                sendImageUDP(filePath, "localhost", 4903);
-                System.out.println("Image envoyée en UDP");
+                sendImageUDP(filePath, address,port_image);
+                //System.out.println("Image sent via UDP");
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            frameCount++;
-            long currentTime = System.currentTimeMillis();
-            double duration = (currentTime - startTime) / 1000.0;
-            double frequency = frameCount / duration;
-            System.out.println("Nombre d'images enregistrées: " + frameCount + ", Fréquence: " + frequency + " images par seconde");
-            // Attendre 20 millisecondes pour permettre à OpenCV de rafraîchir la fenêtre
-            if (HighGui.waitKey(20) == 27) { // 27 correspond à la touche 'ESC'
+
+            // Create the infoText string by concatenating the information
+            sendTime = System.currentTimeMillis();
+            infoText = infoTextFrameCount + "; " + infoTextFPS + "; " + "Send time: " + sendTime;
+
+            // Send the information via UDP
+            try {
+                sendInfoUDP(infoText, address, port_info);
+                //System.out.println("Information sent via UDP");
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            //System.out.println("Number of frames recorded: " + frameCount + ", Frequency: " + formattedFrequency + " frames per second");
+
+            // Wait 20 milliseconds to allow OpenCV to refresh the window
+            if (HighGui.waitKey(20) == 27) { // 27 corresponds to the 'ESC' key
                 break;
             }
         }
-        // Libérer l'objet de capture vidéo
+
+        // Release the video capture object
         capture.release();
-        // Fermer toutes les fenêtres OpenCV
+        // Close all OpenCV windows
         HighGui.destroyAllWindows();
     }
 
@@ -111,6 +145,15 @@ public class ImageSender {
         DatagramSocket socket = new DatagramSocket();
         InetAddress ipAddress = InetAddress.getByName(address);
         DatagramPacket packet = new DatagramPacket(imgData, imgData.length, ipAddress, port);
+        socket.send(packet);
+        socket.close();
+    }
+
+    private static void sendInfoUDP(String info, String address, int port) throws IOException {
+        byte[] infoData = info.getBytes();
+        DatagramSocket socket = new DatagramSocket();
+        InetAddress ipAddress = InetAddress.getByName(address);
+        DatagramPacket packet = new DatagramPacket(infoData, infoData.length, ipAddress, port);
         socket.send(packet);
         socket.close();
     }

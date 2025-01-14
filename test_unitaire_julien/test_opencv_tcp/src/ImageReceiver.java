@@ -1,5 +1,7 @@
 import org.opencv.core.Core;
 import org.opencv.core.Mat;
+import org.opencv.core.Point;
+import org.opencv.core.Scalar;
 import org.opencv.core.Size;
 import org.opencv.imgcodecs.Imgcodecs;
 import org.opencv.imgproc.Imgproc;
@@ -17,39 +19,114 @@ public class ImageReceiver {
         System.out.println("OpenCV library loaded successfully.");
     }
 
+    private static int receivedFrameCount = 0;
+    private static int initialFrameCount = 0;
+    private static long startTime = System.currentTimeMillis();
+
     public static void main(String[] args) {
-        int port = 4903;
+        int imagePort = 4903;
+        int infoPort = 4904;
         byte[] buffer = new byte[65536]; // Buffer to hold incoming data
 
-        try (DatagramSocket socket = new DatagramSocket(port)) {
-            System.out.println("Listening on port " + port + " for incoming images...");
+        try (DatagramSocket imageSocket = new DatagramSocket(imagePort);
+            DatagramSocket infoSocket = new DatagramSocket(infoPort)) {
+            System.out.println("Listening on port " + imagePort + " for incoming images...");
+            System.out.println("Listening on port " + infoPort + " for incoming info...");
 
-            // Créer une fenêtre non redimensionnable
+            // Create a non-resizable window
             HighGui.namedWindow("Receiver", HighGui.WINDOW_NORMAL);
 
             while (true) {
-                DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
-                socket.receive(packet);
+                // Receive image data
+                DatagramPacket imagePacket = new DatagramPacket(buffer, buffer.length);
+                imageSocket.receive(imagePacket);
 
                 // Save the received data to a file
                 String filePath = "received_image.jpg";
                 try (FileOutputStream fos = new FileOutputStream(filePath)) {
-                    fos.write(packet.getData(), 0, packet.getLength());
+                    fos.write(imagePacket.getData(), 0, imagePacket.getLength());
                 }
 
                 // Load the image using OpenCV
                 Mat receivedImage = Imgcodecs.imread(filePath);
 
                 if (!receivedImage.empty()) {
-                    // Redimensionner l'image pour l'affichage à la moitié de la taille
+                    // Resize the image for display at half size
                     Mat displayFrameHalfSize = new Mat();
                     Imgproc.resize(receivedImage, displayFrameHalfSize, new Size(receivedImage.width() / 2, receivedImage.height() / 2));
 
-                    // Afficher l'image redimensionnée
+                    // Receive info text
+                    DatagramPacket infoPacket = new DatagramPacket(buffer, buffer.length);
+                    infoSocket.receive(infoPacket);
+                    String infoText = new String(infoPacket.getData(), 0, infoPacket.getLength());
+
+                    // Extract frameCount, formattedFrequency, and sendTime from infoText
+                    String[] infoParts = infoText.split("; ");
+                    if (infoParts.length == 3) {
+                        int sentFrameCount = Integer.parseInt(infoParts[0].split(": ")[1]);
+                        double sentFrequency = Double.parseDouble(infoParts[1].split(": ")[1].replace(',', '.'));
+                        long sendTime = Long.parseLong(infoParts[2].split(": ")[1]);
+
+                        // Initialize the initial frame count on the first received frame
+                        if (initialFrameCount == -1) {
+                            initialFrameCount = sentFrameCount;
+                            startTime = System.currentTimeMillis();
+                        }
+
+                        // Increment the received frame count
+                        receivedFrameCount++;
+
+                        // Calculate the frequency of received frames
+                        long currentTime = System.currentTimeMillis();
+                        double duration = (currentTime - startTime) / 1000.0;
+                        double receivedFrequency = receivedFrameCount / duration;
+
+                        // Calculate the differences based on the initial frame count
+                        int frameCountDifference = (sentFrameCount - initialFrameCount) - receivedFrameCount;
+                        double frequencyDifference = sentFrequency - receivedFrequency;
+                        if (frequencyDifference < 0) {
+                            frequencyDifference = 0;
+                        }
+
+                        // Calculate the latency
+                        long latency = currentTime - sendTime;
+
+                        // Create the infoText strings
+                        String infoTextFrameCount = "Frame count: " + sentFrameCount;
+                        String infoTextFPS = "FPS: " + String.format("%.2f", sentFrequency);
+                        String recalculatedFrameCount = "Recalculated Frame count: " + receivedFrameCount;
+                        String recalculatedFPS = "Recalculated FPS: " + String.format("%.2f", receivedFrequency);
+                        String frameCountDiffText = "Frame count difference: " + frameCountDifference;
+                        String frequencyDiffText = "FPS difference: " + String.format("%.2f", frequencyDifference);
+                        String latencyText = "Latency: " + latency + " ms";
+
+                        // Display the received information in red on the image
+                        Imgproc.putText(displayFrameHalfSize, infoTextFrameCount, new Point(10, 30), Imgproc.FONT_HERSHEY_SIMPLEX, 0.5, new Scalar(0, 0, 255), 2);
+                        Imgproc.putText(displayFrameHalfSize, infoTextFPS, new Point(10, 50), Imgproc.FONT_HERSHEY_SIMPLEX, 0.5, new Scalar(0, 0, 255), 2);
+
+                        // Display the recalculated information in green on the image
+                        Imgproc.putText(displayFrameHalfSize, recalculatedFrameCount, new Point(10, 70), Imgproc.FONT_HERSHEY_SIMPLEX, 0.5, new Scalar(0, 255, 0), 2);
+                        Imgproc.putText(displayFrameHalfSize, recalculatedFPS, new Point(10, 90), Imgproc.FONT_HERSHEY_SIMPLEX, 0.5, new Scalar(0, 255, 0), 2);
+
+                        // Display the differences in blue on the image
+                        Imgproc.putText(displayFrameHalfSize, frameCountDiffText, new Point(10, 110), Imgproc.FONT_HERSHEY_SIMPLEX, 0.5, new Scalar(255, 0, 0), 2);
+                        Imgproc.putText(displayFrameHalfSize, frequencyDiffText, new Point(10, 130), Imgproc.FONT_HERSHEY_SIMPLEX, 0.5, new Scalar(255, 0, 0), 2);
+
+                        // Display the latency in yellow on the image
+                        Imgproc.putText(displayFrameHalfSize, latencyText, new Point(10, 150), Imgproc.FONT_HERSHEY_SIMPLEX, 0.5, new Scalar(0, 255, 255), 2);
+                    } else {
+                        System.out.println("Received malformed info text: " + infoText);
+                    }
+
+                    // Display the resized image with the information
                     HighGui.imshow("Receiver", displayFrameHalfSize);
-                    HighGui.waitKey(1); // Refresh the window
                 } else {
                     System.out.println("Failed to load the received image.");
+                }
+
+                // Wait 20 milliseconds to allow OpenCV to refresh the window
+                if (HighGui.waitKey(20) == 27) { // 27 corresponds to the 'ESC' key
+                    break;
                 }
             }
         } catch (SocketException e) {
