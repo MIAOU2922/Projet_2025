@@ -21,5 +21,7 @@ Exécutez la commande suivante pour installer toutes les extensions listées dan
 
 cat extensions-list.txt | xargs -n 1 code --install-extension
 
+type extensions-list.txt | findstr /R "^" | for /F "tokens=*" %i in ('findstr /R "^"') do code --install-extension %i
+
 ----------
 Cela installera toutes les extensions listées dans le fichier sur l'autre ordinateur.
