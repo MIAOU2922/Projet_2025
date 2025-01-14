@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.io.FileInputStream;
 
 public class ImageSender {
     static {
@@ -44,6 +45,11 @@ public class ImageSender {
         // Initialiser le compteur d'images et le temps de départ
         int frameCount = 0;
         long startTime = System.currentTimeMillis();
+        
+        // Créer une fenêtre non redimensionnable
+        HighGui.namedWindow("Sender", HighGui.WINDOW_NORMAL);
+        HighGui.resizeWindow("Sender", boxWidth / 2, boxHeight / 2);
+        
         // Boucle pour obtenir continuellement des cadres de la vidéo
         while (true) {
             // Capturer un nouveau cadre
@@ -55,12 +61,17 @@ public class ImageSender {
             }
             // Redimensionner le cadre au format 16:9
             Imgproc.resize(frame, frame, new Size(boxWidth, boxHeight));
-            // Créer une nouvelle image avec un espace de 150 pixels à gauche
+            // Créer une nouvelle image
             displayFrame = Mat.zeros(boxHeight, boxWidth + offsetX, frame.type());
             // Copier le cadre redimensionné dans la nouvelle image
             frame.copyTo(displayFrame.colRange(offsetX, offsetX + boxWidth));
+            
+            // Redimensionner l'image pour l'affichage à la moitié de la taille
+            Mat displayFrameHalfSize = new Mat();
+            Imgproc.resize(displayFrame, displayFrameHalfSize, new Size(boxWidth / 2, boxHeight / 2));
+            
             // Afficher le cadre
-            HighGui.imshow("Capture Vidéo", displayFrame);
+            HighGui.imshow("Sender", displayFrameHalfSize);
             // Redimensionner l'image avant de l'enregistrer
             Mat resizedFrame = new Mat();
             Imgproc.resize(displayFrame, resizedFrame, new Size(boxWidth, boxHeight));
@@ -80,8 +91,8 @@ public class ImageSender {
             double duration = (currentTime - startTime) / 1000.0;
             double frequency = frameCount / duration;
             System.out.println("Nombre d'images enregistrées: " + frameCount + ", Fréquence: " + frequency + " images par seconde");
-            // Attendre 10 millisecondes pour permettre à OpenCV de rafraîchir la fenêtre
-            if (HighGui.waitKey(10) == 27) { // 27 correspond à la touche 'ESC'
+            // Attendre 20 millisecondes pour permettre à OpenCV de rafraîchir la fenêtre
+            if (HighGui.waitKey(20) == 27) { // 27 correspond à la touche 'ESC'
                 break;
             }
         }
@@ -94,6 +105,9 @@ public class ImageSender {
     private static void sendImageUDP(String filePath, String address, int port) throws IOException {
         File imgFile = new File(filePath);
         byte[] imgData = new byte[(int) imgFile.length()];
+        try (FileInputStream fis = new FileInputStream(imgFile)) {
+            fis.read(imgData);
+        }
         DatagramSocket socket = new DatagramSocket();
         InetAddress ipAddress = InetAddress.getByName(address);
         DatagramPacket packet = new DatagramPacket(imgData, imgData.length, ipAddress, port);
