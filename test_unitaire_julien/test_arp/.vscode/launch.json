@@ -1,0 +1,27 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "java",
+            "name": "spam",
+            "request": "launch",
+            "mainClass": "spam",
+            "projectName": "test_arp_ada10ad6"
+        },
+        {
+            "type": "java",
+            "name": "Launch Main",
+            "request": "launch",
+            "mainClass": "Main",
+            "vmArgs": "-Djava.library.path=${workspaceFolder}/lib",
+            "classPaths": [
+                "${workspaceFolder}/lib/pcap4j-core-1.7.5.jar",
+                "${workspaceFolder}/lib/jna-5.13.0.jar",
+                "${workspaceFolder}/lib/slf4j-simple-2.0.9.jar",
+                "${workspaceFolder}/lib/slf4j-api-2.0.9.jar",
+                "${workspaceFolder}/bin"
+            ],
+            "preLaunchTask": "build"
+        }
+    ]
+}
