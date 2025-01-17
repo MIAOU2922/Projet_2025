@@ -1,2 +1,15 @@
-javac -cp lib/opencv-4100.jar -d bin src/Main.java
-java -cp lib/opencv-4100.jar;bin Main
+compile:
+
+javac -cp "lib/opencv-4100.jar" -d "bin" src/ImageReceiver.java src/ImageSender.java
+
+-----------------
+executer reciver:
+
+java -Djava.library.path="lib" -cp "lib/opencv-4100.jar;bin" ImageReceiver
+
+-----------------
+executer reciver:
+
+java -Djava.library.path="lib" -cp "lib/opencv-4100.jar;bin" ImageSender
+
+-----------------
