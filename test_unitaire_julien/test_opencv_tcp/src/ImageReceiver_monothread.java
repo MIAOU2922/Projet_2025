@@ -165,7 +165,7 @@ public class ImageReceiver_monothread {
                 }
 
                 // Wait 20 milliseconds to allow OpenCV to refresh the window
-                if (HighGui.waitKey(20) == 27) { // 27 corresponds to the 'ESC' key
+                if (HighGui.waitKey(10) == 27) { // 27 corresponds to the 'ESC' key
                     break;
                 }
             }

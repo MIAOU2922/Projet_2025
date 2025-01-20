@@ -3,6 +3,13 @@
     "configurations": [
         {
             "type": "java",
+            "name": "ImageReceiver_monothread",
+            "request": "launch",
+            "mainClass": "ImageReceiver_monothread",
+            "projectName": "test_opencv_tcp_b4929c88"
+        },
+        {
+            "type": "java",
             "name": "cmd",
             "request": "launch",
             "mainClass": "cmd",

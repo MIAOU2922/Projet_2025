@@ -31,13 +31,14 @@ public class ImageReceiver {
     private static int receivedFrameCount = 0;
     private static int initialFrameCount = 0;
     private static long startTime = System.currentTimeMillis();
+    private static int referencePort;
 
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
 
         // Ask for the reference port
         System.out.print("Enter the reference port: ");
-        int referencePort = scanner.nextInt();
+        referencePort = scanner.nextInt();
         scanner.nextLine(); // Consume newline
 
         int imagePort = referencePort;
@@ -63,7 +64,7 @@ public class ImageReceiver {
         // Main loop to keep the window open
         while (true) {
             // Wait 20 milliseconds to allow OpenCV to refresh the window
-            if (HighGui.waitKey(20) == 27) { // 27 corresponds to the 'ESC' key
+            if (HighGui.waitKey(1) == 27) { // 27 corresponds to the 'ESC' key
                 break;
             }
         }
@@ -71,11 +72,11 @@ public class ImageReceiver {
 
     public synchronized void processPacket(DatagramPacket packet, int port) {
         try {
-            if (port == 12345) { // Replace with your actual image port
+            if (port == referencePort) { // Replace with your actual image port
                 processImagePacket(packet);
-            } else if (port == 12346) { // Replace with your actual info port
+            } else if (port == referencePort+1) { // Replace with your actual info port
                 processInfoPacket(packet);
-            } else if (port == 12347) { // Replace with your actual telemetry port
+            } else if (port == referencePort+2) { // Replace with your actual telemetry port
                 processTelemetryPacket(packet);
             }
         } catch (IOException e) {
