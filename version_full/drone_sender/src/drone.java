@@ -22,6 +22,7 @@ public class drone {
         String address_broadcast = "172.29.255.255";
         // Obtenir l'adresse IP locale
         InetAddress address_local = InetAddress.getLocalHost();
+        String address_local_str = address_local.getHostAddress();
         // Définition de la taille de l'image
         int imgsize[] = {1280, 720};
         // Initialisation des sockets
@@ -57,7 +58,7 @@ public class drone {
             } while (encodedData.length > maxPacketSize && quality > 10); // Réduire jusqu'à ce que l'image tienne dans un paquet UDP
             // Envoi de l'image
             try {
-                sendImageUDP(encodedData, address, port[0]);
+                sendImageUDP(encodedData, address_local_str, port[0]);
             } catch (IOException e) {
                 System.out.println("Erreur lors de l'envoi de l'image : " + e.getMessage());
             }

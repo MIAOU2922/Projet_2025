@@ -16,6 +16,7 @@ public class Receiver {
         String address_broadcast = "172.29.255.255";
         // Obtenir l'adresse IP locale
         InetAddress address_local = InetAddress.getLocalHost();
+        String address_local_str = address_local.getHostAddress();
         // Définition de la taille de l'image
         int imgsize[] = {1280, 720};
         // Initialisation des matrices
