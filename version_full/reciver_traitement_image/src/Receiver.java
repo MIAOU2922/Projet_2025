@@ -62,35 +62,35 @@ public class Receiver {
     }
     //--------------------------------------------------------------//
     // Méthode pour traiter l'image
-private static Mat processImage(Mat image) {
-    // Convertir l'image en niveaux de gris
-    Mat grayImage = new Mat();
-    Imgproc.cvtColor(image, grayImage, Imgproc.COLOR_BGR2GRAY);
-    // Détection des contours avec l'algorithme Canny
-    Mat edges = new Mat();
-    int lowerThreshold = 10;
-    int upperThreshold = 40;
-    Imgproc.Canny(grayImage, edges, lowerThreshold, upperThreshold);
-    // Créer une image avec des contours rouges
-    Mat edgesRed = Mat.zeros(edges.size(), image.type()); // Initialiser une image noire
-    // Appliquer la dilatation pour augmenter la taille des contours
-    Mat dilatedEdges = new Mat();
-    Mat kernel = Imgproc.getStructuringElement(Imgproc.MORPH_RECT, new Size(3, 3)); // Structure de la dilatation (taille de 3x3)
-    Imgproc.dilate(edges, dilatedEdges, kernel); // Dilater les contours
-    // Remplir les contours dilatés avec la couleur rouge
-    for (int row = 0; row < dilatedEdges.rows(); row++) {
-        for (int col = 0; col < dilatedEdges.cols(); col++) {
-            if (dilatedEdges.get(row, col)[0] > 0) {
-                // Définir la couleur rouge pour les pixels correspondant aux contours
-                edgesRed.put(row, col, new double[]{0, 0, 255});  // Couleur rouge (BGR)
+    private static Mat processImage(Mat image) {
+        // Convertir l'image en niveaux de gris
+        Mat grayImage = new Mat();
+        Imgproc.cvtColor(image, grayImage, Imgproc.COLOR_BGR2GRAY);
+        // Détection des contours avec l'algorithme Canny
+        Mat edges = new Mat();
+        int lowerThreshold = 10;
+        int upperThreshold = 40;
+        Imgproc.Canny(grayImage, edges, lowerThreshold, upperThreshold);
+        // Créer une image avec des contours rouges
+        Mat edgesRed = Mat.zeros(edges.size(), image.type()); // Initialiser une image noire
+        // Appliquer la dilatation pour augmenter la taille des contours
+        Mat dilatedEdges = new Mat();
+        Mat kernel = Imgproc.getStructuringElement(Imgproc.MORPH_RECT, new Size(3, 3)); // Structure de la dilatation (taille de 3x3)
+        Imgproc.dilate(edges, dilatedEdges, kernel); // Dilater les contours
+        // Remplir les contours dilatés avec la couleur rouge
+        for (int row = 0; row < dilatedEdges.rows(); row++) {
+            for (int col = 0; col < dilatedEdges.cols(); col++) {
+                if (dilatedEdges.get(row, col)[0] > 0) {
+                    // Définir la couleur rouge pour les pixels correspondant aux contours
+                    edgesRed.put(row, col, new double[]{0, 0, 255});  // Couleur rouge (BGR)
+                }
             }
         }
+        // Superposer les contours rouges sur l'image d'origine sans flou
+        Mat combinedImage = new Mat();
+        image.copyTo(combinedImage); // Copie de l'image d'origine dans l'image combinée
+        Core.add(edgesRed, combinedImage, combinedImage); // Ajouter les contours rouges dilatés
+        return combinedImage; // Retourner l'image combinée
     }
-    // Superposer les contours rouges sur l'image d'origine sans flou
-    Mat combinedImage = new Mat();
-    image.copyTo(combinedImage); // Copie de l'image d'origine dans l'image combinée
-    Core.add(edgesRed, combinedImage, combinedImage); // Ajouter les contours rouges dilatés
-    return combinedImage; // Retourner l'image combinée
-}
 
 }
