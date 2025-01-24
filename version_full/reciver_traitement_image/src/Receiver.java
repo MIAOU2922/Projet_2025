@@ -9,6 +9,11 @@ public class Receiver {
     static {
         System.loadLibrary(Core.NATIVE_LIBRARY_NAME); // Charger la bibliothèque OpenCV
     }
+
+    
+    static long currentTime , previousTime =System.nanoTime() ;
+    static double intervalInSeconds , fps;
+
     public static void main(String[] args) throws Exception {
         // Définition des ports et adresses IP
         int port[] = {4000, 4001, 4002, 4003, 4004, 4005, 4006, 4007, 4008, 4009};
@@ -26,6 +31,8 @@ public class Receiver {
         // Initialisation du socket UDP
         DatagramSocket socket = new DatagramSocket(port[0]);
         DatagramPacket packet = new DatagramPacket(data, data.length);
+
+        Mat resizedImage = new Mat() ;
         //--------------------------------------------------------------//
         // Boucle principale
         while (true) {
@@ -34,25 +41,24 @@ public class Receiver {
             // Convertir les données reçues en une image
             imageRecu = Imgcodecs.imdecode(new MatOfByte(packet.getData()), Imgcodecs.IMREAD_COLOR);
             if (imageRecu.empty()) {
-                System.out.println("Image non reçue");
+                System.out.printf("Image non reçue");
                 if (dermiereImageValide != null) {
                     // Afficher la dernière image valide
                     HighGui.imshow("Contour", dermiereImageValide);
                 }
             } else {
-                System.out.println("Image reçue");
+                //System.out.printf("Image reçue");
                 dermiereImageValide = imageRecu.clone(); // Stocker l'image d'origine comme dernière valide
                 processedImage = processImage(imageRecu); // Traiter l'image pour les contours
                 
                 // Réduire la taille de l'image avant de l'afficher
-                Mat resizedImage = new Mat();
                 Size displayFrameHalfSize = new Size(processedImage.width() / 2, processedImage.height() / 2);
                 Imgproc.resize(processedImage, resizedImage, displayFrameHalfSize);
-                
                 HighGui.imshow("Contour", resizedImage); // Afficher l'image redimensionnée
             }
+
             //tempo
-            int key = HighGui.waitKey(10);
+            int key = HighGui.waitKey(5);
             if (key == 27) {
                 break;
             }
@@ -63,34 +69,56 @@ public class Receiver {
     //--------------------------------------------------------------//
     // Méthode pour traiter l'image
     private static Mat processImage(Mat image) {
-        // Convertir l'image en niveaux de gris
+        // Réutilisation des matrices pour éviter de les recréer à chaque appel
         Mat grayImage = new Mat();
-        Imgproc.cvtColor(image, grayImage, Imgproc.COLOR_BGR2GRAY);
-        // Détection des contours avec l'algorithme Canny
+        Mat flouImage = new Mat();
         Mat edges = new Mat();
-        int lowerThreshold = 10;
-        int upperThreshold = 40;
-        Imgproc.Canny(grayImage, edges, lowerThreshold, upperThreshold);
-        // Créer une image avec des contours rouges
-        Mat edgesRed = Mat.zeros(edges.size(), image.type()); // Initialiser une image noire
-        // Appliquer la dilatation pour augmenter la taille des contours
         Mat dilatedEdges = new Mat();
-        Mat kernel = Imgproc.getStructuringElement(Imgproc.MORPH_RECT, new Size(3, 3)); // Structure de la dilatation (taille de 3x3)
-        Imgproc.dilate(edges, dilatedEdges, kernel); // Dilater les contours
-        // Remplir les contours dilatés avec la couleur rouge
-        for (int row = 0; row < dilatedEdges.rows(); row++) {
-            for (int col = 0; col < dilatedEdges.cols(); col++) {
-                if (dilatedEdges.get(row, col)[0] > 0) {
-                    // Définir la couleur rouge pour les pixels correspondant aux contours
-                    edgesRed.put(row, col, new double[]{0, 0, 255});  // Couleur rouge (BGR)
-                }
-            }
-        }
-        // Superposer les contours rouges sur l'image d'origine sans flou
+        Mat edgesRed = Mat.zeros(image.size(), image.type()); // Initialiser une image noire
         Mat combinedImage = new Mat();
-        image.copyTo(combinedImage); // Copie de l'image d'origine dans l'image combinée
-        Core.add(edgesRed, combinedImage, combinedImage); // Ajouter les contours rouges dilatés
+    
+        // Convertir l'image en niveaux de gris
+        Imgproc.cvtColor(image, grayImage, Imgproc.COLOR_BGR2GRAY);
+    
+        // Appliquer un filtre bilatéral (lissage tout en préservant les contours)
+        Imgproc.bilateralFilter(grayImage, flouImage, 9, 75, 75);
+    
+        // Détection des contours avec l'algorithme Canny
+        int lowerThreshold = 0;
+        int upperThreshold = 50;
+        Imgproc.Canny(flouImage, edges, lowerThreshold, upperThreshold);
+    
+        // Appliquer la dilatation pour augmenter la taille des contours
+        Mat kernel = Imgproc.getStructuringElement(Imgproc.MORPH_RECT, new Size(3, 3)); // Taille 3x3
+        Imgproc.dilate(edges, dilatedEdges, kernel);
+    
+        // Appliquer la couleur rouge (vectorisé)
+        edgesRed.setTo(new Scalar(0, 0, 255), dilatedEdges); // Affecter rouge là où les contours sont présents
+    
+        // Superposer les contours rouges sur l'image d'origine
+        Core.add(image, edgesRed, combinedImage);
+
+        // Calculer les FPS
+        currentTime = System.nanoTime();
+        intervalInSeconds = (currentTime - previousTime) / 1_000_000_000.0; // Intervalle en secondes
+        fps = 1.0 / intervalInSeconds; // Calcul des FPS
+        //System.out.printf(" FPS: %.0f\n", fps);
+
+        Imgproc.putText(combinedImage, String.format("FPS: %.0f", fps), new Point(10, 30), Imgproc.FONT_HERSHEY_SIMPLEX,1, new Scalar(0, 255, 0), 2);
+
+
+        // Mettre à jour le temps précédent
+        previousTime = currentTime;
+    
+        // Libérer les ressources inutilisées (libère explicitement la mémoire des objets temporaires)
+        grayImage.release();
+        flouImage.release();
+        edges.release();
+        dilatedEdges.release();
+        edgesRed.release();
+    
         return combinedImage; // Retourner l'image combinée
     }
+    
 
 }

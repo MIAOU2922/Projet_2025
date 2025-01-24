@@ -37,6 +37,9 @@ public class drone {
         byte[] data = new byte[65536];
         // Taille maximale autorisée pour un paquet UDP (en bytes)
         int maxPacketSize = 65528; // 65536 - 8 (overhead UDP)
+
+        long currentTime , previousTime =System.nanoTime() ;
+        double intervalInSeconds , fps;
         //--------------------------------------------------------------//
         // Boucle principale
         while (true) {
@@ -59,12 +62,20 @@ public class drone {
             // Envoi de l'image
             try {
                 sendImageUDP(encodedData, address_local_str, port[0]);
+                currentTime = System.nanoTime();
+                intervalInSeconds = (currentTime - previousTime) / 1_000_000_000.0; // Intervalle en secondes
+                fps = 1.0 / intervalInSeconds; // Calcul des FPS
+                System.out.printf(" FPS: %.0f\n", fps);
+
+                // Mettre à jour le temps précédent
+                previousTime = currentTime;
+
             } catch (IOException e) {
                 System.out.println("Erreur lors de l'envoi de l'image : " + e.getMessage());
             }
             // Tempo
             try {
-                Thread.sleep(10);
+                Thread.sleep(20);
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
             }
@@ -79,7 +90,7 @@ public class drone {
             InetAddress ipAddress = InetAddress.getByName(address);
             DatagramPacket packet = new DatagramPacket(imageData, imageData.length, ipAddress, port);
             socket.send(packet);
-            System.out.println("Image envoyée à " + address + ":" + port);
+            System.out.print("Image envoyée à " + address + ":" + port );
         } finally {
             if (socket != null && !socket.isClosed()) {
                 socket.close();
