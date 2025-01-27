@@ -1,4 +1,6 @@
 import java.net.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.io.*;
 import org.opencv.core.*;
 import org.opencv.highgui.HighGui;
@@ -26,13 +28,13 @@ public class Receiver {
         int imgsize[] = {1280, 720};
         // Initialisation des matrices
         Mat imageRecu = new Mat();
-        Mat processedImage , dermiereImageValide = null;
+        Mat processedImage , processedImage2 , dermiereImageValide = null;
         byte[] data = new byte[65536];
         // Initialisation du socket UDP
         DatagramSocket socket = new DatagramSocket(port[0]);
         DatagramPacket packet = new DatagramPacket(data, data.length);
 
-        Mat resizedImage = new Mat() , dermiereImageValide_resizedImage = new Mat();
+        Mat resizedImage = new Mat() , resizedImage2 = new Mat() , dermiereImageValide_resizedImage = new Mat();
         //--------------------------------------------------------------//
         // Boucle principale
         while (true) {
@@ -51,12 +53,18 @@ public class Receiver {
                 dermiereImageValide = imageRecu.clone(); // Stocker l'image d'origine comme dernière valide
                 processedImage = processImage(imageRecu); // Traiter l'image pour les contours
                 
+                processedImage2 = ContoursFormes(imageRecu); // Traiter l'image pour les formes
+
                 // Réduire la taille de l'image avant de l'afficher
                 Size displayFrameHalfSize = new Size(processedImage.width() / 2, processedImage.height() / 2);
                 Imgproc.resize(processedImage, resizedImage, displayFrameHalfSize);
                 HighGui.imshow("Contour", resizedImage); // Afficher l'image redimensionnée
                 Imgproc.resize(dermiereImageValide, dermiereImageValide_resizedImage, displayFrameHalfSize);
                 HighGui.imshow("source", dermiereImageValide_resizedImage); // Afficher l'image redimensionnée
+                
+                Imgproc.resize(processedImage2, resizedImage2, displayFrameHalfSize);
+                HighGui.imshow("forme", resizedImage2); // Afficher l'image redimensionnée
+
             }
 
             //tempo
@@ -69,7 +77,7 @@ public class Receiver {
         HighGui.destroyAllWindows();
     }
     //--------------------------------------------------------------//
-    // Méthode pour traiter l'image
+    // Méthode detection contours
     private static Mat processImage(Mat image) {
         // Réutilisation des matrices pour éviter de les recréer à chaque appel
         Mat grayImage = new Mat();
@@ -122,5 +130,72 @@ public class Receiver {
         return combinedImage; // Retourner l'image combinée
     }
     
+    //--------------------------------------------------------------//
+    // Méthode détection forme
+    private static Mat ContoursFormes(Mat frame)
+    {
+        // Conversion du BufferedImage en Mat
+        Mat grayImage = new Mat();
+        Mat flouImage = new Mat();
+        Mat edges = new Mat();
+        Mat dilatedEdges = new Mat();
+        Mat edgesRed = Mat.zeros(frame.size(), frame.type()); // Initialiser une image noire
+        Mat combinedImage = new Mat();
+    
+        // Convertir l image en niveaux de gris
+        Imgproc.cvtColor(frame, grayImage, Imgproc.COLOR_BGR2GRAY);
+    
+        // Appliquer un filtre bilateral (lissage tout en preservant les contours)
+        Imgproc.bilateralFilter(grayImage, flouImage, 9, 75, 75);
+    
+        // Detection des contours avec l algorithme Canny
+        int lowerThreshold = 0;
+        int upperThreshold = 50;
+        Imgproc.Canny(flouImage, edges, lowerThreshold, upperThreshold);
+    
+        // Appliquer la dilatation pour augmenter la taille des contours
+        Mat kernel = Imgproc.getStructuringElement(Imgproc.MORPH_RECT, new Size(3, 3)); // Taille 3x3
+        Imgproc.dilate(edges, dilatedEdges, kernel);
+
+        // Trouver les contours
+        List<MatOfPoint> contours = new ArrayList<>();
+    
+        Mat hierarchy = new Mat();
+        Imgproc.findContours(dilatedEdges, contours, hierarchy, Imgproc.RETR_EXTERNAL, Imgproc.CHAIN_APPROX_SIMPLE);
+        for (MatOfPoint contour : contours) 
+        {
+            // Approximation des contours pour simplifier la forme
+            MatOfPoint2f contour2f = new MatOfPoint2f(contour.toArray());
+            double perimeter = Imgproc.arcLength(contour2f, true);
+            MatOfPoint2f approx = new MatOfPoint2f();
+            Imgproc.approxPolyDP(contour2f, approx, 0.02 * perimeter, true);
+
+            // Identifier la forme selon le nombre de sommets
+            int vertexCount = approx.toArray().length;
+            String shapeType = vertexCount == 3 ? "Triangle" : vertexCount == 4 ? "Rectangle" : "Circle";
+
+            // Dessiner le contour et afficher la forme detectee
+            Imgproc.drawContours(frame, List.of(contour), -1, new Scalar(0, 255, 0), 2);
+            Point textPoint = approx.toArray()[0];
+            Imgproc.putText(frame, shapeType, textPoint, Imgproc.FONT_HERSHEY_SIMPLEX, 0.8, new Scalar(255, 0, 0), 2);
+        }
+    
+        
+        // Appliquer la couleur rouge (vectoris�)
+        edgesRed.setTo(new Scalar(0, 0, 255), dilatedEdges); // Affecter rouge la ou les contours sont presents
+    
+        // Superposer les contours rouges sur l image d origine
+        Core.add(frame, edgesRed, combinedImage);
+        
+        // Liberer les ressources inutilisees (libere explicitement la memoire des objets temporaires)
+        grayImage.release();
+        flouImage.release();
+        edges.release();
+        dilatedEdges.release();
+        edgesRed.release();
+
+        return combinedImage; // Retourner l'image combinee
+    }
+
 
 }
