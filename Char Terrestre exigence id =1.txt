@@ -1,0 +1,21 @@
+Char Terrestre exigence id =1
+	Déplacements du char Terrestre Id = 1.1
+		déplacement manuelle Id = 1.1.1
+		déplacement automatique Id = 1.1.2
+
+	Obtenir une vision de la zone Id = 1.2
+		Détection formes Id = 1.2.1
+		Détections contours Id = 1.2.2
+		reconnaissance du char Id = 1.2.3
+
+	Information de télémétrie du char Id = 1.3
+		Batterie Id = 1.3
+		
+
+	Superviser Id = 1.4
+		Environnement 3D Id = 1.4.1
+
+	Diffusion du flux vidéo  Id = 1.5
+		PC Id = 1.5.1
+		Android Id = 1.5.2
+		VR Id = 1.5.3

@@ -1,0 +1,35 @@
+Char terrestre 
+	Mouvement
+		Réception des commande
+		Déplacement du char  
+	Capteur 
+		Récupération des valeurs physique 
+		Envoie via udp
+	Vidéo
+		Récupération du flux 
+		Envoie via udp
+
+
+
+serveur java 
+	image 
+	Réception de l’image 
+	Traitement de l’image pour détection de contours 
+	Envoie a chai3d
+		ajout des donné de télémétrie
+		renvoie au serveur java 
+
+		
+Commande 
+	envoie des donné au char 
+		depuis robot haptique
+		depuis client java 
+		depuis client android
+	retour aptique 
+
+	
+Télémétrie 
+	réception des donné 
+	ajout a l'image via chai3d ou java 
+
+
