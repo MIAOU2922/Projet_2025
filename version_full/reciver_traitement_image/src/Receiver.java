@@ -32,7 +32,7 @@ public class Receiver {
         DatagramSocket socket = new DatagramSocket(port[0]);
         DatagramPacket packet = new DatagramPacket(data, data.length);
 
-        Mat resizedImage = new Mat() ;
+        Mat resizedImage = new Mat() , dermiereImageValide_resizedImage = new Mat();
         //--------------------------------------------------------------//
         // Boucle principale
         while (true) {
@@ -55,6 +55,8 @@ public class Receiver {
                 Size displayFrameHalfSize = new Size(processedImage.width() / 2, processedImage.height() / 2);
                 Imgproc.resize(processedImage, resizedImage, displayFrameHalfSize);
                 HighGui.imshow("Contour", resizedImage); // Afficher l'image redimensionnée
+                Imgproc.resize(dermiereImageValide, dermiereImageValide_resizedImage, displayFrameHalfSize);
+                HighGui.imshow("source", dermiereImageValide_resizedImage); // Afficher l'image redimensionnée
             }
 
             //tempo

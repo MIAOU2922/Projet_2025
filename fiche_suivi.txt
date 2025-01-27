@@ -1,13 +1,13 @@
 ----------------------
 janvier :
-semaine 2 :
+semaine 1 :
 -debut projet
 -decouverte du sujet et tépartition des tache
 -création des diagrame sysml
 -debut de quelque test unitaire
 --recup image avec opencv
 --ihm capteur virtuel
-semaine 3 :
+semaine 2 :
 -finalisation capteur virtuel télémétri
 -reciver et sender image en tcp ok .
 -- possible de choisir
@@ -15,8 +15,15 @@ semaine 3 :
 --- le mode d'envoie
 --- l'address a la quel envoyer si nésésaire
 - vérifier si requete arp requise ( si non requise sa serait arrangeant )
--
+semaine 3 :
+- création programe char pour l'envoie d'image
+-- conversion flux en jpg
+-- envoie image dans 1 trame udp
+- creation du client java pour le traitement de l'image
+-- reception via udp
+-- traitement via opencv
 semaine 4 :
+- revu de projet 0
 ----------------------
 fevrier :
 semaine 1 :
