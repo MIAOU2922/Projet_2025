@@ -1,0 +1,5 @@
+javac -cp lib/opencv-4100.jar -d bin src/drone.java
+
+jar cfm drone.jar MANIFEST.MF -C bin .
+
+java -jar drone.jar
