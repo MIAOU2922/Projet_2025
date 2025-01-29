@@ -24,7 +24,7 @@ public class traitement {
         int imgsize[] = {1280, 720};
         // Initialisation des matrices
         Mat imageRecu = new Mat();
-        Mat processedImage , processedImage2 , dermiereImageValide = null;
+        Mat imageEnvoyer , dermiereImageValide = null;
         byte[] data = new byte[65536];
         // Initialisation du socket UDP
         DatagramSocket socket = new DatagramSocket(port[0]);
@@ -35,6 +35,21 @@ public class traitement {
         long currentTime , previousTime =System.nanoTime() ;
         double intervalInSeconds , fps;
 
+        int quality = 70; // Qualité initiale
+        byte[] encodedData;
+
+        // Taille maximale autorisée pour un paquet UDP (en bytes)
+        int maxPacketSize = 65528; // 65536 - 8 (overhead UDP)
+
+        //type de traitement
+        int traitements = 0;
+        /* 
+        0 : pas de triatement 
+        1 : traitement contour
+        2 : traitement forme
+        3 : traitement contour et forme 
+        */
+
         //--------------------------------------------------------------//
         // Boucle principale
         while (true) {
@@ -42,17 +57,29 @@ public class traitement {
             socket.receive(packet);
             // Convertir les données reçues en une image
             imageRecu = Imgcodecs.imdecode(new MatOfByte(packet.getData()), Imgcodecs.IMREAD_COLOR);
-            if (imageRecu.empty()) {
-                System.out.printf("Image non reçue");
-                if (dermiereImageValide != null) {
-                    // Afficher la dernière image valide
-                    HighGui.imshow("Contour", dermiereImageValide);
-                }
-            } else {
+            if (!imageRecu.empty()) {
+
                 //System.out.printf("Image reçue");
                 dermiereImageValide = imageRecu.clone(); // Stocker l'image d'origine comme dernière valide
-                processedImage = processImage(imageRecu); // Traiter l'image pour les contours
-                processedImage2 = detectShapes(imageRecu); // Traiter l'image pour les formes
+
+                switch(traitements){
+                    case 0:
+                        imageEnvoyer = imageRecu;
+                        break;
+                    case 1:
+                        imageEnvoyer = processImage(imageRecu);
+                        break;
+                    case 2:
+                        imageEnvoyer = detectShapes(imageRecu);
+                        break;
+                    case 3:
+                        imageEnvoyer = processImage(imageRecu);
+                        imageEnvoyer = detectShapes(imageRecu);
+                        break;
+                }
+
+
+                
 
                 // Calculer les FPS
                 currentTime = System.nanoTime();
@@ -60,23 +87,56 @@ public class traitement {
                 fps = 1.0 / intervalInSeconds; // Calcul des FPS
                 //System.out.printf(" FPS: %.0f\n", fps);
 
-                Imgproc.putText(processedImage, String.format("FPS: %.0f", fps), new Point(10, 30), Imgproc.FONT_HERSHEY_SIMPLEX,1, new Scalar(0, 255, 0), 2);
-                Imgproc.putText(processedImage2, String.format("FPS: %.0f", fps), new Point(10, 30), Imgproc.FONT_HERSHEY_SIMPLEX,1, new Scalar(0, 255, 0), 2);
-                Imgproc.putText(dermiereImageValide, String.format("FPS: %.0f", fps), new Point(10, 30), Imgproc.FONT_HERSHEY_SIMPLEX,1, new Scalar(0, 255, 0), 2);
-
+                Imgproc.putText(imageEnvoyer, String.format("FPS: %.0f", fps), new Point(10, 30), Imgproc.FONT_HERSHEY_SIMPLEX,1, new Scalar(0, 255, 0), 2);
 
                 // Mettre à jour le temps précédent
                 previousTime = currentTime;
 
                 // Réduire la taille de l'image avant de l'afficher
-                Size displayFrameHalfSize = new Size(processedImage.width() / 2, processedImage.height() / 2);
-                Imgproc.resize(processedImage, resizedImage, displayFrameHalfSize);
-                HighGui.imshow("Contour", resizedImage); // Afficher l'image redimensionnée
+                Size displayFrameHalfSize = new Size(imageEnvoyer.width() / 2, imageEnvoyer.height() / 2);
+
+              
                 Imgproc.resize(dermiereImageValide, dermiereImageValide_resizedImage, displayFrameHalfSize);
                 HighGui.imshow("source", dermiereImageValide_resizedImage); // Afficher l'image redimensionnée
-                Imgproc.resize(processedImage2, resizedImage2, displayFrameHalfSize);
-                HighGui.imshow("forme", resizedImage2); // Afficher l'image redimensionnée
+                Imgproc.resize(imageEnvoyer_resizedImage, imageEnvoyer, displayFrameHalfSize);
+                HighGui.imshow("envoyer", imageEnvoyer); // Afficher l'image redimensionnée
 
+
+
+
+
+                
+                // Ajuster dynamiquement le taux de compression
+                quality = 70; // Qualité initiale
+                // Encoder l'image en JPEG et ajuster la qualité si nécessaire
+                do {
+                    encodedData = encodeImageToJPEG(frame, quality);
+                    quality -= 5; // Réduire la qualité de compression
+                } while (encodedData.length > maxPacketSize && quality > 10); // Réduire jusqu'à ce que l'image tienne dans un paquet UDP
+                // Envoi de l'image
+                try {
+                    sendImageUDP(encodedData, address_local_str, port[0]);
+                    currentTime = System.nanoTime();
+                    intervalInSeconds = (currentTime - previousTime) / 1_000_000_000.0; // Intervalle en secondes
+                    fps = 1.0 / intervalInSeconds; // Calcul des FPS
+                    System.out.printf(" FPS: %.0f\n", fps);
+
+                    // Mettre à jour le temps précédent
+                    previousTime = currentTime;
+
+                } catch (IOException e) {
+                    System.out.println("Erreur lors de l'envoi de l'image : " + e.getMessage());
+                }
+
+            } else {
+
+                System.out.printf("Image non reçue");
+                if (dermiereImageValide != null) {
+                    // Afficher la dernière image valide
+                    HighGui.imshow("traitement Contour", resizedImage); // Afficher l'image redimensionnée
+                    HighGui.imshow("traitement source", dermiereImageValide_resizedImage); // Afficher l'image redimensionnée
+                    HighGui.imshow("traitement forme", resizedImage2); // Afficher l'image redimensionnée
+                }
             }
 
             //tempo
@@ -187,7 +247,22 @@ public class traitement {
 
         return processedImage;
     }
-
+//--------------------------------------------------------------//
+    // Méthode pour envoyer une image via UDP
+    private static void sendImageUDP(byte[] imageData, String address, int port) throws IOException {
+        DatagramSocket socket = null;
+        try {
+            socket = new DatagramSocket();
+            InetAddress ipAddress = InetAddress.getByName(address);
+            DatagramPacket packet = new DatagramPacket(imageData, imageData.length, ipAddress, port);
+            socket.send(packet);
+            System.out.print("Image envoyée à " + address + ":" + port );
+        } finally {
+            if (socket != null && !socket.isClosed()) {
+                socket.close();
+            }
+        }
+    }
 
 
 }

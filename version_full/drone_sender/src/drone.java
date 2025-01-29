@@ -40,6 +40,10 @@ public class drone {
 
         long currentTime , previousTime =System.nanoTime() ;
         double intervalInSeconds , fps;
+
+        int quality = 70; // Qualité initiale
+        byte[] encodedData;
+
         //--------------------------------------------------------------//
         // Boucle principale
         while (true) {
@@ -52,8 +56,9 @@ public class drone {
             Imgproc.resize(frame, frame, new Size(imgsize[0], imgsize[1]));
             
             // Ajuster dynamiquement le taux de compression
-            int quality = 70; // Qualité initiale
-            byte[] encodedData;
+            quality = 70; // Qualité initiale
+
+
             // Encoder l'image en JPEG et ajuster la qualité si nécessaire
             do {
                 encodedData = encodeImageToJPEG(frame, quality);
