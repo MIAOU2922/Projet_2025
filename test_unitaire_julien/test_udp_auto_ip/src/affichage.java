@@ -3,6 +3,8 @@ import java.util.*;
 import java.io.*;
 
 public class affichage {
+
+    static String infoText[] = new String[10];
     public static void main(String[] args) throws Exception {
 
     String[] ascii = {
@@ -97,9 +99,6 @@ public class affichage {
         }
     }
     
-    // Initialisation des paquets d'informations
-    String infoText[] = new String[10];
-
         while (true) {
             // Envoi des informations sur les ports UDP
             for (int i = 0; i < ascii.length; i++) {
@@ -126,11 +125,13 @@ public class affichage {
     // Méthode pour écouter un socket
     private static void SocketListener(DatagramSocket socket, DatagramPacket packet) {
         try {
+            String name = "Listener : " + socket.getLocalPort();
+            Thread.currentThread().setName(name);
             System.out.println("Écoute sur le socket : " + socket.getLocalPort());
             while (true) {
                 socket.receive(packet);
                 //System.out.println("Données reçues sur le port " + socket.getLocalPort() + ": " + new String(packet.getData(), 0, packet.getLength()));
-
+                infoText[0] = new String(packet.getData(), 0, packet.getLength());
             }
         } catch (Exception e) {
             e.printStackTrace();
