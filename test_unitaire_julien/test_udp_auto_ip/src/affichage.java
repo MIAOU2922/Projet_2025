@@ -101,11 +101,9 @@ public class affichage {
     String infoText[] = new String[10];
 
         while (true) {
-            System.out.println("En attente de messages...");
-
+            // Envoi des informations sur les ports UDP
             for (int i = 0; i < ascii.length; i++) {
                 try {
-                    System.out.println(ascii[i]);
                     for (int f = 1; f < 10; f++) {
                         sendSringUDP(ascii[i], address_broadcast, port[f]);
                     }
@@ -117,8 +115,8 @@ public class affichage {
             }
         }
     }
-    private static void sendSringUDP(String telemetryData, String address, int port) throws IOException {
-        byte[] data = telemetryData.getBytes();
+    private static void sendSringUDP(String DataToSend, String address, int port) throws IOException {
+        byte[] data = DataToSend.getBytes();
         DatagramSocket socket = new DatagramSocket();
         InetAddress ipAddress = InetAddress.getByName(address);
         DatagramPacket packet = new DatagramPacket(data, data.length, ipAddress, port);
