@@ -17,20 +17,28 @@ public class traitement {
         int port[] = {4000, 4001, 4002, 4003, 4004, 4005, 4006, 4007, 4008, 4009};
         String address = "172.29.41.9";
         String address_broadcast = "172.29.255.255";
+        
         // Obtenir l'adresse IP locale
         InetAddress address_local = InetAddress.getLocalHost();
         String address_local_str = address_local.getHostAddress();
+        
         // Définition de la taille de l'image
         int imgsize[] = {1280, 720};
-        // Initialisation des matrices
-        Mat imageRecu = new Mat();
-        Mat imageEnvoyer , dermiereImageValide = null;
+        
+
         byte[] data = new byte[65536];
         // Initialisation du socket UDP
         DatagramSocket socket = new DatagramSocket(port[0]);
         DatagramPacket packet = new DatagramPacket(data, data.length);
 
-        Mat resizedImage = new Mat() , resizedImage2 = new Mat() , dermiereImageValide_resizedImage = new Mat();
+        // Initialisation des matrices OpenCV
+        Mat imageRecu = new Mat(),
+            dermiereImageValide = new Mat(),
+            imageEnvoyer = new Mat(),
+            resizedImage = new Mat(),
+            resizedImage2 = new Mat(),
+            dermiereImageValide_resizedImage = new Mat(),
+            imageEnvoyer_resizedImage = new Mat();
 
         long currentTime , previousTime =System.nanoTime() ;
         double intervalInSeconds , fps;
@@ -42,7 +50,7 @@ public class traitement {
         int maxPacketSize = 65528; // 65536 - 8 (overhead UDP)
 
         //type de traitement
-        int traitements = 0;
+        int traitements = 2;
         /* 
         0 : pas de triatement 
         1 : traitement contour
@@ -50,11 +58,34 @@ public class traitement {
         3 : traitement contour et forme 
         */
 
+        Mat blackImage = new Mat(360, 640, CvType.CV_8UC3, new Scalar(0, 0, 0));
+
+        Imgproc.putText(
+            blackImage, 
+            "START", 
+            new Point((blackImage.cols() - Imgproc.getTextSize("START", Imgproc.FONT_HERSHEY_SIMPLEX, 2.0, 3, null).width) / 2, 
+                      (blackImage.rows() + Imgproc.getTextSize("START", Imgproc.FONT_HERSHEY_SIMPLEX, 2.0, 3, null).height) / 2), 
+            Imgproc.FONT_HERSHEY_SIMPLEX, 
+            2.0, 
+            new Scalar(255, 255, 255), 
+            3
+        );
+        HighGui.imshow("char", blackImage); // Afficher l'image redimensionnée
+        HighGui.imshow("traitement", blackImage); // Afficher l'image redimensionnée
+
+
+
+
         //--------------------------------------------------------------//
         // Boucle principale
         while (true) {
             // Réception de l'image via UDP
-            socket.receive(packet);
+            try {
+                socket.receive(packet);
+            } catch (SocketTimeoutException e) {
+                System.out.println("Timeout: " + e.getMessage());
+                continue;
+            }
             // Convertir les données reçues en une image
             imageRecu = Imgcodecs.imdecode(new MatOfByte(packet.getData()), Imgcodecs.IMREAD_COLOR);
             if (!imageRecu.empty()) {
@@ -78,9 +109,6 @@ public class traitement {
                         break;
                 }
 
-
-                
-
                 // Calculer les FPS
                 currentTime = System.nanoTime();
                 intervalInSeconds = (currentTime - previousTime) / 1_000_000_000.0; // Intervalle en secondes
@@ -95,27 +123,22 @@ public class traitement {
                 // Réduire la taille de l'image avant de l'afficher
                 Size displayFrameHalfSize = new Size(imageEnvoyer.width() / 2, imageEnvoyer.height() / 2);
 
-              
                 Imgproc.resize(dermiereImageValide, dermiereImageValide_resizedImage, displayFrameHalfSize);
-                HighGui.imshow("source", dermiereImageValide_resizedImage); // Afficher l'image redimensionnée
-                Imgproc.resize(imageEnvoyer_resizedImage, imageEnvoyer, displayFrameHalfSize);
-                HighGui.imshow("envoyer", imageEnvoyer); // Afficher l'image redimensionnée
-
-
-
-
+                HighGui.imshow("char", dermiereImageValide_resizedImage); // Afficher l'image redimensionnée
+                Imgproc.resize(imageEnvoyer, imageEnvoyer_resizedImage, displayFrameHalfSize);
+                HighGui.imshow("traitement", imageEnvoyer_resizedImage); // Afficher l'image redimensionnée
 
                 
                 // Ajuster dynamiquement le taux de compression
                 quality = 70; // Qualité initiale
                 // Encoder l'image en JPEG et ajuster la qualité si nécessaire
                 do {
-                    encodedData = encodeImageToJPEG(frame, quality);
+                    encodedData = encodeImageToJPEG(imageEnvoyer, quality);
                     quality -= 5; // Réduire la qualité de compression
                 } while (encodedData.length > maxPacketSize && quality > 10); // Réduire jusqu'à ce que l'image tienne dans un paquet UDP
                 // Envoi de l'image
                 try {
-                    sendImageUDP(encodedData, address_local_str, port[0]);
+                    sendImageUDP(encodedData, address_broadcast, port[1]);
                     currentTime = System.nanoTime();
                     intervalInSeconds = (currentTime - previousTime) / 1_000_000_000.0; // Intervalle en secondes
                     fps = 1.0 / intervalInSeconds; // Calcul des FPS
@@ -133,9 +156,8 @@ public class traitement {
                 System.out.printf("Image non reçue");
                 if (dermiereImageValide != null) {
                     // Afficher la dernière image valide
-                    HighGui.imshow("traitement Contour", resizedImage); // Afficher l'image redimensionnée
-                    HighGui.imshow("traitement source", dermiereImageValide_resizedImage); // Afficher l'image redimensionnée
-                    HighGui.imshow("traitement forme", resizedImage2); // Afficher l'image redimensionnée
+                    HighGui.imshow("char", dermiereImageValide_resizedImage); // Afficher l'image redimensionnée
+                    HighGui.imshow("traitement", imageEnvoyer_resizedImage); // Afficher l'image redimensionnée
                 }
             }
 
@@ -263,6 +285,13 @@ public class traitement {
             }
         }
     }
-
+//--------------------------------------------------------------//
+    // Méthode pour encoder une image en JPEG avec un taux de compression donné
+    private static byte[] encodeImageToJPEG(Mat image, int quality) {
+        MatOfByte matOfByte = new MatOfByte();
+        // Encoder l'image en JPEG avec un taux de compression spécifique
+        Imgcodecs.imencode(".jpg", image, matOfByte, new MatOfInt(Imgcodecs.IMWRITE_JPEG_QUALITY, quality));
+        return matOfByte.toArray();
+    }
 
 }
