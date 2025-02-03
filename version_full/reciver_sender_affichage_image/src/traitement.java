@@ -12,34 +12,42 @@ public class traitement {
         System.loadLibrary(Core.NATIVE_LIBRARY_NAME); // Charger la bibliothèque OpenCV
     }
 
-    public static void main(String[] args) throws Exception {
+    Mat imageRecu = new Mat();
+
+    public traitement () {
         // Définition des ports et adresses IP
         int port[] = {4000, 4001, 4002, 4003, 4004, 4005, 4006, 4007, 4008, 4009};
         String address = "172.29.41.9";
         String address_broadcast = "172.29.255.255";
         
-        // Obtenir l'adresse IP locale
-        InetAddress address_local = InetAddress.getLocalHost();
-        String address_local_str = address_local.getHostAddress();
+
+        byte[] data = new byte[65536];
+        
+        DatagramSocket socket = null;
+
+        try {
+            // Obtenir l'adresse IP locale
+
+            InetAddress address_local = InetAddress.getLocalHost();
+            String address_local_str = address_local.getHostAddress();
+    
+            // Initialisation du socket UD
+            socket = new DatagramSocket(port[0]);
+        } catch (Exception e) {
+            
+        }
         
         // Définition de la taille de l'image
         int imgsize[] = {1280, 720};
-        
-
-        byte[] data = new byte[65536];
-        // Initialisation du socket UDP
-        DatagramSocket socket = new DatagramSocket(port[0]);
-        DatagramPacket packet = new DatagramPacket(data, data.length);
-
+    
         // Initialisation des matrices OpenCV
-        Mat imageRecu = new Mat(),
-            dermiereImageValide = new Mat(),
+        Mat dermiereImageValide = new Mat(),
             imageEnvoyer = new Mat(),
-            resizedImage = new Mat(),
-            resizedImage2 = new Mat(),
             dermiereImageValide_resizedImage = new Mat(),
             imageEnvoyer_resizedImage = new Mat();
 
+
+        
         long currentTime , previousTime =System.nanoTime() ;
         double intervalInSeconds , fps;
 
@@ -50,7 +58,7 @@ public class traitement {
         int maxPacketSize = 65528; // 65536 - 8 (overhead UDP)
 
         //type de traitement
-        int traitements = 2;
+        int traitements = 1;
         /* 
         0 : pas de triatement 
         1 : traitement contour
@@ -58,6 +66,7 @@ public class traitement {
         3 : traitement contour et forme 
         */
 
+        // Créer une image noire avec du texte
         Mat blackImage = new Mat(360, 640, CvType.CV_8UC3, new Scalar(0, 0, 0));
 
         Imgproc.putText(
@@ -70,42 +79,37 @@ public class traitement {
             new Scalar(255, 255, 255), 
             3
         );
-        HighGui.imshow("char", blackImage); // Afficher l'image redimensionnée
-        HighGui.imshow("traitement", blackImage); // Afficher l'image redimensionnée
+        
+        boolean firstImageReceived = false; // Indicateur pour savoir si la première image est reçue
 
-
-
+        thread_reception reception = new thread_reception(socket, imageRecu);
+        reception.start();
 
         //--------------------------------------------------------------//
         // Boucle principale
         while (true) {
-            // Réception de l'image via UDP
-            try {
-                socket.receive(packet);
-            } catch (SocketTimeoutException e) {
-                System.out.println("Timeout: " + e.getMessage());
-                continue;
-            }
-            // Convertir les données reçues en une image
-            imageRecu = Imgcodecs.imdecode(new MatOfByte(packet.getData()), Imgcodecs.IMREAD_COLOR);
-            if (!imageRecu.empty()) {
 
+            this.imageRecu = reception.getImageRecu();
+
+            if (!this.imageRecu.empty()) {
+                
+                firstImageReceived = true; // Indiquer que la première image est reçue
                 //System.out.printf("Image reçue");
-                dermiereImageValide = imageRecu.clone(); // Stocker l'image d'origine comme dernière valide
-
+                
+                dermiereImageValide = this.imageRecu.clone(); // Stocker l'image d'origine comme dernière valide
+                
                 switch(traitements){
                     case 0:
-                        imageEnvoyer = imageRecu;
+                        imageEnvoyer = this.imageRecu;
                         break;
                     case 1:
-                        imageEnvoyer = processImage(imageRecu);
+                        imageEnvoyer = processImage(this.imageRecu);
                         break;
                     case 2:
-                        imageEnvoyer = detectShapes(imageRecu);
+                        imageEnvoyer = detectShapes(this.imageRecu);
                         break;
                     case 3:
-                        imageEnvoyer = processImage(imageRecu);
-                        imageEnvoyer = detectShapes(imageRecu);
+                        imageEnvoyer = detectShapes(processImage(this.imageRecu));
                         break;
                 }
 
@@ -124,10 +128,16 @@ public class traitement {
                 Size displayFrameHalfSize = new Size(imageEnvoyer.width() / 2, imageEnvoyer.height() / 2);
 
                 Imgproc.resize(dermiereImageValide, dermiereImageValide_resizedImage, displayFrameHalfSize);
-                HighGui.imshow("char", dermiereImageValide_resizedImage); // Afficher l'image redimensionnée
                 Imgproc.resize(imageEnvoyer, imageEnvoyer_resizedImage, displayFrameHalfSize);
-                HighGui.imshow("traitement", imageEnvoyer_resizedImage); // Afficher l'image redimensionnée
 
+                 // Afficher soit la première image reçue, soit l'image noire
+                if (firstImageReceived) {
+                    HighGui.imshow("char", dermiereImageValide_resizedImage);
+                    HighGui.imshow("traitement", imageEnvoyer_resizedImage);
+                } else {
+                    HighGui.imshow("char", blackImage);
+                    HighGui.imshow("traitement", blackImage);
+                }
                 
                 // Ajuster dynamiquement le taux de compression
                 quality = 70; // Qualité initiale
@@ -153,11 +163,18 @@ public class traitement {
 
             } else {
 
-                System.out.printf("Image non reçue");
+                System.out.println("Image non reçue");
                 if (dermiereImageValide != null) {
-                    // Afficher la dernière image valide
-                    HighGui.imshow("char", dermiereImageValide_resizedImage); // Afficher l'image redimensionnée
-                    HighGui.imshow("traitement", imageEnvoyer_resizedImage); // Afficher l'image redimensionnée
+                    if (firstImageReceived == false) {
+                        // Afficher l'image noire si aucune image n'est reçue
+                        HighGui.imshow("char", blackImage);
+                        HighGui.imshow("traitement", blackImage);
+                    } else {
+                        // Afficher la dernière image valide
+                        HighGui.imshow("char", dermiereImageValide_resizedImage); // Afficher l'image redimensionnée
+                        HighGui.imshow("traitement", imageEnvoyer_resizedImage); // Afficher l'image redimensionnée
+
+                    }
                 }
             }
 
@@ -172,7 +189,7 @@ public class traitement {
     }
     //--------------------------------------------------------------//
     // Méthode detection contours
-    private static Mat processImage(Mat image) {
+    private Mat processImage(Mat image) {
         // Réutilisation des matrices pour éviter de les recréer à chaque appel
         Mat grayImage = new Mat();
         Mat flouImage = new Mat();
@@ -214,7 +231,7 @@ public class traitement {
     
     //--------------------------------------------------------------//
     // Méthode détection forme
-    private static Mat detectShapes(Mat frame) {
+    private Mat detectShapes(Mat frame) {
         Mat grayImage = new Mat();
         Mat blurredImage = new Mat();
         Mat edges = new Mat();
@@ -271,7 +288,7 @@ public class traitement {
     }
 //--------------------------------------------------------------//
     // Méthode pour envoyer une image via UDP
-    private static void sendImageUDP(byte[] imageData, String address, int port) throws IOException {
+    private void sendImageUDP(byte[] imageData, String address, int port) throws IOException {
         DatagramSocket socket = null;
         try {
             socket = new DatagramSocket();
@@ -287,7 +304,7 @@ public class traitement {
     }
 //--------------------------------------------------------------//
     // Méthode pour encoder une image en JPEG avec un taux de compression donné
-    private static byte[] encodeImageToJPEG(Mat image, int quality) {
+    private byte[] encodeImageToJPEG(Mat image, int quality) {
         MatOfByte matOfByte = new MatOfByte();
         // Encoder l'image en JPEG avec un taux de compression spécifique
         Imgcodecs.imencode(".jpg", image, matOfByte, new MatOfInt(Imgcodecs.IMWRITE_JPEG_QUALITY, quality));

@@ -11,23 +11,36 @@ public class reciver {
         System.loadLibrary(Core.NATIVE_LIBRARY_NAME); // Charger la bibliothèque OpenCV
     }
 
-    public static void main(String[] args) throws Exception {
+    Mat imageRecu = new Mat();
+
+    public reciver () {
         // Définition des ports et adresses IP
         int port[] = {4000, 4001, 4002, 4003, 4004, 4005, 4006, 4007, 4008, 4009};
         String address = "172.29.41.9";
         String address_broadcast = "172.29.255.255";
-        // Obtenir l'adresse IP locale
-        InetAddress address_local = InetAddress.getLocalHost();
-        String address_local_str = address_local.getHostAddress();
+        
+        byte[] data = new byte[65536];
+
+        DatagramSocket socket = null;
+        DatagramPacket packet = null;
+
+        try {
+            // Obtenir l'adresse IP locale
+            InetAddress address_local = InetAddress.getLocalHost();
+            String address_local_str = address_local.getHostAddress();
+
+            // Initialisation du socket UDP
+            socket = new DatagramSocket(port[1]);
+            packet = new DatagramPacket(data, data.length);
+
+        } catch (Exception e) {
+            
+        }
+
         // Définition de la taille de l'image
         int imgsize[] = {1280, 720};
-        // Initialisation des matrices
-        Mat imageRecu = new Mat();
+        // Initialisation des matrices OpenCV
         Mat processedImage , processedImage2 , dermiereImageValide = null;
-        byte[] data = new byte[65536];
-        // Initialisation du socket UDP
-        DatagramSocket socket = new DatagramSocket(port[1]);
-        DatagramPacket packet = new DatagramPacket(data, data.length);
 
         Mat resizedImage = new Mat() , resizedImage2 = new Mat() , dermiereImageValide_resizedImage = new Mat();
 
@@ -46,30 +59,31 @@ public class reciver {
             new Scalar(255, 255, 255), 
             3
         );
-        HighGui.imshow("client", blackImage); // afficher l'image noire
+        
+        boolean firstImageReceived = false; // Indicateur pour savoir si la première image est reçue
 
+        thread_reception reception = new thread_reception(socket, imageRecu);
+        reception.start();
 
         //--------------------------------------------------------------//
         // Boucle principale
         while (true) {
-            // Réception de l'image via UDP
-            try {
-                socket.receive(packet);
-            } catch (SocketTimeoutException e) {
-                System.out.println("Timeout: " + e.getMessage());
-                continue;
-            }
-            // Convertir les données reçues en une image
-            imageRecu = Imgcodecs.imdecode(new MatOfByte(packet.getData()), Imgcodecs.IMREAD_COLOR);
-            if (imageRecu.empty()) {
-                System.out.printf("Image non reçue");
+            
+            this.imageRecu = reception.getImageRecu();
+
+
+            if (this.imageRecu.empty()) {
+                System.out.println("Image non reçue");
                 if (dermiereImageValide != null) {
                     // Afficher la dernière image valide
                     HighGui.imshow("client", dermiereImageValide);
+                }else{
+                    // Afficher une image noire si aucune image n'est reçue
+                    HighGui.imshow("client", blackImage);
                 }
             } else {
                 //System.out.printf("Image reçue");
-                dermiereImageValide = imageRecu.clone(); // Stocker l'image d'origine comme dernière valide
+                dermiereImageValide = this.imageRecu.clone(); // Stocker l'image d'origine comme dernière valide
                 
                 // Calculer les FPS
                 currentTime = System.nanoTime();
@@ -82,7 +96,7 @@ public class reciver {
                 // Mettre à jour le temps précédent
                 previousTime = currentTime;
                 // Réduire la taille de l'image avant de l'afficher
-                Size displayFrameHalfSize = new Size(imageRecu.width() / 2, imageRecu.height() / 2);
+                Size displayFrameHalfSize = new Size(this.imageRecu.width() / 2, this.imageRecu.height() / 2);
                 Imgproc.resize(dermiereImageValide, dermiereImageValide_resizedImage, displayFrameHalfSize);
                 HighGui.imshow("client", dermiereImageValide_resizedImage); // Afficher l'image redimensionnée
 
