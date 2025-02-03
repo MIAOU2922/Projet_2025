@@ -1,10 +1,23 @@
 compile:
 
-javac -cp "lib/opencv-4100.jar" -d "bin" src/receiver.java 
+javac -cp "lib/opencv-4100.jar" -d "bin" src/_start_all.java src/_start_client.java src/_start_drone.java src/_start_traitement.java src/client.java src/drone.java src/thread_reception.java src/traitement.java
 
 -----------------
-executer reciver:
+lancer tous :
 
-java -Djava.library.path="lib" -cp "lib/opencv-4100.jar;bin" reciver
+java -Djava.library.path="lib" -cp "lib/opencv-4100.jar;bin" _start_all
 
 -----------------
+lancer drone :
+
+java -Djava.library.path="lib" -cp "lib/opencv-4100.jar;bin" _start_drone
+
+-----------------
+lancer client :
+
+java -Djava.library.path="lib" -cp "lib/opencv-4100.jar;bin" _start_client
+
+-----------------
+lancer traitement :
+
+java -Djava.library.path="lib" -cp "lib/opencv-4100.jar;bin" _start_traitement
