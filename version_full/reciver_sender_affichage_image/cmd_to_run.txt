@@ -1,0 +1,10 @@
+compile:
+
+javac -cp "lib/opencv-4100.jar" -d "bin" src/receiver.java 
+
+-----------------
+executer reciver:
+
+java -Djava.library.path="lib" -cp "lib/opencv-4100.jar;bin" reciver
+
+-----------------
