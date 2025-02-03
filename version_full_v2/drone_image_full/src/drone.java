@@ -1,3 +1,14 @@
+/**
+ * -------------------------------------------------------------------
+ * Nom du fichier : drone.java
+ * Auteur         : BEAL JULIEN
+ * Version        : 1.0
+ * Date           : 03/02/2025
+ * Description    : code drone pour envoi d'image
+ * -------------------------------------------------------------------
+ * © 2025 BEAL JULIEN - Tous droits réservés
+ */
+
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
@@ -58,6 +69,7 @@ public class drone {
         byte[] encodedData;
 
         //--------------------------------------------------------------//
+        error.printError();
         // Boucle principale
         while (true) {
             // Capture d'une image

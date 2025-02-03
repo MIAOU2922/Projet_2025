@@ -1,8 +1,22 @@
-import java.net.*;
-import java.util.*;
+/**
+ * -------------------------------------------------------------------
+ * Nom du fichier : client.java
+ * Auteur         : BEAL JULIEN
+ * Version        : 1.0
+ * Date           : 03/02/2025
+ * Description    : code affichage client
+ * -------------------------------------------------------------------
+ * © 2025 BEAL JULIEN - Tous droits réservés
+ */
+
+import java.awt.*;
+import java.awt.image.*;
 import java.io.*;
+import java.net.*;
+import javax.imageio.ImageIO;
+import javax.swing.*;
+
 import org.opencv.core.*;
-import org.opencv.highgui.HighGui;
 import org.opencv.imgcodecs.Imgcodecs;
 import org.opencv.imgproc.Imgproc;
 
@@ -12,110 +26,128 @@ public class client {
     }
 
     Mat imageRecu = new Mat();
+    BufferedImage bufferedImage = null;
 
     public client () {
-        
         // Définition des ports UDP
         int port[] = {
             55000, // Port de réception traitement
             55001, // Port de réception client
             55002 // Port de commande image
-            };
-        
+        };
+
         // Définition des adresses IP
         String address = "172.29.41.9";
         String address_broadcast = "172.29.255.255";
-        
-        byte[] data = new byte[65536];
 
+        byte[] data = new byte[65536];
         DatagramSocket socket = null;
         DatagramPacket packet = null;
 
         try {
-            // Obtenir l'adresse IP locale
-            InetAddress address_local = InetAddress.getLocalHost();
-            String address_local_str = address_local.getHostAddress();
-
             // Initialisation du socket UDP
             socket = new DatagramSocket(port[1]);
             packet = new DatagramPacket(data, data.length);
-
         } catch (Exception e) {
-            
+            e.printStackTrace();
         }
 
         // Définition de la taille de l'image
         int imgsize[] = {1280, 720};
-        // Initialisation des matrices OpenCV
-        Mat processedImage , processedImage2 , dermiereImageValide = null;
+        Mat processedImage, processedImage2, dermiereImageValide = null;
+        Mat Image_a_afficher = new Mat(), dermiereImageValide_resizedImage = new Mat();
 
-        Mat resizedImage = new Mat() , resizedImage2 = new Mat() , dermiereImageValide_resizedImage = new Mat();
-
-        long currentTime , previousTime =System.nanoTime() ;
-        double intervalInSeconds , fps;
+        long currentTime, previousTime = System.nanoTime();
+        double intervalInSeconds, fps;
 
         Mat blackImage = new Mat(360, 640, CvType.CV_8UC3, new Scalar(0, 0, 0));
-
         Imgproc.putText(
-            blackImage, 
-            "START", 
-            new Point((blackImage.cols() - Imgproc.getTextSize("START", Imgproc.FONT_HERSHEY_SIMPLEX, 2.0, 3, null).width) / 2, 
+            blackImage,
+            "START",
+            new org.opencv.core.Point((blackImage.cols() - Imgproc.getTextSize("START", Imgproc.FONT_HERSHEY_SIMPLEX, 2.0, 3, null).width) / 2, 
                       (blackImage.rows() + Imgproc.getTextSize("START", Imgproc.FONT_HERSHEY_SIMPLEX, 2.0, 3, null).height) / 2), 
-            Imgproc.FONT_HERSHEY_SIMPLEX, 
-            2.0, 
-            new Scalar(255, 255, 255), 
+            Imgproc.FONT_HERSHEY_SIMPLEX,
+            2.0,
+            new Scalar(255, 255, 255),
             3
         );
-        
-        boolean firstImageReceived = false; // Indicateur pour savoir si la première image est reçue
 
         thread_reception reception = new thread_reception(socket, imageRecu);
         reception.start();
 
         //--------------------------------------------------------------//
-        // Boucle principale
+        // Création de la fenêtre client pour afficher l'image reçue
+        JFrame frame = new JFrame("Client");
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setSize(640, 500);
+        frame.setLayout(new BorderLayout());
+        frame.setResizable(false);
+        frame.setLocation(1280,0);
+
+        // Charger l'icône depuis les ressources
+        ImageIcon icon = new ImageIcon("lib/logo.png"); // Remplace par le chemin réel
+        frame.setIconImage(icon.getImage());
+
+        JPanel panel = new JPanel() {
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                if (bufferedImage != null) {
+                    g.drawImage(bufferedImage, 0, 0, null);
+                }
+            }
+        };
+        frame.add(panel, BorderLayout.CENTER);
+        frame.setVisible(true);
+
+        //--------------------------------------------------------------//
+        error.printError();
+        // Boucle principale pour afficher l'image reçue
         while (true) {
-            
             this.imageRecu = reception.getImageRecu();
 
-
             if (this.imageRecu.empty()) {
-                System.out.println("Image non reçue");
                 if (dermiereImageValide != null) {
-                    // Afficher la dernière image valide
-                    HighGui.imshow("client", dermiereImageValide);
-                }else{
-                    // Afficher une image noire si aucune image n'est reçue
-                    HighGui.imshow("client", blackImage);
+                    Image_a_afficher = dermiereImageValide_resizedImage;
+                } else {
+                    Image_a_afficher = blackImage;
                 }
             } else {
-                //System.out.printf("Image reçue");
-                dermiereImageValide = this.imageRecu.clone(); // Stocker l'image d'origine comme dernière valide
-                
-                // Calculer les FPS
+                dermiereImageValide = this.imageRecu.clone();
                 currentTime = System.nanoTime();
-                intervalInSeconds = (currentTime - previousTime) / 1_000_000_000.0; // Intervalle en secondes
-                fps = 1.0 / intervalInSeconds; // Calcul des FPS
-                //System.out.printf(" FPS: %.0f\n", fps);
-
-                Imgproc.putText(dermiereImageValide, String.format("FPS: %.0f", fps), new Point(10, 60), Imgproc.FONT_HERSHEY_SIMPLEX,1, new Scalar(255, 0,0 ), 2);
-
-                // Mettre à jour le temps précédent
+                intervalInSeconds = (currentTime - previousTime) / 1_000_000_000.0;
+                fps = 1.0 / intervalInSeconds;
+                Imgproc.putText(dermiereImageValide, String.format("FPS: %.0f", fps), new org.opencv.core.Point(10, 60), Imgproc.FONT_HERSHEY_SIMPLEX, 1, new Scalar(255, 0, 0), 2);
                 previousTime = currentTime;
-                // Réduire la taille de l'image avant de l'afficher
+
                 Size displayFrameHalfSize = new Size(this.imageRecu.width() / 2, this.imageRecu.height() / 2);
                 Imgproc.resize(dermiereImageValide, dermiereImageValide_resizedImage, displayFrameHalfSize);
-                HighGui.imshow("client", dermiereImageValide_resizedImage); // Afficher l'image redimensionnée
-
+                Image_a_afficher = dermiereImageValide_resizedImage;
             }
 
-            //tempo
-            int key = HighGui.waitKey(5);
-            if (key == 27) {
-                break;
+            try {
+                bufferedImage = byteArrayToBufferedImage(encodeImageToJPEG(Image_a_afficher, 100));
+                SwingUtilities.invokeLater(() -> panel.repaint());
+            } catch (IOException e) {
+                e.printStackTrace();
             }
+
+            new tempo(10);
         }
-        // Fermer toutes les fenêtres après la boucle
-        HighGui.destroyAllWindows();
+    }
+
+    //--------------------------------------------------------------//
+    // Méthode pour encoder une image en JPEG avec un taux de compression donné
+    private byte[] encodeImageToJPEG(Mat image, int quality) {
+        MatOfByte matOfByte = new MatOfByte();
+        Imgcodecs.imencode(".jpg", image, matOfByte, new MatOfInt(Imgcodecs.IMWRITE_JPEG_QUALITY, quality));
+        return matOfByte.toArray();
+    }
+
+    //--------------------------------------------------------------//
+    // Méthode pour convertir un tableau d'octets en BufferedImage
+    private static BufferedImage byteArrayToBufferedImage(byte[] byteArray) throws IOException {
+        ByteArrayInputStream bis = new ByteArrayInputStream(byteArray);
+        return ImageIO.read(bis);
     }
 }

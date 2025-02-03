@@ -1,3 +1,14 @@
+/**
+ * -------------------------------------------------------------------
+ * Nom du fichier : thread_reception.java
+ * Auteur         : BEAL JULIEN
+ * Version        : 1.0
+ * Date           : 03/02/2025
+ * Description    : thread de reception d'image via UDP
+ * -------------------------------------------------------------------
+ * © 2025 BEAL JULIEN - Tous droits réservés
+ */
+
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 
@@ -19,7 +30,7 @@ public class thread_reception extends Thread {
     public void run() {
         byte[] data = new byte[65536];
         DatagramPacket packet = new DatagramPacket(data, data.length);
-
+        Thread.currentThread().setName("reciver UDP");
         while (true) {
             try {
                 // Réception de l'image via UDP

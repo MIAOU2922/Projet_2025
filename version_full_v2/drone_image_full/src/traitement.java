@@ -1,9 +1,22 @@
-import java.net.*;
-import java.util.ArrayList;
-import java.util.List;
+/**
+ * -------------------------------------------------------------------
+ * Nom du fichier : traitement.java
+ * Auteur         : BEAL JULIEN
+ * Version        : 1.0
+ * Date           : 03/02/2025
+ * Description    : class traitement
+ * -------------------------------------------------------------------
+ * © 2025 BEAL JULIEN - Tous droits réservés
+ */
+
+import java.awt.image.*;
 import java.io.*;
+import java.net.*;
+import java.awt.*;
+import javax.imageio.ImageIO;
+import javax.swing.*;
+
 import org.opencv.core.*;
-import org.opencv.highgui.HighGui;
 import org.opencv.imgcodecs.Imgcodecs;
 import org.opencv.imgproc.Imgproc;
 
@@ -12,7 +25,9 @@ public class traitement {
         System.loadLibrary(Core.NATIVE_LIBRARY_NAME); // Charger la bibliothèque OpenCV
     }
 
-    Mat imageRecu = new Mat();
+    Mat imageRecu = new Mat() , imageEnvoyer = new Mat() , imageAfficher_source = new Mat() ,  imageAfficher_envoyer = new Mat();
+    BufferedImage bufferedImage_source = null, bufferedImage_envoyer = null;
+
 
     public traitement () {
 
@@ -30,6 +45,7 @@ public class traitement {
         byte[] data = new byte[65536];
         
         DatagramSocket socket = null;
+        DatagramPacket packet = null;
 
         try {
             // Obtenir l'adresse IP locale
@@ -39,6 +55,7 @@ public class traitement {
     
             // Initialisation du socket UD
             socket = new DatagramSocket(port[0]);
+            packet = new DatagramPacket(data, data.length);
         } catch (Exception e) {
             
         }
@@ -48,7 +65,6 @@ public class traitement {
     
         // Initialisation des matrices OpenCV
         Mat dermiereImageValide = new Mat(),
-            imageEnvoyer = new Mat(),
             dermiereImageValide_resizedImage = new Mat(),
             imageEnvoyer_resizedImage = new Mat();
 
@@ -64,12 +80,12 @@ public class traitement {
         int maxPacketSize = 65528; // 65536 - 8 (overhead UDP)
 
         //type de traitement
-        int traitements = 3;
+        int traitements = 0;
         /* 
-        0 : pas de triatement 
+        0 : pas de triatement
         1 : traitement contour
         2 : traitement forme
-        3 : traitement contour et forme 
+        3 : traitement contour et forme
         */
 
         // Créer une image noire avec du texte
@@ -78,11 +94,11 @@ public class traitement {
         Imgproc.putText(
             blackImage, 
             "START", 
-            new Point((blackImage.cols() - Imgproc.getTextSize("START", Imgproc.FONT_HERSHEY_SIMPLEX, 2.0, 3, null).width) / 2, 
+            new org.opencv.core.Point((blackImage.cols() - Imgproc.getTextSize("START", Imgproc.FONT_HERSHEY_SIMPLEX, 2.0, 3, null).width) / 2, 
                       (blackImage.rows() + Imgproc.getTextSize("START", Imgproc.FONT_HERSHEY_SIMPLEX, 2.0, 3, null).height) / 2), 
-            Imgproc.FONT_HERSHEY_SIMPLEX, 
-            2.0, 
-            new Scalar(255, 255, 255), 
+            Imgproc.FONT_HERSHEY_SIMPLEX,
+            2.0,
+            new Scalar(255, 255, 255),
             3
         );
         
@@ -91,7 +107,63 @@ public class traitement {
         thread_reception reception = new thread_reception(socket, imageRecu);
         reception.start();
 
+        thread_detection_contours detection_contours = new thread_detection_contours(imageRecu, false);
+        detection_contours.start();
+
+        thread_detection_formes detection_formes = new thread_detection_formes(imageRecu, false);
+        detection_formes.start();
+
+        int loop = 0;
+
+//--------------------------------------------------------------//
+         // Charger l'icône depuis les ressources
+        ImageIcon icon = new ImageIcon("lib/logo.png");
+        
+         // Création de la fenêtre client pour afficher l'image reçue
+        JFrame frame_char = new JFrame("Char");
+        frame_char.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame_char.setSize(640, 500);
+        frame_char.setLayout(new BorderLayout());
+        frame_char.setResizable(false);
+        frame_char.setIconImage(icon.getImage());
+
+        JPanel panel_char = new JPanel() {
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                if (bufferedImage_source != null) {
+                    g.drawImage(bufferedImage_source, 0, 0, null);
+                }
+            }
+        };
+        frame_char.add(panel_char, BorderLayout.CENTER);
+        frame_char.setVisible(true);
+
+        // Création de la fenêtre client pour afficher l'image traiter
+
+        // Création de la fenêtre client pour afficher l'image reçue
+        JFrame frame_traitement = new JFrame("traitement");
+        frame_traitement.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame_traitement.setSize(640, 500);
+        frame_traitement.setLayout(new BorderLayout());
+        frame_traitement.setResizable(false);
+        frame_traitement.setIconImage(icon.getImage());
+        frame_traitement.setLocation(640,0);
+
+        JPanel panel_traitement = new JPanel() {
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                if (bufferedImage_envoyer != null) {
+                    g.drawImage(bufferedImage_envoyer, 0, 0, null);
+                }
+            }
+        };
+        frame_traitement.add(panel_traitement, BorderLayout.CENTER);
+        frame_traitement.setVisible(true);
+
         //--------------------------------------------------------------//
+        error.printError();
         // Boucle principale
         while (true) {
 
@@ -100,23 +172,49 @@ public class traitement {
             if (!this.imageRecu.empty()) {
                 
                 firstImageReceived = true; // Indiquer que la première image est reçue
-                //System.out.printf("Image reçue");
+                System.out.println("Image reçue");
                 
                 dermiereImageValide = this.imageRecu.clone(); // Stocker l'image d'origine comme dernière valide
                 
+                traitements = 1;
+                /*
+                0 : pas de triatement
+                1 : traitement contour
+                2 : traitement forme
+                3 : traitement contour et forme
+                */
                 switch(traitements){
                     case 0:
                         imageEnvoyer = this.imageRecu;
-                        break;
+                    break;
                     case 1:
-                        imageEnvoyer = processImage(this.imageRecu);
-                        break;
+                        detection_contours.setFrame(this.imageRecu);
+                        while ( detection_contours.isFrame_process() != false && loop < 9  ){
+                            
+                            new tempo(1);
+                            loop++;
+                        }loop=0;
+                        imageEnvoyer = detection_contours.getFrame();
+                    break;
                     case 2:
-                        imageEnvoyer = detectShapes(this.imageRecu);
-                        break;
+                        detection_formes.setFrame(this.imageRecu);
+                        while ( detection_formes.isFrame_process() != false && loop < 9  ){
+                            
+                            new tempo(1);
+                            loop++;
+                        }loop=0;
+                        imageEnvoyer = detection_formes.getFrame();
+                    break;
                     case 3:
-                        imageEnvoyer = detectShapes(processImage(this.imageRecu));
-                        break;
+                        detection_contours.setFrame(this.imageRecu);
+                        detection_formes.setFrame(this.imageRecu);
+                        while ( detection_formes.isFrame_process() != false && loop < 9 ){
+                            
+                            new tempo(1);
+                            loop++;
+                        }loop=0;
+                        imageEnvoyer = additionDesDifferences(detection_contours.getFrame(),detection_formes.getFrame());
+                    break;
                 }
 
                 // Calculer les FPS
@@ -125,7 +223,7 @@ public class traitement {
                 fps = 1.0 / intervalInSeconds; // Calcul des FPS
                 //System.out.printf(" FPS: %.0f\n", fps);
 
-                Imgproc.putText(imageEnvoyer, String.format("FPS: %.0f", fps), new Point(10, 30), Imgproc.FONT_HERSHEY_SIMPLEX,1, new Scalar(0, 255, 0), 2);
+                Imgproc.putText(imageEnvoyer, String.format("FPS: %.0f", fps), new org.opencv.core.Point(10, 30), Imgproc.FONT_HERSHEY_SIMPLEX,1, new Scalar(0, 255, 0), 2);
 
                 // Mettre à jour le temps précédent
                 previousTime = currentTime;
@@ -138,11 +236,11 @@ public class traitement {
 
                  // Afficher soit la première image reçue, soit l'image noire
                 if (firstImageReceived) {
-                    HighGui.imshow("char", dermiereImageValide_resizedImage);
-                    HighGui.imshow("traitement", imageEnvoyer_resizedImage);
+                    imageAfficher_source = dermiereImageValide_resizedImage;
+                    imageAfficher_envoyer = imageEnvoyer_resizedImage;
                 } else {
-                    HighGui.imshow("char", blackImage);
-                    HighGui.imshow("traitement", blackImage);
+                    imageAfficher_source = blackImage ;
+                    imageAfficher_envoyer = blackImage ;
                 }
                 
                 // Ajuster dynamiquement le taux de compression
@@ -173,127 +271,34 @@ public class traitement {
                 if (dermiereImageValide != null) {
                     if (firstImageReceived == false) {
                         // Afficher l'image noire si aucune image n'est reçue
-                        HighGui.imshow("char", blackImage);
-                        HighGui.imshow("traitement", blackImage);
+                        imageAfficher_source = blackImage ;
+                        imageAfficher_envoyer = blackImage ;
                     } else {
                         // Afficher la dernière image valide
-                        HighGui.imshow("char", dermiereImageValide_resizedImage); // Afficher l'image redimensionnée
-                        HighGui.imshow("traitement", imageEnvoyer_resizedImage); // Afficher l'image redimensionnée
-
+                        imageAfficher_source = dermiereImageValide_resizedImage;
+                        imageAfficher_envoyer = imageEnvoyer_resizedImage;
                     }
                 }
             }
 
-            //tempo
-            int key = HighGui.waitKey(5);
-            if (key == 27) {
-                break;
+            try {
+                bufferedImage_source = byteArrayToBufferedImage(encodeImageToJPEG(imageAfficher_source, 100));
+                SwingUtilities.invokeLater(() -> panel_char.repaint());
+            } catch (IOException e) {
+                e.printStackTrace();
             }
+
+            try {
+                bufferedImage_envoyer = byteArrayToBufferedImage(encodeImageToJPEG(imageAfficher_envoyer, 100));
+                SwingUtilities.invokeLater(() -> panel_traitement.repaint());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            new tempo(5);
         }
-        // Fermer toutes les fenêtres après la boucle
-        HighGui.destroyAllWindows();
-    }
-    //--------------------------------------------------------------//
-    // Méthode detection contours
-    private Mat processImage(Mat image) {
-        // Réutilisation des matrices pour éviter de les recréer à chaque appel
-        Mat grayImage = new Mat();
-        Mat flouImage = new Mat();
-        Mat edges = new Mat();
-        Mat dilatedEdges = new Mat();
-        Mat edgesRed = Mat.zeros(image.size(), image.type()); // Initialiser une image noire
-        Mat combinedImage = new Mat();
-    
-        // Convertir l'image en niveaux de gris
-        Imgproc.cvtColor(image, grayImage, Imgproc.COLOR_BGR2GRAY);
-    
-        // Appliquer un filtre bilatéral (lissage tout en préservant les contours)
-        Imgproc.bilateralFilter(grayImage, flouImage, 9, 75, 75);
-    
-        // Détection des contours avec l'algorithme Canny
-        int lowerThreshold = 0;
-        int upperThreshold = 50;
-        Imgproc.Canny(flouImage, edges, lowerThreshold, upperThreshold);
-    
-        // Appliquer la dilatation pour augmenter la taille des contours
-        Mat kernel = Imgproc.getStructuringElement(Imgproc.MORPH_RECT, new Size(3, 3)); // Taille 3x3
-        Imgproc.dilate(edges, dilatedEdges, kernel);
-    
-        // Appliquer la couleur rouge (vectorisé)
-        edgesRed.setTo(new Scalar(0, 0, 255), dilatedEdges); // Affecter rouge là où les contours sont présents
-    
-        // Superposer les contours rouges sur l'image d'origine
-        Core.add(image, edgesRed, combinedImage);
-    
-        // Libérer les ressources inutilisées (libère explicitement la mémoire des objets temporaires)
-        grayImage.release();
-        flouImage.release();
-        edges.release();
-        dilatedEdges.release();
-        edgesRed.release();
-    
-        return combinedImage; // Retourner l'image combinée
     }
     
     //--------------------------------------------------------------//
-    // Méthode détection forme
-    private Mat detectShapes(Mat frame) {
-        Mat grayImage = new Mat();
-        Mat blurredImage = new Mat();
-        Mat edges = new Mat();
-        Mat processedImage = frame.clone();
-
-        // Convertir l'image en niveaux de gris
-        Imgproc.cvtColor(frame, grayImage, Imgproc.COLOR_BGR2GRAY);
-
-        // Appliquer un flou gaussien pour réduire le bruit
-        Imgproc.GaussianBlur(grayImage, blurredImage, new Size(5, 5), 0);
-
-        // Détection des contours avec Canny
-        Imgproc.Canny(blurredImage, edges, 50, 150);
-
-        // Trouver les contours
-        List<MatOfPoint> contours = new ArrayList<>();
-        Mat hierarchy = new Mat();
-        Imgproc.findContours(edges, contours, hierarchy, Imgproc.RETR_EXTERNAL, Imgproc.CHAIN_APPROX_SIMPLE);
-        contours.removeIf(contour -> Imgproc.contourArea(contour) < 300); //Filtrer les petits contours
-
-        for (MatOfPoint contour : contours) {
-            // Approximation des contours pour simplifier la forme
-            MatOfPoint2f contour2f = new MatOfPoint2f(contour.toArray());
-            double perimeter = Imgproc.arcLength(contour2f, true);
-            MatOfPoint2f approx = new MatOfPoint2f();
-            Imgproc.approxPolyDP(contour2f, approx, 0.02 * perimeter, true);
-
-            // Identifier la forme selon le nombre de sommets
-            int vertexCount = approx.toArray().length;
-            String shapeType = switch (vertexCount) {
-                case 3 -> "Triangle";
-                case 4 -> "Rectangle";
-                case 5 -> "Pentagone";
-                case 6 -> "Hexagone";
-                case 7 -> "Heptagone";
-                case 8 -> "Octogone";
-                default -> (vertexCount > 8 ) ? "cercle" :" ?";
-            };
-
-            // Dessiner les contours et afficher la forme détectée
-            Imgproc.drawContours(processedImage, List.of(contour), -1, new Scalar(0, 255, 0), 2);
-            if (!shapeType.equals(" ")) {
-                Point textPoint = approx.toArray()[0];
-                Imgproc.putText(processedImage, shapeType, textPoint, Imgproc.FONT_HERSHEY_SIMPLEX, 0.8, new Scalar(255, 0, 0), 2);
-            }
-        }
-
-        // Libérer les ressources inutilisées
-        grayImage.release();
-        blurredImage.release();
-        edges.release();
-        hierarchy.release();
-
-        return processedImage;
-    }
-//--------------------------------------------------------------//
     // Méthode pour envoyer une image via UDP
     private void sendImageUDP(byte[] imageData, String address, int port) throws IOException {
         DatagramSocket socket = null;
@@ -309,13 +314,41 @@ public class traitement {
             }
         }
     }
-//--------------------------------------------------------------//
+
+    //--------------------------------------------------------------//
     // Méthode pour encoder une image en JPEG avec un taux de compression donné
     private byte[] encodeImageToJPEG(Mat image, int quality) {
         MatOfByte matOfByte = new MatOfByte();
         // Encoder l'image en JPEG avec un taux de compression spécifique
         Imgcodecs.imencode(".jpg", image, matOfByte, new MatOfInt(Imgcodecs.IMWRITE_JPEG_QUALITY, quality));
         return matOfByte.toArray();
+    }
+
+    //--------------------------------------------------------------//
+    // Méthode pour convertir un tableau d'octets en BufferedImage
+    private static BufferedImage byteArrayToBufferedImage(byte[] byteArray) throws IOException {
+        ByteArrayInputStream bis = new ByteArrayInputStream(byteArray);
+        return ImageIO.read(bis);
+    }
+
+    //--
+    //
+    public Mat additionDesDifferences(Mat img1, Mat img2) {
+        // Assurez-vous que les deux images ont la même taille et le même type
+        if (img1.size().equals(img2.size()) && img1.type() == img2.type()) {
+            
+            // Calculer la différence absolue entre les deux images
+            Mat diff = new Mat();
+            Core.absdiff(img1, img2, diff);
+            
+            // Additionner les différences
+            Mat result = new Mat();
+            Core.add(diff, diff, result);
+            
+            return result;  // L'image résultante contenant l'addition des différences
+        } else {
+            throw new IllegalArgumentException("Les dimensions ou types des images ne correspondent pas");
+        }
     }
 
 }
