@@ -1,0 +1,2 @@
+Main-Class: drone
+Class-Path: lib/opencv-4100.jar
