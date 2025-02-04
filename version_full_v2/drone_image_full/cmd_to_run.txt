@@ -1,6 +1,8 @@
 compile:
 
-javac -cp "lib/opencv-4100.jar" -d "bin" src/_start_all.java src/_start_client.java src/_start_drone.java src/_start_traitement.java src/client.java src/drone.java src/thread_reception.java src/traitement.java src/tempo.java
+mkdir -p bin
+javac -cp "lib/opencv-4100.jar" -d "bin" src/*.java
+
 
 -----------------
 lancer tous :
