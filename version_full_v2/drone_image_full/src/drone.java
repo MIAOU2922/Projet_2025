@@ -91,7 +91,7 @@ public class drone {
             } while (encodedData.length > maxPacketSize && quality > 10); // Réduire jusqu'à ce que l'image tienne dans un paquet UDP
             // Envoi de l'image
             try {
-                sendImageUDP(encodedData, address_broadcast, port[0]);
+                sendImageUDP(encodedData, address, port[0]);
                 currentTime = System.nanoTime();
                 intervalInSeconds = (currentTime - previousTime) / 1_000_000_000.0; // Intervalle en secondes
                 fps = 1.0 / intervalInSeconds; // Calcul des FPS

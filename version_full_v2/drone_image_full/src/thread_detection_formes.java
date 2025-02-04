@@ -30,15 +30,16 @@ public class thread_detection_formes extends Thread {
         Mat grayImage = new Mat();
         Mat blurredImage = new Mat();
         Mat edges = new Mat();
-        Mat processedImage = frame.clone();
+        this.processedImage = this.frame.clone();
 
         Thread.currentThread().setName("Detection de formes");
 
         while (true){
             if (detection == true) {
-                
+                this.processedImage = this.frame.clone();
+
                 // Convertir l'image en niveaux de gris
-                Imgproc.cvtColor(frame, grayImage, Imgproc.COLOR_BGR2GRAY);
+                Imgproc.cvtColor(this.frame, grayImage, Imgproc.COLOR_BGR2GRAY);
 
                 // Appliquer un flou gaussien pour réduire le bruit
                 Imgproc.GaussianBlur(grayImage, blurredImage, new Size(5, 5), 0);
@@ -50,7 +51,7 @@ public class thread_detection_formes extends Thread {
                 List<MatOfPoint> contours = new ArrayList<>();
                 Mat hierarchy = new Mat();
                 Imgproc.findContours(edges, contours, hierarchy, Imgproc.RETR_EXTERNAL, Imgproc.CHAIN_APPROX_SIMPLE);
-                contours.removeIf(contour -> Imgproc.contourArea(contour) < 300); //Filtrer les petits contours
+                contours.removeIf(contour -> Imgproc.contourArea(contour) < 100); //Filtrer les petits contours
 
                 for (MatOfPoint contour : contours) {
                     // Approximation des contours pour simplifier la forme
@@ -72,10 +73,10 @@ public class thread_detection_formes extends Thread {
                     };
 
                     // Dessiner les contours et afficher la forme détectée
-                    Imgproc.drawContours(processedImage, List.of(contour), -1, new Scalar(0, 255, 0), 2);
+                    Imgproc.drawContours(this.processedImage, List.of(contour), -1, new Scalar(0, 255, 0), 2);
                     if (!shapeType.equals(" ")) {
                         org.opencv.core.Point textPoint = approx.toArray()[0];
-                        Imgproc.putText(processedImage, shapeType, textPoint, Imgproc.FONT_HERSHEY_SIMPLEX, 0.8, new Scalar(255, 0, 0), 2);
+                        Imgproc.putText(this.processedImage, shapeType, textPoint, Imgproc.FONT_HERSHEY_SIMPLEX, 0.8, new Scalar(255, 0, 0), 2);
                     }
                 }
 
@@ -86,11 +87,13 @@ public class thread_detection_formes extends Thread {
                 hierarchy.release();
 
                 detection = false;
+                System.out.println("traitement forme fini");
             }
+            new tempo(1);
         }
     }
     public Mat getFrame() {
-        return processedImage;
+        return this.processedImage;
     }
 
     public void setFrame(Mat frame) {

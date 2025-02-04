@@ -102,7 +102,7 @@ public class traitement {
             3
         );
         
-        boolean firstImageReceived = false; // Indicateur pour savoir si la première image est reçue
+        boolean firstImageReceived = false , firstTraitement = false; // Indicateur pour savoir si la première image est reçue
 
         thread_reception reception = new thread_reception(socket, imageRecu);
         reception.start();
@@ -176,7 +176,7 @@ public class traitement {
                 
                 dermiereImageValide = this.imageRecu.clone(); // Stocker l'image d'origine comme dernière valide
                 
-                traitements = 1;
+                traitements = 3;
                 /*
                 0 : pas de triatement
                 1 : traitement contour
@@ -189,39 +189,33 @@ public class traitement {
                     break;
                     case 1:
                         detection_contours.setFrame(this.imageRecu);
-                        while ( detection_contours.isFrame_process() != false && loop < 9  ){
-                            
+                        while ( detection_contours.isFrame_process() != false){
                             new tempo(1);
-                            loop++;
-                        }loop=0;
+                        }
                         imageEnvoyer = detection_contours.getFrame();
                     break;
                     case 2:
                         detection_formes.setFrame(this.imageRecu);
-                        while ( detection_formes.isFrame_process() != false && loop < 9  ){
-                            
+                        while ( detection_formes.isFrame_process() != false){
                             new tempo(1);
-                            loop++;
-                        }loop=0;
+                        }
                         imageEnvoyer = detection_formes.getFrame();
                     break;
                     case 3:
                         detection_contours.setFrame(this.imageRecu);
                         detection_formes.setFrame(this.imageRecu);
-                        while ( detection_formes.isFrame_process() != false && loop < 9 ){
-                            
+                        while (detection_formes.isFrame_process() || detection_contours.isFrame_process()) { 
                             new tempo(1);
-                            loop++;
-                        }loop=0;
-                        imageEnvoyer = additionDesDifferences(detection_contours.getFrame(),detection_formes.getFrame());
+                        }
+                        imageEnvoyer = additionDesDifferences(detection_contours.getFrame(),detection_formes.getFrame(),this.imageRecu);
                     break;
                 }
-
+                firstTraitement = true;
                 // Calculer les FPS
                 currentTime = System.nanoTime();
                 intervalInSeconds = (currentTime - previousTime) / 1_000_000_000.0; // Intervalle en secondes
                 fps = 1.0 / intervalInSeconds; // Calcul des FPS
-                //System.out.printf(" FPS: %.0f\n", fps);
+                System.out.printf(" FPS: %.0f\n", fps);
 
                 Imgproc.putText(imageEnvoyer, String.format("FPS: %.0f", fps), new org.opencv.core.Point(10, 30), Imgproc.FONT_HERSHEY_SIMPLEX,1, new Scalar(0, 255, 0), 2);
 
@@ -252,14 +246,9 @@ public class traitement {
                 } while (encodedData.length > maxPacketSize && quality > 10); // Réduire jusqu'à ce que l'image tienne dans un paquet UDP
                 // Envoi de l'image
                 try {
-                    sendImageUDP(encodedData, address_broadcast, port[1]);
-                    currentTime = System.nanoTime();
-                    intervalInSeconds = (currentTime - previousTime) / 1_000_000_000.0; // Intervalle en secondes
-                    fps = 1.0 / intervalInSeconds; // Calcul des FPS
+                    sendImageUDP(encodedData, address, port[1]);
                     System.out.printf(" FPS: %.0f\n", fps);
 
-                    // Mettre à jour le temps précédent
-                    previousTime = currentTime;
 
                 } catch (IOException e) {
                     System.out.println("Erreur lors de l'envoi de l'image : " + e.getMessage());
@@ -267,7 +256,7 @@ public class traitement {
 
             } else {
 
-                System.out.println("Image non reçue");
+                //System.out.println("Image non reçue");
                 if (dermiereImageValide != null) {
                     if (firstImageReceived == false) {
                         // Afficher l'image noire si aucune image n'est reçue
@@ -326,29 +315,28 @@ public class traitement {
 
     //--------------------------------------------------------------//
     // Méthode pour convertir un tableau d'octets en BufferedImage
-    private static BufferedImage byteArrayToBufferedImage(byte[] byteArray) throws IOException {
+    private BufferedImage byteArrayToBufferedImage(byte[] byteArray) throws IOException {
         ByteArrayInputStream bis = new ByteArrayInputStream(byteArray);
         return ImageIO.read(bis);
     }
 
-    //--
+    //--------------------------------------------------------------//
     //
-    public Mat additionDesDifferences(Mat img1, Mat img2) {
-        // Assurez-vous que les deux images ont la même taille et le même type
-        if (img1.size().equals(img2.size()) && img1.type() == img2.type()) {
+    public Mat additionDesDifferences(Mat img1, Mat img2, Mat source) {
+        // Vérification des tailles et types d'images
+        if (img1.size().equals(img2.size()) && img1.type() == img2.type() && img1.size().equals(source.size()) && img1.type() == source.type()) {
             
-            // Calculer la différence absolue entre les deux images
+            // Calculer la différence absolue entre img1 et img2
             Mat diff = new Mat();
             Core.absdiff(img1, img2, diff);
             
-            // Additionner les différences
-            Mat result = new Mat();
-            Core.add(diff, diff, result);
+            // Appliquer la différence sur l'image source
+            Mat result = source.clone();
+            Core.addWeighted(source, 1.0, diff, 1.0, 0.0, result);
             
-            return result;  // L'image résultante contenant l'addition des différences
+            return result;  // L'image résultante avec les différences appliquées sur la source
         } else {
             throw new IllegalArgumentException("Les dimensions ou types des images ne correspondent pas");
         }
     }
-
 }

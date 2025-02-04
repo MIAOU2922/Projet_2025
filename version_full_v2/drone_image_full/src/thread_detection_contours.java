@@ -29,15 +29,16 @@ public class thread_detection_contours extends Thread {
         Mat flouImage = new Mat();
         Mat edges = new Mat();
         Mat dilatedEdges = new Mat();
-        Mat edgesRed = Mat.zeros(frame.size(), frame.type()); // Initialiser une image noire
-        Mat processedImage = new Mat();
+        Mat edgesRed = new Mat();
+        this.processedImage = new Mat();
 
         Thread.currentThread().setName("Detection de contours");
     
         while (true) {
 
             if (detection == true) {
-                
+                edgesRed = Mat.zeros(frame.size(), frame.type()); // Initialiser une image noire
+
                 // Convertir l'image en niveaux de gris
                 Imgproc.cvtColor(frame, grayImage, Imgproc.COLOR_BGR2GRAY);
             
@@ -57,7 +58,7 @@ public class thread_detection_contours extends Thread {
                 edgesRed.setTo(new Scalar(0, 0, 255), dilatedEdges); // Affecter rouge là où les contours sont présents
             
                 // Superposer les contours rouges sur l'image d'origine
-                Core.add(frame, edgesRed, processedImage);
+                Core.add(frame, edgesRed, this.processedImage);
             
                 // Libérer les ressources inutilisées (libère explicitement la mémoire des objets temporaires)
                 grayImage.release();
@@ -69,11 +70,12 @@ public class thread_detection_contours extends Thread {
                 detection = false;
                 System.out.println("traitement contour fini");
             }
+            new tempo(1);
         }
     }
 
     public Mat getFrame() {
-        return processedImage;
+        return this.processedImage;
     }
 
     public void setFrame(Mat frame) {
