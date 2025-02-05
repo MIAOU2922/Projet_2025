@@ -146,4 +146,25 @@ public class client {
         ByteArrayInputStream bis = new ByteArrayInputStream(byteArray);
         return ImageIO.read(bis);
     }
+
+    //--------------------------------------------------------------//
+    // Méthode pour envoyer un String via UDP
+    private void sendTextUDP(String data, String address, int port) throws IOException {
+        DatagramSocket socket = null;
+        try {
+            socket = new DatagramSocket(); // Crée un socket UDP
+            InetAddress ipAddress = InetAddress.getByName(address); // Résolution de l'adresse IP
+            
+            byte[] buffer = data.getBytes(); // Convertir le texte en tableau d'octets
+            
+            DatagramPacket packet = new DatagramPacket(buffer, buffer.length, ipAddress, port);
+            socket.send(packet); // Envoie du paquet UDP
+            
+            System.out.println("Données envoyées à " + address + ":" + port);
+        } finally {
+            if (socket != null && !socket.isClosed()) {
+                socket.close(); // Ferme le socket proprement
+            }
+        }
+    }
 }

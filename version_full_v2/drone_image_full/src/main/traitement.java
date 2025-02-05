@@ -13,6 +13,7 @@ package main;
 
 import java.awt.image.*;
 import java.io.*;
+import java.lang.reflect.Array;
 import java.net.*;
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -137,6 +138,7 @@ public class traitement {
         FenetreTraitement drone = new FenetreTraitement("drone", icon, 0, 0);
         FenetreTraitement traitement = new FenetreTraitement("traitement", icon, 640, 0);
         
+        
         //--------------------------------------------------------------//
         //--------------------------------------------------------------//
         //--------------------------- boucle ---------------------------//
@@ -148,6 +150,11 @@ public class traitement {
 
             this.imageRecu = reception.getImageRecu();
 
+            if (drone.getTraitement() != 3){
+                drone.setTraitement(3);
+                traitement.setTraitement(3);
+            }
+
             if (!this.imageRecu.empty()) {
                 
                 firstImageReceived = true; // Indiquer que la première image est reçue
@@ -156,10 +163,7 @@ public class traitement {
                 dermiereImageValide = this.imageRecu.clone(); // Stocker l'image d'origine comme dernière valide
                 
                 messageRecu = commande.getMessageRecu();
-
-
-                drone.setTraitement(3);
-
+                
                 traitements = 3 ;
                 /*
                 0 : pas de triatement
@@ -220,14 +224,14 @@ public class traitement {
                     imageAfficher_envoyer = blackImage ;
                 }
 
-                //----------------------
+                //--------------------------------------------------------------//
                 // chai3D
 
 
 
 
 
-                //---------
+                //--------------------------------------------------------------//
 
 
                 
@@ -294,6 +298,27 @@ public class traitement {
         } finally {
             if (socket != null && !socket.isClosed()) {
                 socket.close();
+            }
+        }
+    }
+
+    //--------------------------------------------------------------//
+    // Méthode pour envoyer un String via UDP
+    private void sendTextUDP(String data, String address, int port) throws IOException {
+        DatagramSocket socket = null;
+        try {
+            socket = new DatagramSocket(); // Crée un socket UDP
+            InetAddress ipAddress = InetAddress.getByName(address); // Résolution de l'adresse IP
+            
+            byte[] buffer = data.getBytes(); // Convertir le texte en tableau d'octets
+            
+            DatagramPacket packet = new DatagramPacket(buffer, buffer.length, ipAddress, port);
+            socket.send(packet); // Envoie du paquet UDP
+            
+            System.out.println("Données envoyées à " + address + ":" + port);
+        } finally {
+            if (socket != null && !socket.isClosed()) {
+                socket.close(); // Ferme le socket proprement
             }
         }
     }

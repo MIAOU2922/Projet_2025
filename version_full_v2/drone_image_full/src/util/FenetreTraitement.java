@@ -14,9 +14,9 @@ package util;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.net.DatagramSocket;
-
-import thread.thread_reception_string;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+import java.util.List;
 
 public class FenetreTraitement implements Runnable {
     private JFrame frame;
@@ -25,6 +25,8 @@ public class FenetreTraitement implements Runnable {
     private JCheckBox checkBoxContour;
     private JCheckBox checkBoxForme;
     private BufferedImage image;
+    private List<FenetreTraitement> fenetresLiees; // Liste des fenêtres à synchroniser
+
 
     public FenetreTraitement(String titre, ImageIcon icon, int x, int y) {
         
@@ -85,26 +87,49 @@ public class FenetreTraitement implements Runnable {
             case 0:
                 checkBoxContour.setSelected(false);
                 checkBoxForme.setSelected(false);
+                System.out.println(0);
             break;
             case 1:
                 checkBoxContour.setSelected(true);
                 checkBoxForme.setSelected(false);
+                System.out.println(1);
             break;
             case 2:
                 checkBoxContour.setSelected(false);
                 checkBoxForme.setSelected(true);
+                System.out.println(2);
             break;
             case 3:
                 checkBoxContour.setSelected(true);
                 checkBoxForme.setSelected(true);
+                System.out.println(3);
             break;
             default:
                 checkBoxContour.setSelected(false);
                 checkBoxForme.setSelected(false);
+                System.out.println(4);
             break;
         }
     }
 
+    // Définit les autres fenêtres à synchroniser
+    public void setFenetreLiees(List<FenetreTraitement> fenetres) {
+        this.fenetresLiees = fenetres;
+    }
+
+    // Écouteur pour synchroniser les autres fenêtres
+    private class SyncCheckBoxListener implements ItemListener {
+        @Override
+        public void itemStateChanged(ItemEvent e) {
+            if (fenetresLiees != null) {
+                int etat = getTraitement(); // Récupère l'état actuel
+                for (FenetreTraitement f : fenetresLiees) {
+                    f.setTraitement(etat); // Synchronise les autres fenêtres
+                }
+            }
+        }
+    }
+    
     @Override
     public void run() {
         // La fenêtre s'affiche dès la création
