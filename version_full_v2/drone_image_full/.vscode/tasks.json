@@ -10,7 +10,7 @@
                 "${workspaceFolder}/lib/opencv-4100.jar",
                 "-d",
                 "${workspaceFolder}/bin",
-                "${workspaceFolder}/src/reciver.java"
+                "${workspaceFolder}/src/_start_all.java"
             ],
             "group": {
                 "kind": "build",
