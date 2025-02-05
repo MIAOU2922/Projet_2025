@@ -11,7 +11,6 @@
 
 package main;
 
-import java.awt.*;
 import java.awt.image.*;
 import java.io.*;
 import java.net.*;
@@ -54,10 +53,13 @@ public class client {
         DatagramPacket packet = null;
 
         try {
+            // Obtenir l'adresse IP locale
+            InetAddress address_local = InetAddress.getLocalHost();
+            String address_local_str = address_local.getHostAddress();
+
             // Initialisation du socket UDP
             socket_image = new DatagramSocket(port[1]);
             socket_cmd = new DatagramSocket(port[2]);
-            
             packet = new DatagramPacket(data, data.length);
         } catch (Exception e) {
             e.printStackTrace();
@@ -65,7 +67,7 @@ public class client {
 
         // Définition de la taille de l'image
         int imgsize[] = {1280, 720};
-        Mat processedImage, processedImage2, dermiereImageValide = null;
+        Mat dermiereImageValide = null;
         Mat Image_a_afficher = new Mat(), dermiereImageValide_resizedImage = new Mat();
 
         long currentTime, previousTime = System.nanoTime();
@@ -86,9 +88,8 @@ public class client {
         thread_reception_image reception = new thread_reception_image("client_UDP_image",socket_image, imageRecu);
         reception.start();
 
-        thread_reception_string cmd = new thread_reception_string("client_UDP_string", socket_cmd );
+        thread_reception_string cmd = new thread_reception_string("traitement_UDP_String", socket_cmd);
         cmd.start();
-
 
         //--------------------------------------------------------------//
         // Charger l'icône depuis les ressources

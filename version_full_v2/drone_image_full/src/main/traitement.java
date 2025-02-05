@@ -14,7 +14,6 @@ package main;
 import java.awt.image.*;
 import java.io.*;
 import java.net.*;
-import java.awt.*;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 
@@ -53,15 +52,17 @@ public class traitement {
         String address = "172.29.41.9";
         String address_broadcast = "172.29.255.255";
 
+
+        String messageRecu ;
+
         byte[] data = new byte[65536];
         
-        DatagramSocket socket_image = null ;
-        DatagramSocket socket_cmd = null ;
+        DatagramSocket socket_image = null;
+        DatagramSocket socket_cmd = null;
         DatagramPacket packet = null;
 
         try {
             // Obtenir l'adresse IP locale
-
             InetAddress address_local = InetAddress.getLocalHost();
             String address_local_str = address_local.getHostAddress();
     
@@ -70,7 +71,7 @@ public class traitement {
             socket_cmd = new DatagramSocket(port[2]);
             packet = new DatagramPacket(data, data.length);
         } catch (Exception e) {
-            
+            e.printStackTrace();
         }
         
         // Définition de la taille de l'image
@@ -120,8 +121,8 @@ public class traitement {
         thread_reception_image reception = new thread_reception_image("traitement_UDP_image",socket_image, imageRecu);
         reception.start();
 
-        thread_reception_string cmd = new thread_reception_string("traitement_UDP_string", socket_cmd);
-        cmd.start();
+        thread_reception_string commande = new thread_reception_string("traitement_UDP_String", socket_cmd);
+        commande.start();
 
         thread_detection_contours detection_contours = new thread_detection_contours(imageRecu, false);
         detection_contours.start();
@@ -154,7 +155,12 @@ public class traitement {
                 
                 dermiereImageValide = this.imageRecu.clone(); // Stocker l'image d'origine comme dernière valide
                 
-                traitements = 3;
+                messageRecu = commande.getMessageRecu();
+
+
+                drone.setTraitement(3);
+
+                traitements = 3 ;
                 /*
                 0 : pas de triatement
                 1 : traitement contour
@@ -213,6 +219,17 @@ public class traitement {
                     imageAfficher_source = blackImage ;
                     imageAfficher_envoyer = blackImage ;
                 }
+
+                //----------------------
+                // chai3D
+
+
+
+
+
+                //---------
+
+
                 
                 // Ajuster dynamiquement le taux de compression
                 quality = 70; // Qualité initiale

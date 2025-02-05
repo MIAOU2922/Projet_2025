@@ -14,6 +14,9 @@ package util;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.net.DatagramSocket;
+
+import thread.thread_reception_string;
 
 public class FenetreTraitement implements Runnable {
     private JFrame frame;
@@ -24,6 +27,7 @@ public class FenetreTraitement implements Runnable {
     private BufferedImage image;
 
     public FenetreTraitement(String titre, ImageIcon icon, int x, int y) {
+        
         frame = new JFrame(titre);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(640, 550);  // Augmentation de la hauteur pour ajouter les options
