@@ -20,6 +20,8 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -44,7 +46,7 @@ public class traitement {
 
     Mat imageRecu = new Mat() , imageEnvoyer = new Mat() , imageAfficher_source = new Mat() ,  imageAfficher_envoyer = new Mat();
     BufferedImage bufferedImage_source = null, bufferedImage_envoyer = null;
-
+    private ConcurrentMap<String, LocalDateTime> addressLastReceived = new ConcurrentHashMap<>();
 
     public traitement () {
 
@@ -176,6 +178,24 @@ public class traitement {
         FenetreTraitement drone = new FenetreTraitement("drone", icon, 0, 0);
         FenetreTraitement traitement = new FenetreTraitement("traitement", icon, 640, 0);
         
+        // Thread pour vérifier les adresses toutes les minutes
+        new Thread(() -> {
+            while (true) {
+                try {
+                    LocalDateTime now = LocalDateTime.now();
+                    addressLastReceived.entrySet().removeIf(entry -> {
+                        if (entry.getValue().isBefore(now.minusMinutes(5))) {
+                            System.out.println("Adresse " + entry.getKey() + " supprimée pour inactivité.");
+                            return true;
+                        }
+                        return false;
+                    });
+                    Thread.sleep(60000); // 1 minute
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
         
         //--------------------------------------------------------------//
         //--------------------------------------------------------------//
@@ -210,6 +230,7 @@ public class traitement {
                         String[] addressPortParts = clientAddressPort.split(":");
                         String clientAddress = addressPortParts[0];
                         int clientPort = Integer.parseInt(addressPortParts[1]);
+                        addressLastReceived.put(clientAddress, LocalDateTime.now());
                         if (!address.contains(clientAddress)) {
                             address.add(clientAddress);
                         }
@@ -309,11 +330,13 @@ public class traitement {
                 // Envoi de l'image à chaque adresse dans la liste
                 if (!address.isEmpty()) {
                     for (String addr : address) {
-                        try {
-                            sendImageUDP(encodedData, addr, port[1]);
-                            System.out.printf("Image envoyée à %s:%d FPS: %.0f\n", addr, port[1], fps);
-                        } catch (IOException e) {
-                            System.out.println("Erreur lors de l'envoi de l'image à " + addr + " : " + e.getMessage());
+                        if (addressLastReceived.containsKey(addr)) {
+                            try {
+                                sendImageUDP(encodedData, addr, port[1]);
+                                System.out.printf("Image envoyée à %s:%d FPS: %.0f\n", addr, port[1], fps);
+                            } catch (IOException e) {
+                                System.out.println("Erreur lors de l'envoi de l'image à " + addr + " : " + e.getMessage());
+                            }
                         }
                     }
                 } else {

@@ -35,6 +35,7 @@ public class client {
 
     Mat imageRecu = new Mat();
     BufferedImage bufferedImage = null;
+    String address_local_str;
 
     public client () {
         // Définition des ports UDP
@@ -59,7 +60,6 @@ public class client {
         int previousTraitement = 0;
         int currentTraitement = 0;
 
-        String address_local_str = "";
         InetAddress address_local = null;
 
         try {
@@ -98,6 +98,18 @@ public class client {
         } catch (Exception e) {
             e.printStackTrace();
         }
+
+        // Thread pour envoyer l'adresse IP locale toutes les 3 minutes
+        new Thread(() -> {
+            while (true) {
+                try {
+                    sendTextUDP("address#" + address_local_str, address_broadcast, port[2]);
+                    Thread.sleep(500); // attendre 30 secondes
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
 
         // Définition de la taille de l'image
         int imgsize[] = {1280, 720};
