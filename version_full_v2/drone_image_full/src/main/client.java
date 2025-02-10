@@ -14,6 +14,8 @@ package main;
 import java.awt.image.*;
 import java.io.*;
 import java.net.*;
+import java.time.LocalDateTime;
+
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.util.Enumeration;
@@ -130,7 +132,7 @@ public class client {
                     Thread.currentThread().setName("boucle d'afk");
                     while (true) {
                         try {
-                            sendTextUDP("address#" + address_local_str + "?time#" + System.currentTimeMillis(), address_broadcast, port[2]);
+                            sendTextUDP("address#" + address_local_str + "?time#" + LocalDateTime.now(), address_broadcast, port[2]);
                             Thread.sleep(30000); // attendre 30 secondes
                         } catch (Exception e) {
                             e.printStackTrace();
