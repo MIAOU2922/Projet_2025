@@ -159,18 +159,18 @@ public class traitement {
             if (!this.imageRecu.empty()) {
                 
                 firstImageReceived = true; // Indiquer que la première image est reçue
-               System.out.println("Image reçue");
+                System.out.println("Image reçue");
                 
                 dermiereImageValide = this.imageRecu.clone(); // Stocker l'image d'origine comme dernière valide
                 
                 messageRecu = commande.getMessageRecu();
                 
-                parts = messageRecu.split(";");
+                parts = messageRecu.split("\\?"); // Split using "?"
                 for (String part : parts) {
-                    if (part.startsWith("traitement:")) {
-                        Client_traitement = Integer.parseInt(part.split(":")[1]);
-                    } else if (part.startsWith("time:")) {
-                        String timeString = part.split(":")[1];
+                    if (part.startsWith("traitement#")) {
+                        Client_traitement = Integer.parseInt(part.split("#")[1]);
+                    } else if (part.startsWith("time#")) {
+                        String timeString = part.split("#")[1];
                         DateTimeFormatter formatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
                         Client_Time = LocalDateTime.parse(timeString, formatter);
                     }

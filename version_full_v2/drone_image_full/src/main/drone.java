@@ -128,7 +128,7 @@ public class drone {
             InetAddress ipAddress = InetAddress.getByName(address);
             DatagramPacket packet = new DatagramPacket(imageData, imageData.length, ipAddress, port);
             socket.send(packet);
-            System.out.print("Image envoyée à " + address + ":" + port );
+            System.out.printf("Image envoyée à " + address + ":" + port );
         } finally {
             if (socket != null && !socket.isClosed()) {
                 socket.close();
