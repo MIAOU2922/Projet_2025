@@ -179,7 +179,7 @@ public class client {
             DatagramPacket packet = new DatagramPacket(buffer, buffer.length, ipAddress, port);
             socket.send(packet); // Envoie du paquet UDP
             
-            //System.out.println("Données envoyées à " + address + ":" + port);
+            System.out.println("Données envoyées à " + address + ":" + port);
         } finally {
             if (socket != null && !socket.isClosed()) {
                 socket.close(); // Ferme le socket proprement

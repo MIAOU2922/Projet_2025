@@ -159,7 +159,7 @@ public class traitement {
             if (!this.imageRecu.empty()) {
                 
                 firstImageReceived = true; // Indiquer que la première image est reçue
-               //System.out.println("Image reçue");
+               System.out.println("Image reçue");
                 
                 dermiereImageValide = this.imageRecu.clone(); // Stocker l'image d'origine comme dernière valide
                 
@@ -225,7 +225,7 @@ public class traitement {
                 currentTime = System.nanoTime();
                 intervalInSeconds = (currentTime - previousTime) / 1_000_000_000.0; // Intervalle en secondes
                 fps = 1.0 / intervalInSeconds; // Calcul des FPS
-               //System.out.printf(" FPS: %.0f\n", fps);
+               System.out.printf(" FPS: %.0f\n", fps);
 
                 Imgproc.putText(imageEnvoyer, String.format("FPS: %.0f", fps), new org.opencv.core.Point(10, 30), Imgproc.FONT_HERSHEY_SIMPLEX,1, new Scalar(0, 255, 0), 2);
 
@@ -268,16 +268,16 @@ public class traitement {
                 // Envoi de l'image
                 try {
                     sendImageUDP(encodedData, address, port[1]);
-                   //System.out.printf(" FPS: %.0f\n", fps);
+                   System.out.printf(" FPS: %.0f\n", fps);
 
 
                 } catch (IOException e) {
-                   //System.out.println("Erreur lors de l'envoi de l'image : " + e.getMessage());
+                   System.out.println("Erreur lors de l'envoi de l'image : " + e.getMessage());
                 }
 
             } else {
 
-                //System.out.println("Image non reçue");
+                System.out.println("Image non reçue");
                 if (dermiereImageValide != null) {
                     if (firstImageReceived == false) {
                         // Afficher l'image noire si aucune image n'est reçue
@@ -317,7 +317,7 @@ public class traitement {
             InetAddress ipAddress = InetAddress.getByName(address);
             DatagramPacket packet = new DatagramPacket(imageData, imageData.length, ipAddress, port);
             socket.send(packet);
-           //System.out.print("Image envoyée à " + address + ":" + port );
+           System.out.print("Image envoyée à " + address + ":" + port );
         } finally {
             if (socket != null && !socket.isClosed()) {
                 socket.close();

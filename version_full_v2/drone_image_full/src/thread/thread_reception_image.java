@@ -42,7 +42,7 @@ public class thread_reception_image extends Thread {
                 this.imageRecu = Imgcodecs.imdecode(new MatOfByte(packet.getData()), Imgcodecs.IMREAD_COLOR);
 
             } catch (Exception e) {
-                //System.out.println("Erreur de réception d'image : " + e.getMessage());
+                System.out.println("Erreur de réception d'image : " + e.getMessage());
             }
         }
     }

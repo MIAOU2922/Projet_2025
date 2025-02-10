@@ -106,7 +106,7 @@ public class thread_detection_formes extends Thread {
                 resizedEdgesGreen.release();
 
                 detection = false;
-                //System.out.println("traitement forme fini");
+                System.out.println("traitement forme fini");
             }
             new tempo(1);
         }

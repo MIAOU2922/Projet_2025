@@ -57,7 +57,7 @@ public class drone {
         VideoCapture capture = new VideoCapture(0);
         // Vérification si la caméra est ouverte
         if (!capture.isOpened()) {
-            //System.out.println("Erreur : Impossible d'ouvrir la caméra.");
+            System.out.println("Erreur : Impossible d'ouvrir la caméra.");
             return;
         }
         // Initialisation des matrices
@@ -82,7 +82,7 @@ public class drone {
         while (true) {
             // Capture d'une image
             if (!capture.read(frame)) {
-                //System.out.println("Erreur de capture d'image.");
+                System.out.println("Erreur de capture d'image.");
                 break;
             }
             // Redimensionner l'image
@@ -103,13 +103,13 @@ public class drone {
                 currentTime = System.nanoTime();
                 intervalInSeconds = (currentTime - previousTime) / 1_000_000_000.0; // Intervalle en secondes
                 fps = 1.0 / intervalInSeconds; // Calcul des FPS
-                //System.out.printf(" FPS: %.0f\n", fps);
+                System.out.printf(" FPS: %.0f\n", fps);
 
                 // Mettre à jour le temps précédent
                 previousTime = currentTime;
 
             } catch (IOException e) {
-                //System.out.println("Erreur lors de l'envoi de l'image : " + e.getMessage());
+                System.out.println("Erreur lors de l'envoi de l'image : " + e.getMessage());
             }
             // Tempo
             try {
@@ -128,7 +128,7 @@ public class drone {
             InetAddress ipAddress = InetAddress.getByName(address);
             DatagramPacket packet = new DatagramPacket(imageData, imageData.length, ipAddress, port);
             socket.send(packet);
-            //System.out.print("Image envoyée à " + address + ":" + port );
+            System.out.print("Image envoyée à " + address + ":" + port );
         } finally {
             if (socket != null && !socket.isClosed()) {
                 socket.close();

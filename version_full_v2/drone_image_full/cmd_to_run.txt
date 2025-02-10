@@ -1,25 +1,25 @@
 compile:
 
 mkdir -p bin
-javac -cp "lib/opencv-4100.jar" -d "bin" src/*.java
+javac -cp "lib/opencv-4100.jar" -d "bin" src/_start/*.java src/thread/*.java src/util/*.java src/main/*.java src/filemap/*.java
 
 
 -----------------
 lancer tous :
 
-java -Djava.library.path="lib" -cp "lib/opencv-4100.jar;bin" _start_all
+java -Djava.library.path="lib" -cp "lib/opencv-4100.jar;bin" _start._start_all
 
 -----------------
 lancer drone :
 
-java -Djava.library.path="lib" -cp "lib/opencv-4100.jar;bin" _start_drone
+java -Djava.library.path="lib" -cp "lib/opencv-4100.jar;bin" _start._start_drone
 
 -----------------
 lancer client :
 
-java -Djava.library.path="lib" -cp "lib/opencv-4100.jar;bin" _start_client
+java -Djava.library.path="lib" -cp "lib/opencv-4100.jar;bin" _start._start_client
 
 -----------------
 lancer traitement :
 
-java -Djava.library.path="lib" -cp "lib/opencv-4100.jar;bin" _start_traitement
+java -Djava.library.path="lib" -cp "lib/opencv-4100.jar;bin" _start._start_traitement
