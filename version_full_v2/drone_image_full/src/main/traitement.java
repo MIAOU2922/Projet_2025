@@ -46,6 +46,7 @@ public class traitement {
 
     Mat imageRecu = new Mat() , imageEnvoyer = new Mat() , imageAfficher_source = new Mat() ,  imageAfficher_envoyer = new Mat();
     BufferedImage bufferedImage_source = null, bufferedImage_envoyer = null;
+    double fps = 0.0;
     private ConcurrentMap<String, LocalDateTime> addressLastReceived = new ConcurrentHashMap<>();
 
     public traitement () {
@@ -126,7 +127,7 @@ public class traitement {
 
         
         long currentTime , previousTime =System.nanoTime() ;
-        double intervalInSeconds , fps;
+        double intervalInSeconds ;
 
         int quality = 70; // Qualité initiale
         byte[] encodedData;
@@ -180,6 +181,7 @@ public class traitement {
         
         // Thread pour vérifier les adresses toutes les minutes
         new Thread(() -> {
+            Thread.currentThread().setName("boucle d'afk");
             while (true) {
                 try {
                     LocalDateTime now = LocalDateTime.now();
@@ -190,7 +192,7 @@ public class traitement {
                         }
                         return false;
                     });
-                    Thread.sleep(60000); // 1 minute
+                    Thread.sleep(60000); // Attendre 60 secondes
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
@@ -287,7 +289,7 @@ public class traitement {
                 fps = 1.0 / intervalInSeconds; // Calcul des FPS
                 //System.out.printf(" FPS: %.0f\n", fps);
 
-                Imgproc.putText(imageEnvoyer, String.format("FPS: %.0f", fps), new org.opencv.core.Point(10, 30), Imgproc.FONT_HERSHEY_SIMPLEX,1, new Scalar(0, 255, 0), 2);
+                Imgproc.putText(imageEnvoyer, String.format(" FPS: %.0f", fps), new org.opencv.core.Point(10, 30), Imgproc.FONT_HERSHEY_SIMPLEX,1, new Scalar(0, 255, 0), 2);
 
                 // Mettre à jour le temps précédent
                 previousTime = currentTime;
@@ -331,7 +333,6 @@ public class traitement {
                         if (addressLastReceived.containsKey(addr)) {
                             try {
                                 sendImageUDP(encodedData, addr, port[1]);
-                                System.out.printf("Image envoyée à %s:%d FPS: %.0f\n", addr, port[1], fps);
                             } catch (IOException e) {
                                 System.out.println("Erreur lors de l'envoi de l'image à " + addr + " : " + e.getMessage());
                             }
@@ -383,7 +384,7 @@ public class traitement {
             InetAddress ipAddress = InetAddress.getByName(address);
             DatagramPacket packet = new DatagramPacket(imageData, imageData.length, ipAddress, port);
             socket.send(packet);
-           System.out.print("Image envoyée à " + address + ":" + port );
+            System.out.println("Image envoyée à " + address + ":" + port + String.format("FPS: %.0f", fps));
         } finally {
             if (socket != null && !socket.isClosed()) {
                 socket.close();
@@ -404,7 +405,7 @@ public class traitement {
             DatagramPacket packet = new DatagramPacket(buffer, buffer.length, ipAddress, port);
             socket.send(packet); // Envoie du paquet UDP
             
-            System.out.println("Données envoyées à " + address + ":" + port);
+            System.out.println("Données envoyées à " + address + ":" + port + " FPS: "+ fps);
         } finally {
             if (socket != null && !socket.isClosed()) {
                 socket.close(); // Ferme le socket proprement
