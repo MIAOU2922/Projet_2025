@@ -17,6 +17,7 @@ import java.lang.reflect.Array;
 import java.net.*;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
@@ -47,7 +48,8 @@ public class traitement {
     Mat imageRecu = new Mat() , imageEnvoyer = new Mat() , imageAfficher_source = new Mat() ,  imageAfficher_envoyer = new Mat();
     BufferedImage bufferedImage_source = null, bufferedImage_envoyer = null;
     double fps = 0.0;
-    private ConcurrentMap<String, LocalDateTime> addressLastReceived = new ConcurrentHashMap<>();
+    private ArrayList <String> client_address = new ArrayList<>();
+    private ArrayList <String> client_time = new ArrayList<>();
 
     public traitement () {
 
@@ -172,32 +174,36 @@ public class traitement {
         thread_detection_formes detection_formes = new thread_detection_formes(imageRecu, false);
         detection_formes.start();
 
-        //--------------------------------------------------------------//
-         // Charger l'icône depuis les ressources
-        ImageIcon icon = new ImageIcon("lib/logo.png");
-
-        FenetreTraitement drone = new FenetreTraitement("drone", icon, 0, 0);
-        FenetreTraitement traitement = new FenetreTraitement("traitement", icon, 640, 0);
-        
         // Thread pour vérifier les adresses toutes les minutes
         new Thread(() -> {
             Thread.currentThread().setName("boucle d'afk");
             while (true) {
                 try {
                     LocalDateTime now = LocalDateTime.now();
-                    addressLastReceived.entrySet().removeIf(entry -> {
-                        if (entry.getValue().isBefore(now.minusMinutes(5))) {
-                            System.out.println("Adresse " + entry.getKey() + " supprimée pour inactivité.");
-                            return true;
+                    for (int i = 0; i < client_time.size(); i++) {
+                        LocalDateTime clientTime = LocalDateTime.parse(client_time.get(i));
+                        if (ChronoUnit.MINUTES.between(clientTime, now) > 3) {
+                            System.out.println("Adresse " + client_address.get(i) + " supprimée pour inactivité.");
+                            client_address.remove(i);
+                            client_time.remove(i);
+                            i--; // Ajuster l'index après la suppression
                         }
-                        return false;
-                    });
-                    Thread.sleep(60000); // Attendre 60 secondes
+                    }
+                    System.out.println("Liste des adresses : " + client_address + " (" + client_address.size() + ")" + client_time + " (" + client_time.size() + ")");
+                    Thread.sleep(1000); // Vérification toutes les minutes
                 } catch (InterruptedException e) {
-                    e.printStackTrace();
+                    Thread.currentThread().interrupt();
+                    break;
                 }
             }
         }).start();
+
+        //--------------------------------------------------------------//
+         // Charger l'icône depuis les ressources
+        ImageIcon icon = new ImageIcon("lib/logo.png");
+
+        FenetreTraitement drone = new FenetreTraitement("drone", icon, 0, 0);
+        FenetreTraitement traitement = new FenetreTraitement("traitement", icon, 640, 0);
         
         //--------------------------------------------------------------//
         //--------------------------------------------------------------//
@@ -231,9 +237,16 @@ public class traitement {
                         String clientAddressPort = part.split("#")[1];
                         String[] addressPortParts = clientAddressPort.split(":");
                         String clientAddress = addressPortParts[0];
-                        addressLastReceived.put(clientAddress, LocalDateTime.now());
-                        if (!address.contains(clientAddress)) {
-                            address.add(clientAddress);
+                        
+                        // Vérifier si l'adresse est déjà présente dans client_address
+                        int index = client_address.indexOf(clientAddress);
+                        if (index == -1) {
+                            // Si l'adresse n'est pas présente, l'ajouter
+                            client_address.add(clientAddress);
+                            client_time.add(Client_Time.toString());
+                        } else {
+                            // Si l'adresse est déjà présente, mettre à jour le temps
+                            client_time.set(index, Client_Time.toString());
                         }
                     }
                 }
@@ -328,23 +341,21 @@ public class traitement {
                     quality -= 5; // Réduire la qualité de compression
                 } while (encodedData.length > maxPacketSize && quality > 10); // Réduire jusqu'à ce que l'image tienne dans un paquet UDP
                 // Envoi de l'image à chaque adresse dans la liste
-                if (!address.isEmpty()) {
-                    for (String addr : address) {
-                        if (addressLastReceived.containsKey(addr)) {
-                            try {
-                                sendImageUDP(encodedData, addr, port[1]);
-                            } catch (IOException e) {
-                                System.out.println("Erreur lors de l'envoi de l'image à " + addr + " : " + e.getMessage());
-                            }
+                if (!client_address.isEmpty()) {
+                    for (String addr : client_address) {
+                        try {
+                            sendImageUDP(encodedData, addr, port[1]);
+                        } catch (IOException e) {
+                            System.out.println("Erreur lors de l'envoi de l'image à " + addr + " : " + e.getMessage());
                         }
                     }
                 } else {
-                    System.out.println("La liste des adresses est vide, aucune image n'a été envoyée.");
+                    //System.out.println("La liste des adresses est vide, aucune image n'a été envoyée.");
                 }
                 
             } else {
 
-                System.out.println("Image non reçue");
+                //System.out.println("Image non reçue");
                 if (dermiereImageValide != null) {
                     if (firstImageReceived == false) {
                         // Afficher l'image noire si aucune image n'est reçue
@@ -384,7 +395,7 @@ public class traitement {
             InetAddress ipAddress = InetAddress.getByName(address);
             DatagramPacket packet = new DatagramPacket(imageData, imageData.length, ipAddress, port);
             socket.send(packet);
-            System.out.println("Image envoyée à " + address + ":" + port + String.format("FPS: %.0f", fps));
+            //System.out.println("Image envoyée à " + address + ":" + port + String.format(" FPS: %.0f", fps));
         } finally {
             if (socket != null && !socket.isClosed()) {
                 socket.close();
@@ -405,7 +416,7 @@ public class traitement {
             DatagramPacket packet = new DatagramPacket(buffer, buffer.length, ipAddress, port);
             socket.send(packet); // Envoie du paquet UDP
             
-            System.out.println("Données envoyées à " + address + ":" + port + " FPS: "+ fps);
+            //System.out.println("Données envoyées à " + address + ":" + port + " FPS: "+ fps);
         } finally {
             if (socket != null && !socket.isClosed()) {
                 socket.close(); // Ferme le socket proprement

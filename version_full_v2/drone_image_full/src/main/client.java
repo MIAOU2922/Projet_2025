@@ -99,18 +99,6 @@ public class client {
             e.printStackTrace();
         }
 
-        // Thread pour envoyer l'adresse IP locale toutes les 3 minutes
-        new Thread(() -> {
-            while (true) {
-                try {
-                    sendTextUDP("address#" + address_local_str, address_broadcast, port[2]);
-                    Thread.sleep(180000); // attendre 3 minutes
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        }).start();
-
         // Définition de la taille de l'image
         int imgsize[] = {1280, 720};
         Mat dermiereImageValide = null;
@@ -136,6 +124,19 @@ public class client {
 
         thread_reception_string cmd = new thread_reception_string("traitement_UDP_String", socket_cmd);
         cmd.start();
+
+                // Thread pour envoyer l'adresse IP locale toutes les 3 minutes
+                new Thread(() -> {
+                    Thread.currentThread().setName("boucle d'afk");
+                    while (true) {
+                        try {
+                            sendTextUDP("address#" + address_local_str, address_broadcast, port[2]);
+                            Thread.sleep(30000); // attendre 30 secondes
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }).start();
 
         //--------------------------------------------------------------//
         // Charger l'icône depuis les ressources
