@@ -130,7 +130,7 @@ public class client {
                     Thread.currentThread().setName("boucle d'afk");
                     while (true) {
                         try {
-                            sendTextUDP("address#" + address_local_str, address_broadcast, port[2]);
+                            sendTextUDP("address#" + address_local_str + "?time#" + System.currentTimeMillis(), address_broadcast, port[2]);
                             Thread.sleep(30000); // attendre 30 secondes
                         } catch (Exception e) {
                             e.printStackTrace();
