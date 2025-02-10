@@ -47,10 +47,16 @@ public class client {
         String address = "172.29.41.9";
         String address_broadcast = "172.29.255.255";
 
+        // Définition du texte à envoyer
+        String text = "";
+
         byte[] data = new byte[65536];
         DatagramSocket socket_image = null;
         DatagramSocket socket_cmd = null;
         DatagramPacket packet = null;
+
+        int previousTraitement = 0;
+        int currentTraitement = 0;
 
         try {
             // Obtenir l'adresse IP locale
@@ -121,11 +127,24 @@ public class client {
                 Image_a_afficher = dermiereImageValide_resizedImage;
             }
 
+            // Afficher l'image dans la fenêtre
             try {
                 bufferedImage = byteArrayToBufferedImage(encodeImageToJPEG(Image_a_afficher, 100));
                 client.setImage(bufferedImage);
             } catch (IOException e) {
                 e.printStackTrace();
+            }
+
+            // Envoi du traitement à effectuer uniquement s'il y a eu une modification d'état
+            currentTraitement = client.getTraitement();
+            if (currentTraitement != previousTraitement) {
+                try {
+                    text = "traitement:" + currentTraitement + ";time:" + client.getLastModifiedTime();
+                    sendTextUDP(text, address_broadcast, port[2]);
+                    previousTraitement = currentTraitement; // Mettre à jour l'état précédent
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
 
             new tempo(10);
@@ -160,7 +179,7 @@ public class client {
             DatagramPacket packet = new DatagramPacket(buffer, buffer.length, ipAddress, port);
             socket.send(packet); // Envoie du paquet UDP
             
-            System.out.println("Données envoyées à " + address + ":" + port);
+            //System.out.println("Données envoyées à " + address + ":" + port);
         } finally {
             if (socket != null && !socket.isClosed()) {
                 socket.close(); // Ferme le socket proprement

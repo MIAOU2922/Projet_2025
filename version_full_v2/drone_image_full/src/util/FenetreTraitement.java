@@ -13,20 +13,22 @@ package util;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
-import java.util.List;
+import java.time.LocalDateTime;
 
 public class FenetreTraitement implements Runnable {
     private JFrame frame;
     private JPanel panel;
     private JPanel panelOptions;
-    private JCheckBox checkBoxContour;
-    private JCheckBox checkBoxForme;
+    private JButton buttonForme;
+    private JButton buttonContours;
+    private JButton buttonFormeContours;
+    private JButton buttonRien;
     private BufferedImage image;
-    private List<FenetreTraitement> fenetresLiees; // Liste des fenêtres à synchroniser
-
+    private int traitement = 0;
+    private LocalDateTime lastModifiedTime = LocalDateTime.now();
 
     public FenetreTraitement(String titre, ImageIcon icon, int x, int y) {
         
@@ -49,18 +51,52 @@ public class FenetreTraitement implements Runnable {
             }
         };
 
-        // Panel pour les cases à cocher
+        // Panel pour les boutons
         panelOptions = new JPanel();
-        checkBoxContour = new JCheckBox("Contour");
-        checkBoxForme = new JCheckBox("Forme");
+        buttonRien = new JButton("rien");
+        buttonContours = new JButton("contours");
+        buttonForme = new JButton("forme");
+        buttonFormeContours = new JButton("forme et contours");
 
-        panelOptions.add(checkBoxContour);
-        panelOptions.add(checkBoxForme);
+        // Ajout des boutons au panel
+        panelOptions.add(buttonRien); // traitement = 0
+        panelOptions.add(buttonContours); // traitement = 1
+        panelOptions.add(buttonForme); // traitement = 2
+        panelOptions.add(buttonFormeContours); // traitement = 3
 
         // Ajout des composants à la fenêtre
         frame.add(panel, BorderLayout.CENTER);
         frame.add(panelOptions, BorderLayout.SOUTH);
         frame.setVisible(true);
+
+        // Ajout des listeners pour les boutons
+        buttonRien.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                setTraitement(0);
+            }
+        });
+
+        buttonContours.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                setTraitement(1);
+            }
+        });
+
+        buttonForme.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                setTraitement(2);
+            }
+        });
+
+        buttonFormeContours.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                setTraitement(3);
+            }
+        });
     }
 
     // Permet de changer l'image affichée
@@ -69,74 +105,24 @@ public class FenetreTraitement implements Runnable {
         panel.repaint();  // Rafraîchissement de l'affichage
     }
 
-   //methode pour recuperer l'etat du filtre
-    public int getTraitement(){
-        int nbr = 0;
-        if (checkBoxContour.isSelected()){
-            nbr=nbr+1;
-        }
-        if (checkBoxForme.isSelected()){
-            nbr=nbr+2;
-        }
-        return nbr;
+    // Permet de changer la valeur de traitement et met à jour le temps de la dernière modification
+    private void setTraitement(int traitement) {
+        this.traitement = traitement;
+        this.lastModifiedTime = LocalDateTime.now();
     }
 
-    //methode pour déffinir l'etat du filtre
-    public void setTraitement(int nbr){
-        switch (nbr){
-            case 0:
-                checkBoxContour.setSelected(false);
-                checkBoxForme.setSelected(false);
-                System.out.println(0);
-            break;
-            case 1:
-                checkBoxContour.setSelected(true);
-                checkBoxForme.setSelected(false);
-                System.out.println(1);
-            break;
-            case 2:
-                checkBoxContour.setSelected(false);
-                checkBoxForme.setSelected(true);
-                System.out.println(2);
-            break;
-            case 3:
-                checkBoxContour.setSelected(true);
-                checkBoxForme.setSelected(true);
-                System.out.println(3);
-            break;
-            default:
-                checkBoxContour.setSelected(false);
-                checkBoxForme.setSelected(false);
-                System.out.println(4);
-            break;
-        }
+    // Retourne la valeur actuelle de traitement
+    public int getTraitement() {
+        return traitement;
     }
 
-    // Définit les autres fenêtres à synchroniser
-    public void setFenetreLiees(List<FenetreTraitement> fenetres) {
-        this.fenetresLiees = fenetres;
+    // Retourne le temps de la dernière modification de traitement
+    public LocalDateTime getLastModifiedTime() {
+        return lastModifiedTime;
     }
 
-    // Écouteur pour synchroniser les autres fenêtres
-    private class SyncCheckBoxListener implements ItemListener {
-        @Override
-        public void itemStateChanged(ItemEvent e) {
-            if (fenetresLiees != null) {
-                int etat = getTraitement(); // Récupère l'état actuel
-                for (FenetreTraitement f : fenetresLiees) {
-                    f.setTraitement(etat); // Synchronise les autres fenêtres
-                }
-            }
-        }
-    }
-    
     @Override
     public void run() {
         // La fenêtre s'affiche dès la création
-    }
-
-    // Méthode pour lancer une nouvelle instance de la fenêtre
-    public static void startNewInstance(String title, ImageIcon icon, int x, int y) {
-        SwingUtilities.invokeLater(() -> new FenetreTraitement(title, icon, x, y));
     }
 }

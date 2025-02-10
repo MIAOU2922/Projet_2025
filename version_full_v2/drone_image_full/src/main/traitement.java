@@ -15,6 +15,9 @@ import java.awt.image.*;
 import java.io.*;
 import java.lang.reflect.Array;
 import java.net.*;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+
 import javax.imageio.ImageIO;
 import javax.swing.*;
 
@@ -55,6 +58,9 @@ public class traitement {
 
 
         String messageRecu ;
+        String[] parts;
+        LocalDateTime Client_Time = LocalDateTime.now();
+        int Client_traitement = 0;
 
         byte[] data = new byte[65536];
         
@@ -150,11 +156,6 @@ public class traitement {
 
             this.imageRecu = reception.getImageRecu();
 
-            if (drone.getTraitement() != 3){
-                drone.setTraitement(3);
-                traitement.setTraitement(3);
-            }
-
             if (!this.imageRecu.empty()) {
                 
                 firstImageReceived = true; // Indiquer que la première image est reçue
@@ -164,7 +165,29 @@ public class traitement {
                 
                 messageRecu = commande.getMessageRecu();
                 
-                traitements = 3 ;
+                parts = messageRecu.split(";");
+                for (String part : parts) {
+                    if (part.startsWith("traitement:")) {
+                        Client_traitement = Integer.parseInt(part.split(":")[1]);
+                    } else if (part.startsWith("time:")) {
+                        String timeString = part.split(":")[1];
+                        DateTimeFormatter formatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
+                        Client_Time = LocalDateTime.parse(timeString, formatter);
+                    }
+                }
+
+                // Comparer les temps de modification et mettre à jour la valeur de traitement
+                LocalDateTime droneTime = drone.getLastModifiedTime();
+                LocalDateTime traitementTime = traitement.getLastModifiedTime();
+
+                if (Client_Time.isAfter(droneTime) && Client_Time.isAfter(traitementTime)) {
+                    traitements = Client_traitement;
+                } else if (droneTime.isAfter(traitementTime)) {
+                    traitements = drone.getTraitement();
+                } else {
+                    traitements = traitement.getTraitement();
+                }
+
                 /*
                 0 : pas de triatement
                 1 : traitement contour

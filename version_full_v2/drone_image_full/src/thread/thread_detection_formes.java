@@ -21,10 +21,10 @@ import util.tempo;
 
 public class thread_detection_formes extends Thread {
 
-    private Mat frame , processedImage;
+    private Mat frame, processedImage;
     private boolean detection;
 
-    public thread_detection_formes(Mat frame , boolean detection) {
+    public thread_detection_formes(Mat frame, boolean detection) {
         this.frame = frame;
         this.detection = detection;
     }
@@ -34,16 +34,19 @@ public class thread_detection_formes extends Thread {
         Mat grayImage = new Mat();
         Mat blurredImage = new Mat();
         Mat edges = new Mat();
-        this.processedImage = this.frame.clone();
+        this.processedImage = new Mat();
 
         Thread.currentThread().setName("Detection de formes");
 
-        while (true){
+        while (true) {
             if (detection == true) {
-                this.processedImage = this.frame.clone();
+                // Réduire la taille de l'image avant le traitement
+                Mat resizedFrame = new Mat();
+                Size reducedSize = new Size(frame.width() / 2, frame.height() / 2);
+                Imgproc.resize(frame, resizedFrame, reducedSize);
 
-                // Convertir l'image en niveaux de gris
-                Imgproc.cvtColor(this.frame, grayImage, Imgproc.COLOR_BGR2GRAY);
+                // Convertir l'image réduite en niveaux de gris
+                Imgproc.cvtColor(resizedFrame, grayImage, Imgproc.COLOR_BGR2GRAY);
 
                 // Appliquer un flou gaussien pour réduire le bruit
                 Imgproc.GaussianBlur(grayImage, blurredImage, new Size(5, 5), 0);
@@ -55,7 +58,9 @@ public class thread_detection_formes extends Thread {
                 List<MatOfPoint> contours = new ArrayList<>();
                 Mat hierarchy = new Mat();
                 Imgproc.findContours(edges, contours, hierarchy, Imgproc.RETR_EXTERNAL, Imgproc.CHAIN_APPROX_SIMPLE);
-                contours.removeIf(contour -> Imgproc.contourArea(contour) < 100); //Filtrer les petits contours
+                contours.removeIf(contour -> Imgproc.contourArea(contour) < 100); // Filtrer les petits contours
+
+                Mat edgesGreen = Mat.zeros(resizedFrame.size(), resizedFrame.type()); // Initialiser une image noire
 
                 for (MatOfPoint contour : contours) {
                     // Approximation des contours pour simplifier la forme
@@ -73,22 +78,32 @@ public class thread_detection_formes extends Thread {
                         case 6 -> "Hexagone";
                         case 7 -> "Heptagone";
                         case 8 -> "Octogone";
-                        default -> (vertexCount > 8 ) ? "cercle" :" ?";
+                        default -> (vertexCount > 8) ? "Cercle" : "?";
                     };
 
                     // Dessiner les contours et afficher la forme détectée
-                    Imgproc.drawContours(this.processedImage, List.of(contour), -1, new Scalar(0, 255, 0), 2);
-                    if (!shapeType.equals(" ")) {
+                    Imgproc.drawContours(edgesGreen, List.of(contour), -1, new Scalar(0, 255, 0), 2);
+                    if (!shapeType.equals("?")) {
                         org.opencv.core.Point textPoint = approx.toArray()[0];
-                        Imgproc.putText(this.processedImage, shapeType, textPoint, Imgproc.FONT_HERSHEY_SIMPLEX, 0.8, new Scalar(255, 0, 0), 2);
+                        Imgproc.putText(edgesGreen, shapeType, textPoint, Imgproc.FONT_HERSHEY_SIMPLEX, 0.4, new Scalar(255, 255, 255), 1); // Taille de la police et épaisseur réduites, couleur blanche
                     }
                 }
+
+                // Réagrandir l'image traitée à sa taille d'origine
+                Mat resizedEdgesGreen = new Mat();
+                Imgproc.resize(edgesGreen, resizedEdgesGreen, frame.size());
+
+                // Superposer les contours verts sur l'image d'origine
+                Core.add(frame, resizedEdgesGreen, this.processedImage);
 
                 // Libérer les ressources inutilisées
                 grayImage.release();
                 blurredImage.release();
                 edges.release();
                 hierarchy.release();
+                edgesGreen.release();
+                resizedFrame.release();
+                resizedEdgesGreen.release();
 
                 detection = false;
                 //System.out.println("traitement forme fini");
@@ -96,6 +111,7 @@ public class thread_detection_formes extends Thread {
             new tempo(1);
         }
     }
+
     public Mat getFrame() {
         return this.processedImage;
     }
