@@ -139,7 +139,8 @@ public class client {
             currentTraitement = client.getTraitement();
             if (currentTraitement != previousTraitement) {
                 try {
-                    text = "traitement#" + currentTraitement + "?time#" + client.getLastModifiedTime();
+                    String address_local_str = InetAddress.getLocalHost().getHostAddress();
+                    text = "address#" + address_local_str + ":" + port[1] + "?traitement#" + currentTraitement + "?time#" + client.getLastModifiedTime();
                     sendTextUDP(text, address_broadcast, port[2]);
                     previousTraitement = currentTraitement; // Mettre à jour l'état précédent
                 } catch (IOException e) {

@@ -83,7 +83,7 @@ public class thread_detection_contours extends Thread {
                 resizedEdgesRed.release();
 
                 detection = false;
-                System.out.println("traitement contour fini");
+                //System.out.println("traitement contour fini");
             }
             new tempo(1);
         }

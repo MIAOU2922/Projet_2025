@@ -17,6 +17,8 @@ import java.lang.reflect.Array;
 import java.net.*;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -53,7 +55,8 @@ public class traitement {
             };
         
         // Définition des adresses IP
-        String address = "172.29.41.9";
+        List<String> address = new ArrayList<>();
+
         String address_broadcast = "172.29.255.255";
 
 
@@ -159,7 +162,7 @@ public class traitement {
             if (!this.imageRecu.empty()) {
                 
                 firstImageReceived = true; // Indiquer que la première image est reçue
-                System.out.println("Image reçue");
+                //System.out.println("Image reçue");
                 
                 dermiereImageValide = this.imageRecu.clone(); // Stocker l'image d'origine comme dernière valide
                 
@@ -173,6 +176,15 @@ public class traitement {
                         String timeString = part.split("#")[1];
                         DateTimeFormatter formatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
                         Client_Time = LocalDateTime.parse(timeString, formatter);
+                    } else if (part.startsWith("address#")) {
+                        String clientAddressPort = part.split("#")[1];
+                        String[] addressPortParts = clientAddressPort.split(":");
+                        String clientAddress = addressPortParts[0];
+                        int clientPort = Integer.parseInt(addressPortParts[1]);
+                        if (!address.contains(clientAddress)) {
+                            address.add(clientAddress);
+                        }
+                        // Ajouter le port à une liste ou une map si nécessaire
                     }
                 }
 
@@ -225,7 +237,7 @@ public class traitement {
                 currentTime = System.nanoTime();
                 intervalInSeconds = (currentTime - previousTime) / 1_000_000_000.0; // Intervalle en secondes
                 fps = 1.0 / intervalInSeconds; // Calcul des FPS
-               System.out.printf(" FPS: %.0f\n", fps);
+                //System.out.printf(" FPS: %.0f\n", fps);
 
                 Imgproc.putText(imageEnvoyer, String.format("FPS: %.0f", fps), new org.opencv.core.Point(10, 30), Imgproc.FONT_HERSHEY_SIMPLEX,1, new Scalar(0, 255, 0), 2);
 
@@ -265,16 +277,20 @@ public class traitement {
                     encodedData = encodeImageToJPEG(imageEnvoyer, quality);
                     quality -= 5; // Réduire la qualité de compression
                 } while (encodedData.length > maxPacketSize && quality > 10); // Réduire jusqu'à ce que l'image tienne dans un paquet UDP
-                // Envoi de l'image
-                try {
-                    sendImageUDP(encodedData, address, port[1]);
-                   System.out.printf(" FPS: %.0f\n", fps);
-
-
-                } catch (IOException e) {
-                   System.out.println("Erreur lors de l'envoi de l'image : " + e.getMessage());
+                // Envoi de l'image à chaque adresse dans la liste
+                if (!address.isEmpty()) {
+                    for (String addr : address) {
+                        try {
+                            sendImageUDP(encodedData, addr, port[1]);
+                            System.out.printf("Image envoyée à %s:%d FPS: %.0f\n", addr, port[1], fps);
+                        } catch (IOException e) {
+                            System.out.println("Erreur lors de l'envoi de l'image à " + addr + " : " + e.getMessage());
+                        }
+                    }
+                } else {
+                    System.out.println("La liste des adresses est vide, aucune image n'a été envoyée.");
                 }
-
+                
             } else {
 
                 System.out.println("Image non reçue");
