@@ -104,7 +104,7 @@ public class client {
             while (true) {
                 try {
                     sendTextUDP("address#" + address_local_str, address_broadcast, port[2]);
-                    Thread.sleep(500); // attendre 30 secondes
+                    Thread.sleep(180000); // attendre 3 minutes
                 } catch (Exception e) {
                     e.printStackTrace();
                 }

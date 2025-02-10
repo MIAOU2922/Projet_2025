@@ -229,12 +229,10 @@ public class traitement {
                         String clientAddressPort = part.split("#")[1];
                         String[] addressPortParts = clientAddressPort.split(":");
                         String clientAddress = addressPortParts[0];
-                        int clientPort = Integer.parseInt(addressPortParts[1]);
                         addressLastReceived.put(clientAddress, LocalDateTime.now());
                         if (!address.contains(clientAddress)) {
                             address.add(clientAddress);
                         }
-                        // Ajouter le port à une liste ou une map si nécessaire
                     }
                 }
 
