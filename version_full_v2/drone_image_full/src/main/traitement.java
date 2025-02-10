@@ -71,11 +71,15 @@ public class traitement {
         DatagramSocket socket_cmd = null;
         DatagramPacket packet = null;
 
+        String address_local_str = "";
+        InetAddress address_local = null;
+
         try {
             // Obtenir l'adresse IP locale
-            InetAddress address_local = InetAddress.getLocalHost();
-            String address_local_str = address_local.getHostAddress();
-    
+            address_local = InetAddress.getLocalHost();
+            address_local_str = address_local.getHostAddress();
+
+            
             // Initialisation du socket UD
             socket_image = new DatagramSocket(port[0]);
             socket_cmd = new DatagramSocket(port[2]);

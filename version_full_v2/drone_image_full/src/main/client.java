@@ -58,10 +58,13 @@ public class client {
         int previousTraitement = 0;
         int currentTraitement = 0;
 
+        String address_local_str = "";
+        InetAddress address_local = null;
+
         try {
             // Obtenir l'adresse IP locale
-            InetAddress address_local = InetAddress.getLocalHost();
-            String address_local_str = address_local.getHostAddress();
+            address_local = InetAddress.getLocalHost();
+            address_local_str = address_local.getHostAddress();
 
             // Initialisation du socket UDP
             socket_image = new DatagramSocket(port[1]);
@@ -104,6 +107,15 @@ public class client {
 
         //--------------------------------------------------------------//
         error.printError();
+
+        try {
+            text = "address#" + address_local_str ;
+            sendTextUDP(text, address_broadcast, port[2]);
+            previousTraitement = currentTraitement; // Mettre à jour l'état précédent
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
         // Boucle principale pour afficher l'image reçue
         while (true) {
             this.imageRecu = reception.getImageRecu();
@@ -139,7 +151,6 @@ public class client {
             currentTraitement = client.getTraitement();
             if (currentTraitement != previousTraitement) {
                 try {
-                    String address_local_str = InetAddress.getLocalHost().getHostAddress();
                     text = "address#" + address_local_str + ":" + port[1] + "?traitement#" + currentTraitement + "?time#" + client.getLastModifiedTime();
                     sendTextUDP(text, address_broadcast, port[2]);
                     previousTraitement = currentTraitement; // Mettre à jour l'état précédent
