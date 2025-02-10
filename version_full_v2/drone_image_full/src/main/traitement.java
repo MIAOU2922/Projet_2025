@@ -18,6 +18,7 @@ import java.net.*;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.List;
 
 import javax.imageio.ImageIO;
@@ -76,17 +77,41 @@ public class traitement {
 
         try {
             // Obtenir l'adresse IP locale
-            address_local = InetAddress.getLocalHost();
-            address_local_str = address_local.getHostAddress();
+            Enumeration<NetworkInterface> interfaces = NetworkInterface.getNetworkInterfaces();
+            while (interfaces.hasMoreElements()) {
+                NetworkInterface networkInterface = interfaces.nextElement();
+                if (networkInterface.isLoopback() || !networkInterface.isUp()) {
+                    continue;
+                }
+                Enumeration<InetAddress> addresses = networkInterface.getInetAddresses();
+                while (addresses.hasMoreElements()) {
+                    InetAddress inetAddress = addresses.nextElement();
+                    if (inetAddress instanceof Inet4Address) {
+                        String ip = inetAddress.getHostAddress();
+                        if (ip.startsWith("172.29.41.")) {
+                            address_local = inetAddress;
+                            address_local_str = ip;
+                            break;
+                        }
+                    }
+                }
+                if (address_local != null) {
+                    break;
+                }
+            }
 
-            
-            // Initialisation du socket UD
-            socket_image = new DatagramSocket(port[0]);
+            if (address_local == null) {
+                throw new Exception("Aucune adresse IP locale valide trouvée.");
+            }
+
+            // Initialisation du socket UDP
+            socket_image = new DatagramSocket(port[1]);
             socket_cmd = new DatagramSocket(port[2]);
             packet = new DatagramPacket(data, data.length);
         } catch (Exception e) {
             e.printStackTrace();
         }
+
         
         // Définition de la taille de l'image
         int imgsize[] = {1280, 720};

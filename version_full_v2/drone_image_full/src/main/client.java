@@ -16,6 +16,7 @@ import java.io.*;
 import java.net.*;
 import javax.imageio.ImageIO;
 import javax.swing.*;
+import java.util.Enumeration;
 
 import org.opencv.core.*;
 import org.opencv.imgcodecs.Imgcodecs;
@@ -63,8 +64,32 @@ public class client {
 
         try {
             // Obtenir l'adresse IP locale
-            address_local = InetAddress.getLocalHost();
-            address_local_str = address_local.getHostAddress();
+            Enumeration<NetworkInterface> interfaces = NetworkInterface.getNetworkInterfaces();
+            while (interfaces.hasMoreElements()) {
+                NetworkInterface networkInterface = interfaces.nextElement();
+                if (networkInterface.isLoopback() || !networkInterface.isUp()) {
+                    continue;
+                }
+                Enumeration<InetAddress> addresses = networkInterface.getInetAddresses();
+                while (addresses.hasMoreElements()) {
+                    InetAddress inetAddress = addresses.nextElement();
+                    if (inetAddress instanceof Inet4Address) {
+                        String ip = inetAddress.getHostAddress();
+                        if (ip.startsWith("172.29.41.")) {
+                            address_local = inetAddress;
+                            address_local_str = ip;
+                            break;
+                        }
+                    }
+                }
+                if (address_local != null) {
+                    break;
+                }
+            }
+
+            if (address_local == null) {
+                throw new Exception("Aucune adresse IP locale valide trouvée.");
+            }
 
             // Initialisation du socket UDP
             socket_image = new DatagramSocket(port[1]);
@@ -107,14 +132,6 @@ public class client {
 
         //--------------------------------------------------------------//
         error.printError();
-
-        try {
-            text = "address#" + address_local_str ;
-            sendTextUDP(text, address_broadcast, port[2]);
-            previousTraitement = currentTraitement; // Mettre à jour l'état précédent
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
 
         // Boucle principale pour afficher l'image reçue
         while (true) {
