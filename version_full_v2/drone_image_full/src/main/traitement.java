@@ -68,7 +68,7 @@ public class traitement {
 
         String messageRecu ;
         String[] parts;
-        LocalDateTime Client_Time = LocalDateTime.now();
+        LocalDateTime Client_Time = LocalDateTime.now() , update_afk = LocalDateTime.now();
         int Client_traitement = 0;
 
         byte[] data = new byte[65536];
@@ -128,7 +128,7 @@ public class traitement {
 
 
         
-        long currentTime , previousTime =System.nanoTime() ;
+        long currentTime , previousTime =System.nanoTime();
         double intervalInSeconds ;
 
         int quality = 70; // Qualité initiale
@@ -224,15 +224,23 @@ public class traitement {
                 dermiereImageValide = this.imageRecu.clone(); // Stocker l'image d'origine comme dernière valide
                 
                 messageRecu = commande.getMessageRecu();
-                
+                boolean isTraitement = false;
                 parts = messageRecu.split("\\?"); // Split using "?"
                 for (String part : parts) {
                     if (part.startsWith("traitement#")) {
                         Client_traitement = Integer.parseInt(part.split("#")[1]);
+                        
+                        if (Client_traitement == 0 || Client_traitement == 1 || Client_traitement == 2 || Client_traitement == 3) {
+                            isTraitement = true;
+                        }
                     } else if (part.startsWith("time#")) {
                         String timeString = part.split("#")[1];
                         DateTimeFormatter formatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
-                        Client_Time = LocalDateTime.parse(timeString, formatter);
+                        if(isTraitement == true ){
+                            Client_Time = LocalDateTime.parse(timeString, formatter);
+                        }
+                        update_afk = LocalDateTime.parse(timeString, formatter);
+                        
                     } else if (part.startsWith("address#")) {
                         String clientAddressPort = part.split("#")[1];
                         String[] addressPortParts = clientAddressPort.split(":");
@@ -243,10 +251,10 @@ public class traitement {
                         if (index == -1) {
                             // Si l'adresse n'est pas présente, l'ajouter
                             client_address.add(clientAddress);
-                            client_time.add(Client_Time.toString());
+                            client_time.add(update_afk.toString());
                         } else {
                             // Si l'adresse est déjà présente, mettre à jour le temps
-                            client_time.set(index, Client_Time.toString());
+                            client_time.set(index, update_afk.toString());
                         }
                     }
                 }
