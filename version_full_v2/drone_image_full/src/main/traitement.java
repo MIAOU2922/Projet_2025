@@ -105,7 +105,7 @@ public class traitement {
             }
 
             // Initialisation du socket UDP
-            socket_image = new DatagramSocket(port[1]);
+            socket_image = new DatagramSocket(port[0]);
             socket_cmd = new DatagramSocket(port[2]);
             packet = new DatagramPacket(data, data.length);
         } catch (Exception e) {
