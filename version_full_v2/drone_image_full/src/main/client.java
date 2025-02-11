@@ -2,9 +2,9 @@
  * -------------------------------------------------------------------
  * Nom du fichier : client.java
  * Auteur         : BEAL JULIEN
- * Version        : 1.0
- * Date           : 03/02/2025
- * Description    : code affichage client
+ * Version        : 2.0
+ * Date           : 11/02/2025
+ * Description    : Code affichage client
  * -------------------------------------------------------------------
  * © 2025 BEAL JULIEN - Tous droits réservés
  */

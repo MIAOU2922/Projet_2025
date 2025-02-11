@@ -2,9 +2,9 @@
  * -------------------------------------------------------------------
  * Nom du fichier : thread_detection_contours.java
  * Auteur         : BEAL JULIEN
- * Version        : 1.0
- * Date           : 03/02/2025
- * Description    : thread de détection de contours
+ * Version        : 2.0
+ * Date           : 11/02/2025
+ * Description    : Thread de détection de contours
  * -------------------------------------------------------------------
  * © 2025 BEAL JULIEN - Tous droits réservés
  */

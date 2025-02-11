@@ -2,9 +2,9 @@
  * -------------------------------------------------------------------
  * Nom du fichier : traitement.java
  * Auteur         : BEAL JULIEN
- * Version        : 1.0
- * Date           : 03/02/2025
- * Description    : class traitement
+ * Version        : 2.0
+ * Date           : 11/02/2025
+ * Description    : Classe traitement pour gérer les images reçues et envoyées
  * -------------------------------------------------------------------
  * © 2025 BEAL JULIEN - Tous droits réservés
  */
@@ -190,7 +190,7 @@ public class traitement {
                         }
                     }
                     System.out.println("Liste des adresses : " + client_address + " (" + client_address.size() + ")" + client_time + " (" + client_time.size() + ")");
-                    Thread.sleep(1000); // Vérification toutes les minutes
+                    Thread.sleep(10000); // Vérification toutes les 10 secondes
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
                     break;
@@ -258,6 +258,8 @@ public class traitement {
                         }
                     }
                 }
+                messageRecu = "";
+                parts = null;
 
                 // Comparer les temps de modification et mettre à jour la valeur de traitement
                 LocalDateTime droneTime = drone.getLastModifiedTime();
@@ -310,7 +312,7 @@ public class traitement {
                 fps = 1.0 / intervalInSeconds; // Calcul des FPS
                 //System.out.printf(" FPS: %.0f\n", fps);
 
-                Imgproc.putText(imageEnvoyer, String.format(" FPS: %.0f", fps), new org.opencv.core.Point(10, 30), Imgproc.FONT_HERSHEY_SIMPLEX,1, new Scalar(0, 255, 0), 2);
+                Imgproc.putText(imageEnvoyer, String.format("FPS: %.0f", fps), new org.opencv.core.Point(10, 30), Imgproc.FONT_HERSHEY_SIMPLEX, 1, new Scalar(0, 255, 0), 2);
 
                 // Mettre à jour le temps précédent
                 previousTime = currentTime;

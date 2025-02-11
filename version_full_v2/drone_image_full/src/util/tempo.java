@@ -1,10 +1,10 @@
 /**
  * -------------------------------------------------------------------
- * Nom du fichier  : tempo.java
+ * Nom du fichier : tempo.java
  * Auteur         : BEAL JULIEN
- * Version        : 1.0
- * Date           : 03/02/2025
- * Description    : class tempo
+ * Version        : 2.0
+ * Date           : 11/02/2025
+ * Description    : Classe pour gérer les délais
  * -------------------------------------------------------------------
  * © 2025 BEAL JULIEN - Tous droits réservés
  */

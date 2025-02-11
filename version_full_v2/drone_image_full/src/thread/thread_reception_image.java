@@ -1,10 +1,10 @@
 /**
  * -------------------------------------------------------------------
- * Nom du fichier : thread_reception.java
+ * Nom du fichier : thread_reception_image.java
  * Auteur         : BEAL JULIEN
- * Version        : 1.0
- * Date           : 03/02/2025
- * Description    : thread de reception d'image via UDP
+ * Version        : 2.0
+ * Date           : 11/02/2025
+ * Description    : Thread de réception d'image via UDP
  * -------------------------------------------------------------------
  * © 2025 BEAL JULIEN - Tous droits réservés
  */

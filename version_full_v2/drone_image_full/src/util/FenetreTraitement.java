@@ -1,9 +1,9 @@
 /**
  * -------------------------------------------------------------------
- * Nom du fichier : interface.java
+ * Nom du fichier : FenetreTraitement.java
  * Auteur         : BEAL JULIEN
- * Version        : 1.1
- * Date           : 04/02/2025
+ * Version        : 2.0
+ * Date           : 11/02/2025
  * Description    : Classe interface avec options de traitement
  * -------------------------------------------------------------------
  * © 2025 BEAL JULIEN - Tous droits réservés
@@ -55,8 +55,8 @@ public class FenetreTraitement implements Runnable {
         panelOptions = new JPanel();
         buttonRien = new JButton("rien");
         buttonContours = new JButton("contours");
-        buttonForme = new JButton("forme");
-        buttonFormeContours = new JButton("forme et contours");
+        buttonForme = new JButton("formes");
+        buttonFormeContours = new JButton("formes et contours");
 
         // Ajout des boutons au panel
         panelOptions.add(buttonRien); // traitement = 0

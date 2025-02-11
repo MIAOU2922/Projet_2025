@@ -1,9 +1,9 @@
 /**
  * -------------------------------------------------------------------
- * Nom du fichier : ThreadReceptionString.java
+ * Nom du fichier : thread_reception_string.java
  * Auteur         : BEAL JULIEN
- * Version        : 1.0
- * Date           : 03/02/2025
+ * Version        : 2.0
+ * Date           : 11/02/2025
  * Description    : Thread de réception de messages texte via UDP
  * -------------------------------------------------------------------
  * © 2025 BEAL JULIEN - Tous droits réservés
