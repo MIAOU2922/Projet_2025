@@ -1,0 +1,2 @@
+ninja: Entering directory `F:\BEAL_JULIEN_SN2\_projet_2025\git\version_android_client_v2\client\openCVLibrary\.cxx\Debug\1zh47y71\x86_64'
+ninja: no work to do.

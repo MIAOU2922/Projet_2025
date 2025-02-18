@@ -1,6 +1,6 @@
 /**
  * -------------------------------------------------------------------
- * Nom du fichier : Video_client.java
+ * Nom du fichier : client_video.java
  * Auteur         : BEAL JULIEN
  * Version        : 1.0
  * Date           : 11/02/2025
@@ -11,7 +11,8 @@
 
 package ju.main;
 
-import ju.util.R;
+import static android.content.ContentValues.TAG;
+
 import ju.util.SystemUiHider;
 import ju.util.thread_reception_image;
 import ju.util.thread_reception_string;
@@ -22,11 +23,13 @@ import android.graphics.BitmapFactory;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 
+import org.opencv.android.OpenCVLoader;
 import org.opencv.core.*;
 import org.opencv.imgcodecs.Imgcodecs;
 import org.opencv.imgproc.Imgproc;
@@ -39,10 +42,27 @@ import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Enumeration;
+import java.util.Locale;
 
-public class Video_client extends Activity {
+public class client_video extends Activity {
+
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (OpenCVLoader.initLocal()) {
+            Log.i(TAG, "OpenCV 4.10 chargé avec succès !");
+            // Par exemple, si vous utilisez une vue caméra :
+            // mOpenCvCameraView.enableView();
+        } else {
+            Log.e(TAG, "Echec du chargement d'OpenCV !");
+            // Gérer l'erreur d'initialisation
+        }
+    }
+
     private static final boolean AUTO_HIDE = true;
     private static final int AUTO_HIDE_DELAY_MILLIS = 3000;
     private static final boolean TOGGLE_ON_CLICK = true;
@@ -52,25 +72,32 @@ public class Video_client extends Activity {
     private ImageView fullscreenContent;
     private Button button1, button2, button3, button4;
 
-    static {
-        System.loadLibrary(Core.NATIVE_LIBRARY_NAME); // Charger la bibliothèque OpenCV
-    }
-
-    Mat imageRecu = new Mat();
+    Mat imageRecu;
     Bitmap bitmapImage = null;
     String address_local_str;
     final int[] port = {55000, 55001, 55002}; // Définition des ports UDP
     final String address = "172.29.41.9"; // Définition des adresses IP
     final String address_broadcast = "172.29.255.255";
-    final String text = "";
+    String text = "";
     final byte[] data = new byte[65536];
     int previousTraitement = 0;
     int currentTraitement = 0;
     Mat blackImage;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_client_video);
+        
+        if (OpenCVLoader.initLocal()) {
+            Log.i(TAG, "OpenCV 4.10 chargé avec succès !");
+            // Par exemple, si vous utilisez une vue caméra :
+            // mOpenCvCameraView.enableView();
+        } else {
+            Log.e(TAG, "Echec du chargement d'OpenCV !");
+            // Gérer l'erreur d'initialisation
+        }
 
         DatagramSocket socket_image = null;
         DatagramSocket socket_cmd = null;
@@ -91,7 +118,7 @@ public class Video_client extends Activity {
                     InetAddress inetAddress = addresses.nextElement();
                     if (inetAddress instanceof Inet4Address) {
                         String ip = inetAddress.getHostAddress();
-                        if (ip.startsWith("172.29.41.")) {
+                        if (ip.startsWith("172.29")) {
                             address_local = inetAddress;
                             address_local_str = ip;
                             break;
@@ -115,8 +142,7 @@ public class Video_client extends Activity {
             e.printStackTrace();
         }
 
-        // Définition de la taille de l'image
-        int imgsize[] = {1280, 720};
+        imageRecu = new Mat();
         Mat dermiereImageValide = null;
         Mat Image_a_afficher = new Mat(), dermiereImageValide_resizedImage = new Mat();
 
@@ -157,7 +183,6 @@ public class Video_client extends Activity {
             }
         }).start();
 
-        setContentView(R.layout.activity_video_client);
 
         final View controlsView = findViewById(R.id.fullscreen_content_controls);
         fullscreenContent = (ImageView) findViewById(R.id.fullscreen_content);
@@ -214,19 +239,29 @@ public class Video_client extends Activity {
         View.OnClickListener buttonClickListener = new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Calendar calendar = Calendar.getInstance();
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS", Locale.getDefault());
+                String formattedDate = sdf.format(calendar.getTime());
                 switch (v.getId()) {
                     case R.id.button1:
-                        // Action for button1
+                        currentTraitement = 0 ;
                         break;
                     case R.id.button2:
-                        // Action for button2
+                        currentTraitement = 1 ;
                         break;
                     case R.id.button3:
-                        // Action for button3
+                        currentTraitement = 2 ;
                         break;
                     case R.id.button4:
-                        // Action for button4
+                        currentTraitement = 3 ;
                         break;
+                }
+                try {
+                    text = "address#" + address_local_str + ":" + port[1] + "?traitement#" + currentTraitement + "?time#" + formattedDate ;
+                    sendTextUDP(text, address_broadcast, port[2]);
+                    previousTraitement = currentTraitement; // Mettre à jour l'état précédent
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
             }
         };
@@ -251,14 +286,14 @@ public class Video_client extends Activity {
                 while (true) {
                     imageRecu = reception.getImageRecu();
 
-                    if (imageRecu.empty()) {
+                    if (imageRecu == null) {
                         if (dermiereImageValide != null) {
                             Image_a_afficher = dermiereImageValide_resizedImage;
                         } else {
                             Image_a_afficher = blackImage;
                         }
                     } else {
-                        dermiereImageValide = imageRecu.clone();
+                        dermiereImageValide = imageRecu ;
                         currentTime = System.nanoTime();
                         intervalInSeconds = (currentTime - previousTime) / 1000000000.0;
                         fps = 1.0 / intervalInSeconds;
@@ -281,18 +316,6 @@ public class Video_client extends Activity {
                         });
                     } catch (IOException e) {
                         e.printStackTrace();
-                    }
-
-                    // Envoi du traitement à effectuer uniquement s'il y a eu une modification d'état
-                    currentTraitement = getTraitement();
-                    if (currentTraitement != previousTraitement) {
-                        try {
-                            final String text = "address#" + address_local_str + ":" + port[1] + "?traitement#" + currentTraitement + "?time#" + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
-                            sendTextUDP(text, address_broadcast, port[2]);
-                            previousTraitement = currentTraitement; // Mettre à jour l'état précédent
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
                     }
 
                     try {
@@ -349,7 +372,7 @@ public class Video_client extends Activity {
         return BitmapFactory.decodeStream(bis);
     }
 
-    private void sendTextUDP(String data, String address, int port) throws IOException {
+    private void sendTextUDP(String data, String address, int port) {
         DatagramSocket socket = null;
         try {
             socket = new DatagramSocket(); // Crée un socket UDP
@@ -361,15 +384,13 @@ public class Video_client extends Activity {
             socket.send(packet); // Envoie du paquet UDP
 
             System.out.println("Données envoyées à " + address + ":" + port);
-        } finally {
+        }catch (IOException e ){
+            System.out.println("socket null ");
+        }
+        finally {
             if (socket != null && !socket.isClosed()) {
                 socket.close(); // Ferme le socket proprement
             }
         }
-    }
-
-    private int getTraitement() {
-        // Implémentez cette méthode pour obtenir l'état de traitement actuel
-        return 0;
     }
 }

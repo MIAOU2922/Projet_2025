@@ -11,6 +11,8 @@
 
 package main;
 
+import filemap.*;
+
 import java.awt.image.*;
 import java.io.*;
 import java.lang.reflect.Array;
@@ -31,6 +33,8 @@ import org.opencv.core.*;
 import org.opencv.imgcodecs.Imgcodecs;
 import org.opencv.imgproc.Imgproc;
 
+import filemap.cFileMappingPictureClient;
+import filemap.cFileMappingPictureServeur;
 import thread.thread_detection_contours;
 import thread.thread_detection_formes;
 import thread.thread_reception_image;
@@ -41,9 +45,19 @@ import util.FenetreTraitement;
 
 public class traitement {
     static {
-        System.loadLibrary(Core.NATIVE_LIBRARY_NAME); // Charger la bibliothèque OpenCV
+        System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
     }
-    
+
+    private cFileMappingPictureClient monCLientFMP = new cFileMappingPictureClient(false);
+    private cFileMappingPictureServeur monServeurFMP = new cFileMappingPictureServeur(true);
+
+
+    //--------------------------------------------------------------//
+
+
+    byte[] imageBytes;
+    int length;
+
 
     Mat imageRecu = new Mat() , imageEnvoyer = new Mat() , imageAfficher_source = new Mat() ,  imageAfficher_envoyer = new Mat();
     BufferedImage bufferedImage_source = null, bufferedImage_envoyer = null;
@@ -52,6 +66,10 @@ public class traitement {
     private ArrayList <String> client_time = new ArrayList<>();
 
     public traitement () {
+
+        
+        monServeurFMP.OpenServer("img_java_to_c");
+        monCLientFMP.OpenClient("img_c_to_java");
 
         // Définition des ports UDP
         int port[] = {
@@ -93,7 +111,7 @@ public class traitement {
                     InetAddress inetAddress = addresses.nextElement();
                     if (inetAddress instanceof Inet4Address) {
                         String ip = inetAddress.getHostAddress();
-                        if (ip.startsWith("172.29.41.")) {
+                        if (ip.startsWith("172.29")) {
                             address_local = inetAddress;
                             address_local_str = ip;
                             break;
@@ -332,16 +350,22 @@ public class traitement {
                     imageAfficher_envoyer = blackImage ;
                 }
 
+
                 //--------------------------------------------------------------//
                 // chai3D
 
+                imageBytes = encodeImageToJPEG(this.imageEnvoyer, 100); // encodeImageToJPEG est une méthode déjà présent
+                length = imageBytes.length;
+                // Écrire chaque octet dans la map file via le serveur FMP
+                for (int i = 0; i < length; i++) {
+                    monServeurFMP.setMapFileOneByOneUnsignedChar(i, imageBytes[i]);
+                }
 
-
-
+                for (int i = 0; i < length; i++) {
+                    monCLientFMP.getMapFileOneByOneUnsignedChar(i);
+                }
 
                 //--------------------------------------------------------------//
-
-
                 
                 // Ajuster dynamiquement le taux de compression
                 quality = 70; // Qualité initiale

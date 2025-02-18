@@ -1,0 +1,2 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merger version="3"><dataSet config="main" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="F:\BEAL_JULIEN_SN2\_projet_2025\git\version_android_client_v2\client\openCVLibrary\src\main\shaders"/></dataSet><dataSet config="debug" ignore_pattern="!.svn:!.git:!.ds_store:!*.scc:.*:&lt;dir>_*:!CVS:!thumbs.db:!picasa.ini:!*~"><source path="F:\BEAL_JULIEN_SN2\_projet_2025\git\version_android_client_v2\client\openCVLibrary\src\debug\shaders"/></dataSet></merger>
