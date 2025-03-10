@@ -77,7 +77,7 @@
                 "-Djava.library.path=${workspaceFolder}/lib",
                 "-cp",
                 "${workspaceFolder}/lib/opencv_java4100.jar;${workspaceFolder}/lib/JNIFileMappingPictureClient.jar;${workspaceFolder}/lib/JNIFileMappingPictureServeur.jar;${workspaceFolder}/lib/JNIVirtualPicture.jar;${workspaceFolder}/bin",
-                "_start._start_traitement"
+                "_start_traitement"
             ],
             "presentation": {
                 "echo": true,
