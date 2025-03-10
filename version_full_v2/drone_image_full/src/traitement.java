@@ -170,7 +170,7 @@ public class traitement {
         byte[] encodedData;
 
         // Taille maximale autorisée pour un paquet UDP (en bytes)
-        int maxPacketSize = 65528; // 65536 - 8 (overhead UDP)
+        int maxPacketSize = 65520; // 65536 - 8 (overhead UDP)
 
         //type de traitement
         int traitements = 0;

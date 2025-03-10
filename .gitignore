@@ -1,1 +1,10 @@
-/.metadata/
+# Répertoires de compilation Maven
+/target/
+
+# Répertoires de compilation généraux
+/bin/
+/build/
+/out/
+
+# Répertoire de Visual Studio
+.vs/
