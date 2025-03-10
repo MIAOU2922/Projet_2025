@@ -127,13 +127,13 @@ public class client {
         thread_reception_string cmd = new thread_reception_string("traitement_UDP_String", socket_cmd);
         cmd.start();
 
-                // Thread pour envoyer l'adresse IP locale toutes les 3 minutes
+                // Thread pour envoyer l'adresse IP locale toutes les 1 minute et 30 secondes
                 new Thread(() -> {
                     Thread.currentThread().setName("boucle d'afk");
                     while (true) {
                         try {
                             sendTextUDP("address#" + address_local_str + "?time#" + LocalDateTime.now(), address_broadcast, port[2]);
-                            Thread.sleep(30000); // attendre 30 secondes
+                            Thread.sleep(90000); // attendre 1 minute et 30 secondes
                         } catch (Exception e) {
                             e.printStackTrace();
                         }

@@ -79,14 +79,46 @@ public class traitement {
     Mat imageRecu = new Mat() , imageEnvoyer = new Mat() , imageAfficher_source = new Mat() ,  imageAfficher_envoyer = new Mat();
     BufferedImage bufferedImage_source = null, bufferedImage_envoyer = null;
     double fps = 0.0;
+
+    Process process = null;
+
     private ArrayList <String> client_address = new ArrayList<>();
     private ArrayList <String> client_time = new ArrayList<>();
 
     public traitement () {
 
-        
+        // ouvrir le serveur de filemapping
         monServeurFMP.OpenServer("img_java_to_c");
-        monCLientFMP.OpenClient("img_c_to_java");
+
+        // lancer chai3d
+        
+        try {
+            ProcessBuilder pb = new ProcessBuilder("F:\\BEAL_JULIEN_SN2\\_projet_2025\\git\\Chai3d-3.2.0\\bin\\win-x64\\00-drone-ju.exe");
+            process = pb.start();
+            // Ajout d'un hook d'arrêt pour détruire le processus à la fin du programme Java
+            Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+                if (process.isAlive()) {
+                    process.destroy();
+                }
+            }));
+            // Votre code continue ici sans être bloqué
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        
+        // ouvrir le client de filemapping 
+        try {
+            monCLientFMP.OpenClient("img_c_to_java");
+        }catch (Exception e) {
+            System.err.println("Erreur lors de l'ouverture du client img_c_to_java");
+            e.printStackTrace();
+            try {
+                monCLientFMP.OpenClient("img_java_to_c");
+            }catch (Exception e1) {
+                System.err.println("Erreur lors de l'ouverture du client img_java_to_c");
+                e.printStackTrace();
+            }
+        }
 
         // Définition des ports UDP
         int port[] = {
@@ -170,7 +202,7 @@ public class traitement {
         byte[] encodedData;
 
         // Taille maximale autorisée pour un paquet UDP (en bytes)
-        int maxPacketSize = 65520; // 65536 - 8 (overhead UDP)
+        int maxPacketSize = 65000; // 65536 - 8 (overhead UDP)
 
         //type de traitement
         int traitements = 0;
@@ -196,6 +228,10 @@ public class traitement {
         );
         
         boolean firstImageReceived = false ; // Indicateur pour savoir si la première image est reçue
+
+
+        // Réduire la taille de l'image avant de l'afficher
+        Size displayFrameHalfSize = new Size(imageRecu.width() / 2, imageRecu.height() / 2);
 
         thread_reception_image reception = new thread_reception_image("traitement_UDP_image",socket_image, imageRecu);
         reception.start();
@@ -253,9 +289,13 @@ public class traitement {
 
             if (!this.imageRecu.empty()) {
                 
+                if(firstImageReceived == false){
+                    displayFrameHalfSize = new Size(imageRecu.width() / 2, imageRecu.height() / 2);
+                }
+
                 firstImageReceived = true; // Indiquer que la première image est reçue
                 //System.out.println("Image reçue");
-                
+
                 dermiereImageValide = this.imageRecu.clone(); // Stocker l'image d'origine comme dernière valide
                 
                 messageRecu = commande.getMessageRecu();
@@ -310,9 +350,9 @@ public class traitement {
 
                 /*
                 0 : pas de triatement
-                1 : traitement contour
-                2 : traitement forme
-                3 : traitement contour et forme
+                1 : traitement contours
+                2 : traitement formes
+                3 : traitement contours et formes
                 */
                 switch(traitements){
                     case 0:
@@ -352,9 +392,6 @@ public class traitement {
                 // Mettre à jour le temps précédent
                 previousTime = currentTime;
 
-                // Réduire la taille de l'image avant de l'afficher
-                Size displayFrameHalfSize = new Size(imageEnvoyer.width() / 2, imageEnvoyer.height() / 2);
-
                 Imgproc.resize(dermiereImageValide, dermiereImageValide_resizedImage, displayFrameHalfSize);
                 Imgproc.resize(imageEnvoyer, imageEnvoyer_resizedImage, displayFrameHalfSize);
 
@@ -379,18 +416,28 @@ public class traitement {
                 }
 
                 for (int i = 0; i < length; i++) {
-                    monCLientFMP.getMapFileOneByOneUnsignedChar(i);
+                    imageBytes[i] = (byte) monCLientFMP.getMapFileOneByOneUnsignedChar(i);
+            
                 }
 
                 //--------------------------------------------------------------//
                 
                 // Ajuster dynamiquement le taux de compression
                 quality = 70; // Qualité initiale
-                // Encoder l'image en JPEG et ajuster la qualité si nécessaire
-                do {
-                    encodedData = encodeImageToJPEG(imageEnvoyer, quality);
-                    quality -= 5; // Réduire la qualité de compression
-                } while (encodedData.length > maxPacketSize && quality > 10); // Réduire jusqu'à ce que l'image tienne dans un paquet UDP
+
+                if (imageBytes.length > maxPacketSize) {
+                    imageEnvoyer = jpegToMat(imageBytes); // Convertir le tableau de bytes en Mat
+                    
+                    // Encoder l'image en JPEG et ajuster la qualité si nécessaire
+                    do {
+                        encodedData = encodeImageToJPEG(imageEnvoyer, quality);
+                        quality -= 5; // Réduire la qualité de compression
+                    } while (encodedData.length > maxPacketSize && quality > 10); // Réduire jusqu'à ce que l'image tienne dans un paquet UDP
+
+                }else{
+                    encodedData = imageBytes;
+                }
+
                 // Envoi de l'image à chaque adresse dans la liste
                 if (!client_address.isEmpty()) {
                     for (String addr : client_address) {
@@ -428,12 +475,17 @@ public class traitement {
             }
 
             try {
-                bufferedImage_envoyer = byteArrayToBufferedImage(encodeImageToJPEG(imageAfficher_envoyer, 100));
+                // avant chai3d
+                //bufferedImage_envoyer = byteArrayToBufferedImage(encodeImageToJPEG(imageAfficher_envoyer, 100));
+
+                // image provenan du filemap
+                bufferedImage_envoyer = byteArrayToBufferedImage(resizeJPEGImage(imageBytes, displayFrameHalfSize));
+
                 traitement.setImage(bufferedImage_envoyer);
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            new tempo(5);
+            new tempo(1);
         }
     }
     
@@ -492,7 +544,7 @@ public class traitement {
     }
 
     //--------------------------------------------------------------//
-    //
+    // Méthode pour ajouter les différences entre deux images sur une image source
     public Mat additionDesDifferences(Mat img1, Mat img2, Mat source) {
         // Vérification des tailles et types d'images
         if (img1.size().equals(img2.size()) && img1.type() == img2.type() && img1.size().equals(source.size()) && img1.type() == source.type()) {
@@ -509,5 +561,38 @@ public class traitement {
         } else {
             throw new IllegalArgumentException("Les dimensions ou types des images ne correspondent pas");
         }
+    }
+
+    //--------------------------------------------------------------//
+    // Méthode pour redimensionner une image JPEG
+    public static byte[] resizeJPEGImage(byte[] jpegImageBytes, Size newSize) {
+        // Convertir le tableau de bytes en Mat
+        MatOfByte mob = new MatOfByte(jpegImageBytes);
+        Mat image = Imgcodecs.imdecode(mob, Imgcodecs.IMREAD_COLOR);
+        if (image.empty()) {
+            System.err.println("Erreur lors du décodage de l'image JPEG.");
+            return null;
+        }
+        
+        // Redimensionner l'image
+        Mat resizedImage = new Mat();
+        Imgproc.resize(image, resizedImage, newSize);
+        
+        // Encoder l'image redimensionnée en JPEG
+        MatOfByte mobResized = new MatOfByte();
+        Imgcodecs.imencode(".jpg", resizedImage, mobResized);
+        
+        // Retourner le tableau de bytes
+        return mobResized.toArray();
+    }
+
+    //--------------------------------------------------------------//
+    // Méthode pour convertir un tableau de bytes en Mat
+    public static Mat jpegToMat(byte[] jpegBytes) {
+        // Encapsuler le tableau de bytes dans un MatOfByte
+        MatOfByte mob = new MatOfByte(jpegBytes);
+        // Décoder le MatOfByte pour obtenir le Mat (l'image en couleur par défaut)
+        Mat image = Imgcodecs.imdecode(mob, Imgcodecs.IMREAD_COLOR);
+        return image;
     }
 }

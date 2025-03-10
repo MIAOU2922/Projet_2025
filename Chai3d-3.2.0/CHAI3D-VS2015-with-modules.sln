@@ -382,7 +382,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "04-oculus-membrane", "modul
 		{013851C3-3FCE-48E6-A3FD-21019751F7C0} = {013851C3-3FCE-48E6-A3FD-21019751F7C0}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "00-drone-ju", "examples\GLFW\00-drone-ju\03-analytics-VS2015.vcxproj", "{DFECCA40-19F4-4A10-8550-A2109BF6A24F}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "00-drone-ju", "examples\GLFW\00-drone-ju\00-drone-ju-VS2015.vcxproj", "{DFECCA40-19F4-4A10-8550-A2109BF6A24F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
