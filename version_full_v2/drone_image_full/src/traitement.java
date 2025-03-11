@@ -273,7 +273,7 @@ public class traitement {
             while (true) {
                 try {
                     sendTextUDP("T#"+getLastTwoSegments(address_local_str)+"?address#" + address_local_str + "?time#" + LocalDateTime.now(), address_broadcast, port[2]);
-                    Thread.sleep(90000); // attendre 1 minute et 30 secondes
+                    Thread.sleep(30000); // attendre 30 secondes
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -526,7 +526,7 @@ public class traitement {
             InetAddress ipAddress = InetAddress.getByName(address);
             DatagramPacket packet = new DatagramPacket(imageData, imageData.length, ipAddress, port);
             socket.send(packet);
-            System.out.println("Image envoyée à " + address + ":" + port );
+            //System.out.println("Image envoyée à " + address + ":" + port );
         } finally {
             if (socket != null && !socket.isClosed()) {
                 socket.close();

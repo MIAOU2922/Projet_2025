@@ -229,7 +229,7 @@ public class drone {
                         currentTime = System.nanoTime();
                         intervalInSeconds = (currentTime - previousTime) / 1_000_000_000.0; // Intervalle en secondes
                         fps = 1.0 / intervalInSeconds; // Calcul des FPS
-                        System.out.printf(" FPS: %.0f\n", fps);
+                        //System.out.printf(" FPS: %.0f\n", fps);
         
                         // Mettre à jour le temps précédent
                         previousTime = currentTime;
@@ -258,7 +258,7 @@ public class drone {
             InetAddress ipAddress = InetAddress.getByName(address);
             DatagramPacket packet = new DatagramPacket(imageData, imageData.length, ipAddress, port);
             socket.send(packet);
-            System.out.println("Image envoyée à " + address + ":" + port );
+            //System.out.println("Image envoyée à " + address + ":" + port );
         } finally {
             if (socket != null && !socket.isClosed()) {
                 socket.close();
