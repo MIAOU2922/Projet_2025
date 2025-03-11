@@ -38,14 +38,17 @@ import util.error;
 
 public class drone_L {
     static {
+        /*
         try {
             System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
         } catch (Exception e) {
             System.out.println("Erreur lors du chargement des librairies: " + e);
         }
+        */
         try {
             String libPath = System.getProperty("user.dir") + "/lib/libopencv_java480.so";
             System.load(libPath);
+            
         } catch (Exception e) {
             System.out.println("Erreur lors du chargement des librairies: " + e);
         }
