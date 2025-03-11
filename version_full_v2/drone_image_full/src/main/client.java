@@ -127,18 +127,18 @@ public class client {
         thread_reception_string cmd = new thread_reception_string("traitement_UDP_String", socket_cmd);
         cmd.start();
 
-                // Thread pour envoyer l'adresse IP locale toutes les 1 minute et 30 secondes
-                new Thread(() -> {
-                    Thread.currentThread().setName("boucle d'afk");
-                    while (true) {
-                        try {
-                            sendTextUDP("address#" + address_local_str + "?time#" + LocalDateTime.now(), address_broadcast, port[2]);
-                            Thread.sleep(90000); // attendre 1 minute et 30 secondes
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
-                    }
-                }).start();
+        // Thread pour envoyer l'adresse IP locale toutes les 1 minute et 30 secondes
+        new Thread(() -> {
+            Thread.currentThread().setName("boucle d'afk");
+            while (true) {
+                try {
+                    sendTextUDP("client#"+getLastTwoSegments(address_local_str)+"?address#" + address_local_str + "?time#" + LocalDateTime.now(), address_broadcast, port[2]);
+                    Thread.sleep(90000); // attendre 1 minute et 30 secondes
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
 
         //--------------------------------------------------------------//
         // Charger l'icône depuis les ressources
@@ -229,5 +229,14 @@ public class client {
                 socket.close(); // Ferme le socket proprement
             }
         }
+    }
+    //--------------------------------------------------------------//
+    // Méthode pour obtenir les deux derniers segments d'une adresse IP
+    public static String getLastTwoSegments(String ip) {
+        String[] parts = ip.split("\\.");
+        if (parts.length >= 2) {
+            return parts[parts.length - 2] + ".." + parts[parts.length - 1];
+        }
+        return ip;
     }
 }

@@ -81,6 +81,7 @@ public class traitement {
     double fps = 0.0;
 
     Process process = null;
+    String address_local_str ;
 
     private ArrayList <String> client_address = new ArrayList<>();
     private ArrayList <String> client_time = new ArrayList<>();
@@ -108,16 +109,14 @@ public class traitement {
         
         // ouvrir le client de filemapping 
         try {
-            monCLientFMP.OpenClient("img_c_to_java");
+            //boucle pour juste se servir du filemap a mettre en com une fois  chai3d mis en place 
+            monCLientFMP.OpenClient("img_java_to_c");
+            
+            //une fois chel3d mis 
+            //monCLientFMP.OpenClient("img_c_to_java");
         }catch (Exception e) {
-            System.err.println("Erreur lors de l'ouverture du client img_c_to_java");
+            System.out.println("Erreur lors de l'ouverture du client img_c_to_java");
             e.printStackTrace();
-            try {
-                monCLientFMP.OpenClient("img_java_to_c");
-            }catch (Exception e1) {
-                System.err.println("Erreur lors de l'ouverture du client img_java_to_c");
-                e.printStackTrace();
-            }
         }
 
         // Définition des ports UDP
@@ -144,7 +143,6 @@ public class traitement {
         DatagramSocket socket_cmd = null;
         DatagramPacket packet = null;
 
-        String address_local_str = "";
         InetAddress address_local = null;
 
         try {
@@ -269,6 +267,19 @@ public class traitement {
             }
         }).start();
 
+        // Thread pour envoyer l'adresse IP locale toutes les 1 minute et 30 secondes
+        new Thread(() -> {
+            Thread.currentThread().setName("boucle d'afk");
+            while (true) {
+                try {
+                    sendTextUDP("traitement#"+getLastTwoSegments(address_local_str)+"?address#" + address_local_str + "?time#" + LocalDateTime.now(), address_broadcast, port[2]);
+                    Thread.sleep(90000); // attendre 1 minute et 30 secondes
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
+
         //--------------------------------------------------------------//
          // Charger l'icône depuis les ressources
         ImageIcon icon = new ImageIcon("lib/logo.png");
@@ -298,44 +309,51 @@ public class traitement {
 
                 dermiereImageValide = this.imageRecu.clone(); // Stocker l'image d'origine comme dernière valide
                 
+                // Traitement du message reçu
                 messageRecu = commande.getMessageRecu();
-                boolean isTraitement = false;
-                parts = messageRecu.split("\\?"); // Split using "?"
-                for (String part : parts) {
-                    if (part.startsWith("traitement#")) {
-                        Client_traitement = Integer.parseInt(part.split("#")[1]);
-                        
-                        if (Client_traitement == 0 || Client_traitement == 1 || Client_traitement == 2 || Client_traitement == 3) {
-                            isTraitement = true;
-                        }
-                    } else if (part.startsWith("time#")) {
-                        String timeString = part.split("#")[1];
-                        DateTimeFormatter formatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
-                        if(isTraitement == true ){
-                            Client_Time = LocalDateTime.parse(timeString, formatter);
-                        }
-                        update_afk = LocalDateTime.parse(timeString, formatter);
-                        
-                    } else if (part.startsWith("address#")) {
-                        String clientAddressPort = part.split("#")[1];
-                        String[] addressPortParts = clientAddressPort.split(":");
-                        String clientAddress = addressPortParts[0];
-                        
-                        // Vérifier si l'adresse est déjà présente dans client_address
-                        int index = client_address.indexOf(clientAddress);
-                        if (index == -1) {
-                            // Si l'adresse n'est pas présente, l'ajouter
-                            client_address.add(clientAddress);
-                            client_time.add(update_afk.toString());
-                        } else {
-                            // Si l'adresse est déjà présente, mettre à jour le temps
-                            client_time.set(index, update_afk.toString());
+
+                if (messageRecu.startsWith("client#")) {
+                    parts = messageRecu.split("\\?");
+                    boolean isTraitement = false;
+                    
+                    // Parcourir chaque partie de la trame
+                    for (String part : parts) {
+                        if (part.startsWith("client#")) {
+                            // Pour la partie "client", on peut éventuellement extraire des infos spécifiques
+                            // ou simplement l'ignorer, car elle sert de signal pour lancer le traitement.
+                        } else if (part.startsWith("traitement#")) {
+                            Client_traitement = Integer.parseInt(part.split("#")[1]);
+                            if (Client_traitement == 0 || Client_traitement == 1 || Client_traitement == 2 || Client_traitement == 3) {
+                                isTraitement = true;
+                            }
+                        } else if (part.startsWith("time#")) {
+                            String timeString = part.split("#")[1];
+                            DateTimeFormatter formatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
+                            if (isTraitement) {
+                                Client_Time = LocalDateTime.parse(timeString, formatter);
+                            }
+                            update_afk = LocalDateTime.parse(timeString, formatter);
+                        } else if (part.startsWith("address#")) {
+                            String clientAddressPort = part.split("#")[1];
+                            String[] addressPortParts = clientAddressPort.split(":");
+                            String clientAddress = addressPortParts[0];
+                            int index = client_address.indexOf(clientAddress);
+                            if (index == -1) {
+                                client_address.add(clientAddress);
+                                client_time.add(update_afk.toString());
+                            } else {
+                                client_time.set(index, update_afk.toString());
+                            }
                         }
                     }
+                    // Réinitialisation facultative
+                    messageRecu = "";
+                    parts = null;
+                } else {
+                    // Le message ne commence pas par "client#" : aucun traitement n'est effectué.
                 }
-                messageRecu = "";
-                parts = null;
 
+                
                 // Comparer les temps de modification et mettre à jour la valeur de traitement
                 LocalDateTime droneTime = drone.getLastModifiedTime();
                 LocalDateTime traitementTime = traitement.getLastModifiedTime();
@@ -464,6 +482,10 @@ public class traitement {
                         imageAfficher_source = dermiereImageValide_resizedImage;
                         imageAfficher_envoyer = imageEnvoyer_resizedImage;
                     }
+                }else{
+                    // Afficher l'image noire si aucune image n'est reçue
+                    imageAfficher_source = blackImage ;
+                    imageAfficher_envoyer = blackImage ;
                 }
             }
 
@@ -479,8 +501,14 @@ public class traitement {
                 //bufferedImage_envoyer = byteArrayToBufferedImage(encodeImageToJPEG(imageAfficher_envoyer, 100));
 
                 // image provenan du filemap
-                bufferedImage_envoyer = byteArrayToBufferedImage(resizeJPEGImage(imageBytes, displayFrameHalfSize));
 
+                // ajouté une verification si le imageBytes est null
+                if (imageBytes != null) {
+                    bufferedImage_envoyer = byteArrayToBufferedImage(resizeJPEGImage(imageBytes, displayFrameHalfSize));
+                } else {
+                    bufferedImage_envoyer = byteArrayToBufferedImage(encodeImageToJPEG(imageAfficher_envoyer, 100));
+                }
+                
                 traitement.setImage(bufferedImage_envoyer);
             } catch (IOException e) {
                 e.printStackTrace();
@@ -594,5 +622,14 @@ public class traitement {
         // Décoder le MatOfByte pour obtenir le Mat (l'image en couleur par défaut)
         Mat image = Imgcodecs.imdecode(mob, Imgcodecs.IMREAD_COLOR);
         return image;
+    }
+     //--------------------------------------------------------------//
+    // Méthode pour obtenir les deux derniers segments d'une adresse IP
+    public static String getLastTwoSegments(String ip) {
+        String[] parts = ip.split("\\.");
+        if (parts.length >= 2) {
+            return parts[parts.length - 2] + ".." + parts[parts.length - 1];
+        }
+        return ip;
     }
 }

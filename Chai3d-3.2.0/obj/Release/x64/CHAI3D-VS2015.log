@@ -7,16 +7,18 @@
   TheoraAudioPacketQueue.cpp
   TheoraDataSource.cpp
   TheoraException.cpp
+/@Chai3d-3.2.0_VisualStudio_2015_x64-VirtualDevice-Formes-08/src/virtualform/CFileMappingStructureServeurBridge.cpp(1,1): error C1083: Impossible d'ouvrir le fichier source : '..\@Chai3d-3.2.0_VisualStudio_2015_x64-VirtualDevice-Formes-08\src\virtualform\CFileMappingStructureServeurBridge.cpp' : No such file or directory
+  (compiler le fichier source '/@Chai3d-3.2.0_VisualStudio_2015_x64-VirtualDevice-Formes-08/src/virtualform/CFileMappingStructureServeurBridge.cpp')
+  
+/@Chai3d-3.2.0_VisualStudio_2015_x64-VirtualDevice-Formes-08/src/virtualform/CFileMappingStructureClientBridge.cpp(1,1): error C1083: Impossible d'ouvrir le fichier source : '..\@Chai3d-3.2.0_VisualStudio_2015_x64-VirtualDevice-Formes-08\src\virtualform\CFileMappingStructureClientBridge.cpp' : No such file or directory
+  (compiler le fichier source '/@Chai3d-3.2.0_VisualStudio_2015_x64-VirtualDevice-Formes-08/src/virtualform/CFileMappingStructureClientBridge.cpp')
+  
   TheoraFrameQueue.cpp
   TheoraTimer.cpp
   TheoraUtil.cpp
   TheoraVideoClip.cpp
   TheoraVideoFrame.cpp
   TheoraVideoManager.cpp
-F:\BEAL_JULIEN_SN2\_projet_2025\302-ProspectionImplantationEoliennes\Ressources\@Chai3d-3.2.0_VisualStudio_2015_x64-VirtualDevice-Formes-08\src\virtualform\CFileMappingStructureServeurBridge.cpp(110,11): warning C4477: 'printf' : la chaîne de format '%8x' nécessite un argument de type 'unsigned int', mais l'argument variadique 1 est de type 'LPVOID'
-F:\BEAL_JULIEN_SN2\_projet_2025\302-ProspectionImplantationEoliennes\Ressources\@Chai3d-3.2.0_VisualStudio_2015_x64-VirtualDevice-Formes-08\src\virtualform\CFileMappingStructureServeurBridge.cpp(110,11): warning C4313: 'printf' : '%x' dans la chaîne de format est en conflit avec l'argument 1 de type 'LPVOID'.
-F:\BEAL_JULIEN_SN2\_projet_2025\302-ProspectionImplantationEoliennes\Ressources\@Chai3d-3.2.0_VisualStudio_2015_x64-VirtualDevice-Formes-08\src\virtualform\CFileMappingStructureServeurBridge.cpp(244,10): warning C4477: 'printf' : la chaîne de format '%8x' nécessite un argument de type 'unsigned int', mais l'argument variadique 1 est de type 'LPVOID'
-F:\BEAL_JULIEN_SN2\_projet_2025\302-ProspectionImplantationEoliennes\Ressources\@Chai3d-3.2.0_VisualStudio_2015_x64-VirtualDevice-Formes-08\src\virtualform\CFileMappingStructureServeurBridge.cpp(244,10): warning C4313: 'printf' : '%x' dans la chaîne de format est en conflit avec l'argument 1 de type 'LPVOID'.
   TheoraWorkerThread.cpp
   TheoraVideoClip_Theora.cpp
   CAudioBuffer.cpp
@@ -26,18 +28,6 @@ F:\BEAL_JULIEN_SN2\_projet_2025\302-ProspectionImplantationEoliennes\Ressources\
   CCollisionAABBTree.cpp
   CCollisionBrute.cpp
   CGenericCollision.cpp
-F:\BEAL_JULIEN_SN2\_projet_2025\302-ProspectionImplantationEoliennes\Ressources\@Chai3d-3.2.0_VisualStudio_2015_x64-VirtualDevice-Formes-08\src\virtualform\CFileMappingStructureClientBridge.cpp(118,12): warning C4477: 'printf' : la chaîne de format '%8x' nécessite un argument de type 'unsigned int', mais l'argument variadique 1 est de type 'LPVOID'
-F:\BEAL_JULIEN_SN2\_projet_2025\302-ProspectionImplantationEoliennes\Ressources\@Chai3d-3.2.0_VisualStudio_2015_x64-VirtualDevice-Formes-08\src\virtualform\CFileMappingStructureClientBridge.cpp(118,12): warning C4313: 'printf' : '%x' dans la chaîne de format est en conflit avec l'argument 1 de type 'LPVOID'.
-F:\BEAL_JULIEN_SN2\_projet_2025\302-ProspectionImplantationEoliennes\Ressources\@Chai3d-3.2.0_VisualStudio_2015_x64-VirtualDevice-Formes-08\src\virtualform\CFileMappingStructureClientBridge.cpp(241,11): warning C4477: 'printf' : la chaîne de format '%8x' nécessite un argument de type 'unsigned int', mais l'argument variadique 1 est de type 'LPVOID'
-F:\BEAL_JULIEN_SN2\_projet_2025\302-ProspectionImplantationEoliennes\Ressources\@Chai3d-3.2.0_VisualStudio_2015_x64-VirtualDevice-Formes-08\src\virtualform\CFileMappingStructureClientBridge.cpp(241,11): warning C4313: 'printf' : '%x' dans la chaîne de format est en conflit avec l'argument 1 de type 'LPVOID'.
-F:\BEAL_JULIEN_SN2\_projet_2025\302-ProspectionImplantationEoliennes\Ressources\@Chai3d-3.2.0_VisualStudio_2015_x64-VirtualDevice-Formes-08\src\virtualform\CFileMappingStructureClientBridge.cpp(455,11): warning C4477: 'printf' : la chaîne de format '%d' nécessite un argument de type 'int', mais l'argument variadique 1 est de type 'unsigned __int64'
-      F:\BEAL_JULIEN_SN2\_projet_2025\302-ProspectionImplantationEoliennes\Ressources\@Chai3d-3.2.0_VisualStudio_2015_x64-VirtualDevice-Formes-08\src\virtualform\CFileMappingStructureClientBridge.cpp(455,11):
-      utilisez '%zd' dans la chaîne de format
-  
-F:\BEAL_JULIEN_SN2\_projet_2025\302-ProspectionImplantationEoliennes\Ressources\@Chai3d-3.2.0_VisualStudio_2015_x64-VirtualDevice-Formes-08\src\virtualform\CFileMappingStructureClientBridge.cpp(455,11): warning C4477: 'printf' : la chaîne de format '%d' nécessite un argument de type 'int', mais l'argument variadique 2 est de type 'unsigned __int64'
-      F:\BEAL_JULIEN_SN2\_projet_2025\302-ProspectionImplantationEoliennes\Ressources\@Chai3d-3.2.0_VisualStudio_2015_x64-VirtualDevice-Formes-08\src\virtualform\CFileMappingStructureClientBridge.cpp(455,11):
-      utilisez '%zd' dans la chaîne de format
-  
   CDeltaDevices.cpp
   CGenericDevice.cpp
   CGenericHapticDevice.cpp
@@ -127,212 +117,9 @@ F:\BEAL_JULIEN_SN2\_projet_2025\302-ProspectionImplantationEoliennes\Ressources\
   CVirtualDevice.cpp
   CExtras.cpp
   CShapeEllipsoid.cpp
-F:\BEAL_JULIEN_SN2\_projet_2025\302-ProspectionImplantationEoliennes\Ressources\@Chai3d-3.2.0_VisualStudio_2015_x64-VirtualDevice-Formes-08\src\devices\CVirtualDevice.cpp(132,12): warning C4477: 'printf' : la chaîne de format '%d' nécessite un argument de type 'int', mais l'argument variadique 1 est de type 'HANDLE'
-F:\BEAL_JULIEN_SN2\_projet_2025\302-ProspectionImplantationEoliennes\Ressources\@Chai3d-3.2.0_VisualStudio_2015_x64-VirtualDevice-Formes-08\src\devices\CVirtualDevice.cpp(132,12): warning C4313: 'printf' : '%d' dans la chaîne de format est en conflit avec l'argument 1 de type 'HANDLE'.
-F:\BEAL_JULIEN_SN2\_projet_2025\302-ProspectionImplantationEoliennes\Ressources\@Chai3d-3.2.0_VisualStudio_2015_x64-VirtualDevice-Formes-08\src\devices\CVirtualDevice.cpp(152,12): warning C4477: 'printf' : la chaîne de format '%8X' nécessite un argument de type 'unsigned int', mais l'argument variadique 1 est de type 'LPVOID'
-F:\BEAL_JULIEN_SN2\_projet_2025\302-ProspectionImplantationEoliennes\Ressources\@Chai3d-3.2.0_VisualStudio_2015_x64-VirtualDevice-Formes-08\src\devices\CVirtualDevice.cpp(152,12): warning C4313: 'printf' : '%X' dans la chaîne de format est en conflit avec l'argument 1 de type 'LPVOID'.
-F:\BEAL_JULIEN_SN2\_projet_2025\302-ProspectionImplantationEoliennes\Ressources\@Chai3d-3.2.0_VisualStudio_2015_x64-VirtualDevice-Formes-08\src\devices\CVirtualDevice.cpp(199,9): warning C4477: 'printf' : la chaîne de format '%8X' nécessite un argument de type 'unsigned int', mais l'argument variadique 1 est de type 'chai3d::cVirtualDeviceData *'
-F:\BEAL_JULIEN_SN2\_projet_2025\302-ProspectionImplantationEoliennes\Ressources\@Chai3d-3.2.0_VisualStudio_2015_x64-VirtualDevice-Formes-08\src\devices\CVirtualDevice.cpp(199,9): warning C4313: 'printf' : '%X' dans la chaîne de format est en conflit avec l'argument 1 de type 'chai3d::cVirtualDeviceData *'.
-  dev2gif.c
-  dgif_lib.c
-  egif_lib.c
-  getarg.c
-  gifalloc.c
-  gif_err.c
-  gif_font.c
-  gif_hash.c
-  qprintf.c
-  quantize.c
-  glew.c
-  lib3ds_atmosphere.c
-  lib3ds_background.c
-  lib3ds_camera.c
-  lib3ds_chunk.c
-  lib3ds_chunktable.c
-  lib3ds_file.c
-  lib3ds_io.c
-  lib3ds_light.c
-  lib3ds_material.c
-  lib3ds_matrix.c
-  lib3ds_math.c
-  lib3ds_mesh.c
-  lib3ds_node.c
-  lib3ds_quat.c
-  lib3ds_shadow.c
-  lib3ds_track.c
-  lib3ds_util.c
-  lib3ds_vector.c
-  lib3ds_viewport.c
-  jaricom.c
-  jcapimin.c
-  jcapistd.c
-  jcarith.c
-  jccoefct.c
-  jccolor.c
-  jchuff.c
-  jcdctmgr.c
-  jcinit.c
-  jcmainct.c
-  jcmarker.c
-  jcmaster.c
-  jcomapi.c
-  jcparam.c
-  jcprepct.c
-  jcsample.c
-  jctrans.c
-  jdapimin.c
-  jdapistd.c
-  jdarith.c
-  jdatadst.c
-  jdatasrc.c
-  jdcoefct.c
-  jdcolor.c
-  jddctmgr.c
-  jdhuff.c
-  jdinput.c
-  jdmainct.c
-  jdmarker.c
-  jdmaster.c
-  jdmerge.c
-  jdpostct.c
-  jdsample.c
-  jdtrans.c
-  jerror.c
-  jfdctflt.c
-  jfdctfst.c
-  jfdctint.c
-  jidctflt.c
-  jidctfst.c
-  jidctint.c
-  jmemansi.c
-  jmemmgr.c
-  jmemnobs.c
-  jquant1.c
-  jquant2.c
-  jutils.c
-  adler32.c
-  compress.c
-  crc32.c
-  deflate.c
-  gzclose.c
-  gzlib.c
-  gzread.c
-  gzwrite.c
-  infback.c
-  inffast.c
-  inflate.c
-  inftrees.c
-  png.c
-  pngerror.c
-  pngget.c
-  pngmem.c
-  pngpread.c
-  pngread.c
-  pngrio.c
-  pngrtran.c
-  pngrutil.c
-  pngset.c
-  pngtrans.c
-  pngwio.c
-  pngwrite.c
-  pngwtran.c
-  pngwutil.c
-  trees.c
-  uncompr.c
-  zutil.c
-  ALc.c
-  alcConfig.c
-  alcDedicated.c
-  alcEcho.c
-  alcModulator.c
-  alcReverb.c
-  alcRing.c
-  alcThread.c
-  ALu.c
-  dsound.c
-  loopback.c
-  mmdevapi.c
-  null.c
-  wave.c
-  winmm.c
-  bs2b.c
-  helpers.c
-  hrtf.c
-  mixer.c
-  mixer_c.c
-  mixer_sse.c
-  panning.c
-  alAuxEffectSlot.c
-  alBuffer.c
-  alEffect.c
-  alError.c
-  alExtension.c
-  alFilter.c
-  alListener.c
-  alSource.c
-  alState.c
-  alThunk.c
-  bitwise.c
-  framing.c
-  analyze.c
-  apiwrapper.c
-  bitpack.c
-  collect.c
-  decapiwrapper.c
-  decinfo.c
-  decode.c
-  dequant.c
-  encapiwrapper.c
-  encfrag.c
-  encinfo.c
-  encode.c
-  encoder_disabled.c
-  enquant.c
-  fdct.c
-  fragment.c
-  huffdec.c
-  huffenc.c
-  idct.c
-  infot.c
-  internal.c
-  mathops.c
-  mcenc.c
-  quant.c
-  rate.c
-  state.c
-  tokenize.c
-  mmxencfrag.c
-  mmxfdct.c
-  mmxfrag.c
-  mmxidct.c
-  mmxstate.c
-  x86cpu.c
-  x86enc.c
-  x86state.c
-  analysis.c
-  bitrate.c
-  block.c
-  codebook.c
-  envelope.c
-  floor0.c
-  floor1.c
-  info.c
-  lookup.c
-  lpc.c
-  lsp.c
-  mapping0.c
-  mdct.c
-  psy.c
-  registry.c
-  res0.c
-  sharedbook.c
-  smallft.c
-  synthesis.c
-  vorbisenc.c
-  vorbisfile.c
-  window.c
-  yuv420_grey_c.c
-  yuv420_rgb_c.c
-  yuv420_yuv_c.c
-  yuv_util.c
-  CHAI3D-VS2015.vcxproj -> F:\BEAL_JULIEN_SN2\_projet_2025\302-ProspectionImplantationEoliennes\Ressources\@Chai3d-3.2.0_VisualStudio_2015_x64-VirtualDevice-Formes-08\lib\Release\x64\chai3d.lib
+F:\BEAL_JULIEN_SN2\_projet_2025\git\Chai3d-3.2.0\src\devices\CVirtualDevice.cpp(132,12): warning C4477: 'printf' : la chaîne de format '%d' nécessite un argument de type 'int', mais l'argument variadique 1 est de type 'HANDLE'
+F:\BEAL_JULIEN_SN2\_projet_2025\git\Chai3d-3.2.0\src\devices\CVirtualDevice.cpp(132,12): warning C4313: 'printf' : '%d' dans la chaîne de format est en conflit avec l'argument 1 de type 'HANDLE'.
+F:\BEAL_JULIEN_SN2\_projet_2025\git\Chai3d-3.2.0\src\devices\CVirtualDevice.cpp(152,12): warning C4477: 'printf' : la chaîne de format '%8X' nécessite un argument de type 'unsigned int', mais l'argument variadique 1 est de type 'LPVOID'
+F:\BEAL_JULIEN_SN2\_projet_2025\git\Chai3d-3.2.0\src\devices\CVirtualDevice.cpp(152,12): warning C4313: 'printf' : '%X' dans la chaîne de format est en conflit avec l'argument 1 de type 'LPVOID'.
+F:\BEAL_JULIEN_SN2\_projet_2025\git\Chai3d-3.2.0\src\devices\CVirtualDevice.cpp(199,9): warning C4477: 'printf' : la chaîne de format '%8X' nécessite un argument de type 'unsigned int', mais l'argument variadique 1 est de type 'chai3d::cVirtualDeviceData *'
+F:\BEAL_JULIEN_SN2\_projet_2025\git\Chai3d-3.2.0\src\devices\CVirtualDevice.cpp(199,9): warning C4313: 'printf' : '%X' dans la chaîne de format est en conflit avec l'argument 1 de type 'chai3d::cVirtualDeviceData *'.
