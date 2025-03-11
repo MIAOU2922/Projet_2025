@@ -353,7 +353,7 @@ public class traitement {
                     // Le message ne commence pas par "client#" : aucun traitement n'est effectué.
                 }
 
-                
+
                 // Comparer les temps de modification et mettre à jour la valeur de traitement
                 LocalDateTime droneTime = drone.getLastModifiedTime();
                 LocalDateTime traitementTime = traitement.getLastModifiedTime();
@@ -526,7 +526,7 @@ public class traitement {
             InetAddress ipAddress = InetAddress.getByName(address);
             DatagramPacket packet = new DatagramPacket(imageData, imageData.length, ipAddress, port);
             socket.send(packet);
-            //System.out.println("Image envoyée à " + address + ":" + port + String.format(" FPS: %.0f", fps));
+            System.out.println("Image envoyée à " + address + ":" + port );
         } finally {
             if (socket != null && !socket.isClosed()) {
                 socket.close();
@@ -547,7 +547,9 @@ public class traitement {
             DatagramPacket packet = new DatagramPacket(buffer, buffer.length, ipAddress, port);
             socket.send(packet); // Envoie du paquet UDP
             
-            //System.out.println("Données envoyées à " + address + ":" + port + " FPS: "+ fps);
+            System.out.println("Données envoyées à " + address + ":" + port );
+            System.out.println("Données envoyées : " + data);
+
         } finally {
             if (socket != null && !socket.isClosed()) {
                 socket.close(); // Ferme le socket proprement
