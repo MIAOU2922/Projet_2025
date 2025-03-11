@@ -169,10 +169,9 @@ public class drone {
             // Traitement du message reçu
             messageRecu = commande.getMessageRecu();
 
-            if (messageRecu.startsWith("client#")) {
+            if (messageRecu.startsWith("T#")) {
                 parts = messageRecu.split("\\?");
                 boolean isTraitement = false;
-                
                 // Parcourir chaque partie de la trame
                 for (String part : parts) {
                     if (part.startsWith("traitement#")) {

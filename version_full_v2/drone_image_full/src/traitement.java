@@ -272,7 +272,7 @@ public class traitement {
             Thread.currentThread().setName("boucle d'afk");
             while (true) {
                 try {
-                    sendTextUDP("traitement#"+getLastTwoSegments(address_local_str)+"?address#" + address_local_str + "?time#" + LocalDateTime.now(), address_broadcast, port[2]);
+                    sendTextUDP("T#"+getLastTwoSegments(address_local_str)+"?address#" + address_local_str + "?time#" + LocalDateTime.now(), address_broadcast, port[2]);
                     Thread.sleep(90000); // attendre 1 minute et 30 secondes
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -312,13 +312,13 @@ public class traitement {
                 // Traitement du message reçu
                 messageRecu = commande.getMessageRecu();
 
-                if (messageRecu.startsWith("client#")) {
+                if (messageRecu.startsWith("C#")) {
                     parts = messageRecu.split("\\?");
                     boolean isTraitement = false;
                     
                     // Parcourir chaque partie de la trame
                     for (String part : parts) {
-                        if (part.startsWith("client#")) {
+                        if (part.startsWith("C#")) {
                             // Pour la partie "client", on peut éventuellement extraire des infos spécifiques
                             // ou simplement l'ignorer, car elle sert de signal pour lancer le traitement.
                         } else if (part.startsWith("traitement#")) {
