@@ -11,8 +11,15 @@ java -Djava.library.path="lib" -cp "lib/opencv-4100.jar;bin" _start._start_all
 
 -----------------
 lancer drone :
+windows :
 
-java -Djava.library.path="lib" -cp "lib/opencv-4100.jar;bin" _start._start_drone
+java -Djava.library.path="lib" -cp "lib/opencv-4100.jar;bin" _start._start_drone_W
+
+
+linux :
+
+java -Djava.library.path=lib -cp "lib/opencv-4100.jar:bin" _start._start_drone_L
+
 
 -----------------
 lancer client :

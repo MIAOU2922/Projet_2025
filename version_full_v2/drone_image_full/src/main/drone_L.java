@@ -17,6 +17,7 @@ import java.net.DatagramSocket;
 import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
+import java.net.URISyntaxException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
@@ -35,16 +36,26 @@ import org.opencv.videoio.VideoCapture;
 import thread.thread_reception_string;
 import util.error;
 
-public class drone {
+public class drone_L {
     static {
-        System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
+        try {
+            System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
+        } catch (Exception e) {
+            System.out.println("Erreur lors du chargement des librairies: " + e);
+        }
+        try {
+            String libPath = System.getProperty("user.dir") + "/lib/libopencv_java480.so";
+            System.load(libPath);
+        } catch (Exception e) {
+            System.out.println("Erreur lors du chargement des librairies: " + e);
+        }
     }
 
     private ArrayList <String> client_address = new ArrayList<>();
     private ArrayList <String> client_time = new ArrayList<>();
 
 
-    public drone () {
+    public drone_L () {
         
         // Définition des ports UDP
         int port[] = {
