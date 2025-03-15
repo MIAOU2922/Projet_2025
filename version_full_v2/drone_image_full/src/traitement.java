@@ -29,13 +29,8 @@ import org.opencv.core.*;
 import org.opencv.imgcodecs.Imgcodecs;
 import org.opencv.imgproc.Imgproc;
 
-import thread.thread_detection_contours;
-import thread.thread_detection_formes;
-import thread.thread_reception_image;
-import thread.thread_reception_string;
-import util.error;
-import util.tempo;
-import util.FenetreTraitement;
+import thread.*;
+import util.*;
 
 public class traitement {
     static {
@@ -83,9 +78,6 @@ public class traitement {
     Process process = null;
     String address_local_str ;
 
-    private ArrayList <String> client_address = new ArrayList<>();
-    private ArrayList <String> client_time = new ArrayList<>();
-
     public traitement () {
 
         // ouvrir le serveur de filemapping
@@ -107,12 +99,12 @@ public class traitement {
             e.printStackTrace();
         }
         
-        // ouvrir le client de filemapping 
+        // ouvrir le client de filemapping
         try {
-            //boucle pour juste se servir du filemap a mettre en com une fois  chai3d mis en place 
+            //boucle pour juste se servir du filemap a mettre en commentaire une fois chai3d mis en place
             monCLientFMP.OpenClient("img_java_to_c");
             
-            //une fois chel3d mis 
+            //une fois chel3d mis
             //monCLientFMP.OpenClient("img_c_to_java");
         }catch (Exception e) {
             System.out.println("Erreur lors de l'ouverture du client img_c_to_java");
@@ -125,16 +117,13 @@ public class traitement {
             55001, // Port de réception client
             55002 // Port de commande image
             };
-        
-        // Définition des adresses IP
-        List<String> address = new ArrayList<>();
 
         String address_broadcast = "172.29.255.255";
 
 
         String messageRecu ;
         String[] parts;
-        LocalDateTime Client_Time = LocalDateTime.now() , update_afk = LocalDateTime.now();
+        LocalDateTime Client_Time = LocalDateTime.now() ;
         int Client_traitement = 0;
 
         byte[] data = new byte[65536];
@@ -243,42 +232,9 @@ public class traitement {
         thread_detection_formes detection_formes = new thread_detection_formes(imageRecu, false);
         detection_formes.start();
 
-        // Thread pour vérifier les adresses toutes les minutes
-        new Thread(() -> {
-            Thread.currentThread().setName("boucle d'afk");
-            while (true) {
-                try {
-                    LocalDateTime now = LocalDateTime.now();
-                    for (int i = 0; i < client_time.size(); i++) {
-                        LocalDateTime clientTime = LocalDateTime.parse(client_time.get(i));
-                        if (ChronoUnit.MINUTES.between(clientTime, now) > 3) {
-                            System.out.println("Adresse " + client_address.get(i) + " supprimée pour inactivité.");
-                            client_address.remove(i);
-                            client_time.remove(i);
-                            i--; // Ajuster l'index après la suppression
-                        }
-                    }
-                    System.out.println("Liste des adresses : " + client_address + " (" + client_address.size() + ")" + client_time + " (" + client_time.size() + ")");
-                    Thread.sleep(10000); // Vérification toutes les 10 secondes
-                } catch (InterruptedException e) {
-                    Thread.currentThread().interrupt();
-                    break;
-                }
-            }
-        }).start();
+        thread_envoie_cmd envoie_cmd = new thread_envoie_cmd("T", address_local_str, address_broadcast, port[2]);
+        envoie_cmd.start();
 
-        // Thread pour envoyer l'adresse IP locale toutes les 1 minute et 30 secondes
-        new Thread(() -> {
-            Thread.currentThread().setName("boucle d'afk");
-            while (true) {
-                try {
-                    sendTextUDP("T#"+getLastTwoSegments(address_local_str)+"?address#" + address_local_str + "?time#" + LocalDateTime.now(), address_broadcast, port[2]);
-                    Thread.sleep(30000); // attendre 30 secondes
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        }).start();
 
         //--------------------------------------------------------------//
          // Charger l'icône depuis les ressources
@@ -332,17 +288,15 @@ public class traitement {
                             if (isTraitement) {
                                 Client_Time = LocalDateTime.parse(timeString, formatter);
                             }
-                            update_afk = LocalDateTime.parse(timeString, formatter);
                         } else if (part.startsWith("address#")) {
                             String clientAddressPort = part.split("#")[1];
                             String[] addressPortParts = clientAddressPort.split(":");
                             String clientAddress = addressPortParts[0];
-                            int index = client_address.indexOf(clientAddress);
+                            int index = thread_list_dynamic_ip.getClientAddress().indexOf(clientAddress);
                             if (index == -1) {
-                                client_address.add(clientAddress);
-                                client_time.add(update_afk.toString());
+                                thread_list_dynamic_ip.addClient(clientAddress);
                             } else {
-                                client_time.set(index, update_afk.toString());
+                                thread_list_dynamic_ip.updateClient(clientAddress);
                             }
                         }
                     }
@@ -457,8 +411,8 @@ public class traitement {
                 }
 
                 // Envoi de l'image à chaque adresse dans la liste
-                if (!client_address.isEmpty()) {
-                    for (String addr : client_address) {
+                if (!thread_list_dynamic_ip.getClientAddress().isEmpty()) {
+                    for (String addr : thread_list_dynamic_ip.getClientAddress()) {
                         try {
                             sendImageUDP(encodedData, addr, port[1]);
                         } catch (IOException e) {
