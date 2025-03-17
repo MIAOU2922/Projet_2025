@@ -1,7 +1,7 @@
 /**
  * -------------------------------------------------------------------
  * Nom du fichier : 00-drone-ju.cpp
- * Auteur         : Votre Nom
+ * Auteur         : BEAL julien
  * Version        : 1.0
  * Date           : 10/03/2025
  * Description    : IHM chai3d avec background mis à jour aléatoirement

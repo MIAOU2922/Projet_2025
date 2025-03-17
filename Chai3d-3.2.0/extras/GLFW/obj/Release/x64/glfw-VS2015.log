@@ -1,16 +1,1 @@
-﻿  context.c
-  egl_context.c
-  init.c
-  input.c
-  monitor.c
-  vulkan.c
-  wgl_context.c
-  win32_init.c
-  win32_joystick.c
-  win32_monitor.c
-  win32_time.c
-  win32_tls.c
-  win32_window.c
-  window.c
-  Génération de code en cours...
-  glfw-VS2015.vcxproj -> F:\BEAL_JULIEN_SN2\_projet_2025\git\Chai3d-3.2.0\extras\GLFW\lib\Release\x64\glfw.lib
+﻿

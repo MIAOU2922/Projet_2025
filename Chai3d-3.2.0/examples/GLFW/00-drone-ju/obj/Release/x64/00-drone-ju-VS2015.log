@@ -1,3 +1,3 @@
 ﻿C:\Program Files\Microsoft Visual Studio\2022\Community\MSBuild\Microsoft\VC\v170\Microsoft.CppBuild.targets(531,5): warning MSB8028: Le répertoire intermédiaire (obj/Release/x64/) contient des fichiers partagés provenant d'un autre projet (03-analytics.vcxproj). Cela peut entraîner un comportement de nettoyage et de regénération incorrect.
   00-drone-ju.cpp
-  00-drone-ju-VS2015.vcxproj -> F:\BEAL_JULIEN_SN2\_projet_2025\git\Chai3d-3.2.0\bin\win-x64\00-drone-ju.exe
+LINK : fatal error LNK1181: impossible d'ouvrir le fichier en entrée 'glfw.lib'
