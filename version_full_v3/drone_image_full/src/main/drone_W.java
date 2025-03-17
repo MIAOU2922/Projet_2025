@@ -64,67 +64,77 @@ public class drone_W {
 
     //--------------------------------------------------------------//
     public drone_W() {
+
+        //--------------------------------------------------------------//
+        // Initialisation des adresses IP et des sockets UDP
         try {
-            this.initializeNetwork();
-            this.initializeCamera();
-            this.startThreads();
+            Enumeration<NetworkInterface> interfaces = NetworkInterface.getNetworkInterfaces();
+            while (interfaces.hasMoreElements()) {
+                NetworkInterface networkInterface = interfaces.nextElement();
+                if (networkInterface.isLoopback() || !networkInterface.isUp()) {
+                    continue;
+                }
+                Enumeration<InetAddress> addresses = networkInterface.getInetAddresses();
+                while (addresses.hasMoreElements()) {
+                    InetAddress inetAddress = addresses.nextElement();
+                    if (inetAddress instanceof Inet4Address) {
+                        String ip = inetAddress.getHostAddress();
+                        if (ip.startsWith("172.29")) {
+                            this.addressLocal = inetAddress;
+                            this.addressLocalStr = ip;
+                            break;
+                        }
+                    }
+                }
+                if (this.addressLocal != null) {
+                    break;
+                }
+            }
+    
+            if (this.addressLocal == null) {
+                throw new Exception("Aucune adresse IP locale valide trouvée.");
+            }
+    
+            this.socketCmd = new DatagramSocket(this.port[2]);
+            this.packet = new DatagramPacket(this.data, this.data.length);
+        }catch (Exception e) {
+            System.out.println("Erreur lors de l'initialisation des adresses IP et des sockets UDP");
+            e.printStackTrace();
+        }
+        //--------------------------------------------------------------//
+        // Initialisation de la caméra
+        try {
+            this.capture = new VideoCapture(0);
+            if (!this.capture.isOpened()) {
+                System.out.println("Erreur : Impossible d'ouvrir la caméra.");
+                return;
+            }
+            this.frame = new Mat();
+        }catch (Exception e) {
+            System.out.println("Erreur lors de l'initialisation de la caméra");
+            e.printStackTrace();
+        }
+        //--------------------------------------------------------------//
+        // Lancement des threads
+        try {
+            this.commande = new thread_reception_string("traitement_UDP_String", this.socketCmd);
+            this.commande.start();
+    
+            this.listDynamicIp = new thread_list_dynamic_ip("drone - boucle de vérification de la liste d'adresses");
+            this.listDynamicIp.start();
+        }catch (Exception e) {
+            System.out.println("Erreur lors du lancement des threads");
+            e.printStackTrace();
+        }
+        //--------------------------------------------------------------//
+        // Boucle principale du drone
+        try {
             error.printError();
             this.mainLoop();
         } catch (Exception e) {
+            System.out.println("Erreur lors de l'exécution de la boucle principale");
             e.printStackTrace();
         }
-    }
-    //--------------------------------------------------------------//
-    // Initialisation du réseau
-    private void initializeNetwork() throws Exception {
-        Enumeration<NetworkInterface> interfaces = NetworkInterface.getNetworkInterfaces();
-        while (interfaces.hasMoreElements()) {
-            NetworkInterface networkInterface = interfaces.nextElement();
-            if (networkInterface.isLoopback() || !networkInterface.isUp()) {
-                continue;
-            }
-            Enumeration<InetAddress> addresses = networkInterface.getInetAddresses();
-            while (addresses.hasMoreElements()) {
-                InetAddress inetAddress = addresses.nextElement();
-                if (inetAddress instanceof Inet4Address) {
-                    String ip = inetAddress.getHostAddress();
-                    if (ip.startsWith("172.29")) {
-                        this.addressLocal = inetAddress;
-                        this.addressLocalStr = ip;
-                        break;
-                    }
-                }
-            }
-            if (this.addressLocal != null) {
-                break;
-            }
-        }
-
-        if (this.addressLocal == null) {
-            throw new Exception("Aucune adresse IP locale valide trouvée.");
-        }
-
-        this.socketCmd = new DatagramSocket(this.port[2]);
-        this.packet = new DatagramPacket(this.data, this.data.length);
-    }
-    //--------------------------------------------------------------//
-    // Initialisation de la caméra
-    private void initializeCamera() {
-        this.capture = new VideoCapture(0);
-        if (!this.capture.isOpened()) {
-            System.out.println("Erreur : Impossible d'ouvrir la caméra.");
-            return;
-        }
-        this.frame = new Mat();
-    }
-    //--------------------------------------------------------------//
-    // Lancement des threads
-    private void startThreads() {
-        this.commande = new thread_reception_string("traitement_UDP_String", this.socketCmd);
-        this.commande.start();
-
-        this.listDynamicIp = new thread_list_dynamic_ip("drone - boucle de vérification de la liste d'adresses");
-        this.listDynamicIp.start();
     }
     //--------------------------------------------------------------//
     // Boucle principale
@@ -197,19 +207,6 @@ public class drone_W {
             InetAddress ipAddress = InetAddress.getByName(address);
             DatagramPacket packet = new DatagramPacket(imageData, imageData.length, ipAddress, port);
             socket.send(packet);
-        }
-    }
-    //--------------------------------------------------------------//
-    // Méthode pour envoyer un String via UDP
-    private void sendTextUDP(String data, String address, int port) throws IOException {
-        try (DatagramSocket socket = new DatagramSocket()) {
-            InetAddress ipAddress = InetAddress.getByName(address);
-            byte[] buffer = data.getBytes();
-            DatagramPacket packet = new DatagramPacket(buffer, buffer.length, ipAddress, port);
-            socket.send(packet);
-
-            System.out.println("Données envoyées à " + address + ":" + port);
-            System.out.println("Données envoyées : " + data);
         }
     }
     //--------------------------------------------------------------//

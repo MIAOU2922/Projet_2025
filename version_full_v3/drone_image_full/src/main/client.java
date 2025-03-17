@@ -41,17 +41,14 @@ public class client {
     private String text = "";
 
     // Configuration réseau
-    private final int[] port = {55000, 55001, 55002};
-    private final String address = "172.29.41.9";
-    private final String addressBroadcast = "172.29.255.255";
+    private int[] port = {55000, 55001, 55002};
+    private String address = "172.29.41.9";
+    private String addressBroadcast = "172.29.255.255";
     private byte[] data = new byte[65536];
     private DatagramSocket socketImage;
     private DatagramSocket socketCmd;
     private DatagramPacket packet;
     private InetAddress localAddress;
-
-    // Paramètres image
-    private final int[] imgSize = {1280, 720};
 
     // Variables pour le traitement d'image et l'affichage
     private Mat lastValidImage = null;
@@ -72,103 +69,102 @@ public class client {
 
     //--------------------------------------------------------------//
     public client() {
+
+        //--------------------------------------------------------------//
+        // Initialisation des adresses IP et des sockets UDP
         try {
-            initializeNetwork();
-            initializeSockets();
-            initializeImageProcessing();
-            startThreads();
-            initializeUI();
-            addShutdownHook();
+            Enumeration<NetworkInterface> interfaces = NetworkInterface.getNetworkInterfaces();
+            while (interfaces.hasMoreElements()) {
+                NetworkInterface networkInterface = interfaces.nextElement();
+                if (networkInterface.isLoopback() || !networkInterface.isUp()) {
+                    continue;
+                }
+                Enumeration<InetAddress> addresses = networkInterface.getInetAddresses();
+                while (addresses.hasMoreElements()) {
+                    InetAddress inetAddress = addresses.nextElement();
+                    if (inetAddress instanceof Inet4Address) {
+                        String ip = inetAddress.getHostAddress();
+                        if (ip.startsWith("172.29.41.")) {
+                            this.localAddress = inetAddress;
+                            this.addressLocalStr = ip;
+                            break;
+                        }
+                    }
+                }
+                if (this.localAddress != null) {
+                    break;
+                }
+            }
+            if (this.localAddress == null) {
+                throw new Exception("Aucune adresse IP locale valide trouvée.");
+            }
+            this.socketImage = new DatagramSocket(this.port[1]);
+            this.socketCmd = new DatagramSocket(this.port[2]);
+            this.packet = new DatagramPacket(this.data, this.data.length);
+        } catch (Exception e) {
+            System.out.println("Erreur lors de l'initialisation des adresses IP et des sockets UDP");
+            e.printStackTrace();
+        }
+        //--------------------------------------------------------------//
+        // Initialisation de l'image noire
+        try {
+            // Création d'une image noire avec le texte "START"
+            this.blackImage = new Mat(360, 640, CvType.CV_8UC3, new Scalar(0, 0, 0));
+            Size textSize = Imgproc.getTextSize("START", Imgproc.FONT_HERSHEY_SIMPLEX, 2.0, 3, null);
+            Point textOrg = new Point((this.blackImage.cols() - textSize.width) / 2,(this.blackImage.rows() + textSize.height) / 2);
+            Imgproc.putText(this.blackImage,"START",textOrg,Imgproc.FONT_HERSHEY_SIMPLEX,2.0,new Scalar(255, 255, 255),3);
+        } catch (Exception e) {
+            System.out.println("Erreur lors de l'initialisation de l'image noire");
+            e.printStackTrace();
+        }
+        //--------------------------------------------------------------//
+        // lancement des threads
+        try {
+            this.reception = new thread_reception_image("client_UDP_image", this.socketImage, this.imageRecu);
+            this.reception.start();
+    
+            this.cmd = new thread_reception_string("traitement_UDP_String", this.socketCmd);
+            this.cmd.start();
+    
+            this.envoieCmd = new thread.thread_envoie_cmd("C", this.addressLocalStr, this.addressBroadcast, this.port[2]);
+            this.envoieCmd.start();
+        } catch (Exception e) {
+            System.out.println("Erreur lors du lancement des threads");
+            e.printStackTrace();
+        }
+        //--------------------------------------------------------------//
+        // Initialisation de l'interface graphique
+        try {
+            ImageIcon icon = new ImageIcon("lib/logo.png"); // Remplacer par le chemin réel de l'icône
+            this.fenetreClient = new FenetreTraitement("client", icon, 1280, 0);
+        }catch (Exception e) {
+            System.out.println("Erreur lors de l'initialisation de l'interface graphique");
+            e.printStackTrace();
+        }
+        //--------------------------------------------------------------//
+        // Ajout du shutdown hook pour supprimer l'adresse de la liste
+        try {
+            Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+                try {
+                    this.text = "C#remove?address#" + this.addressLocalStr;
+                    sendTextUDP(this.text, this.addressBroadcast, this.port[2]);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }));
+        } catch (Exception e) {
+            System.out.println("Erreur lors de l'ajout du shutdown hook");
+            e.printStackTrace();
+        }
+        //--------------------------------------------------------------//
+        // Boucle principale du client
+        try {
             error.printError();
             mainLoop();
         } catch (Exception e) {
+            System.out.println("Erreur lors de la boucle principale du client");
             e.printStackTrace();
         }
-    }
-    //--------------------------------------------------------------//
-    // Initialisation du réseau : récupération de l'adresse IP locale
-    private void initializeNetwork() throws Exception {
-        Enumeration<NetworkInterface> interfaces = NetworkInterface.getNetworkInterfaces();
-        while (interfaces.hasMoreElements()) {
-            NetworkInterface networkInterface = interfaces.nextElement();
-            if (networkInterface.isLoopback() || !networkInterface.isUp()) {
-                continue;
-            }
-            Enumeration<InetAddress> addresses = networkInterface.getInetAddresses();
-            while (addresses.hasMoreElements()) {
-                InetAddress inetAddress = addresses.nextElement();
-                if (inetAddress instanceof Inet4Address) {
-                    String ip = inetAddress.getHostAddress();
-                    if (ip.startsWith("172.29.41.")) {
-                        this.localAddress = inetAddress;
-                        this.addressLocalStr = ip;
-                        break;
-                    }
-                }
-            }
-            if (this.localAddress != null) {
-                break;
-            }
-        }
-        if (this.localAddress == null) {
-            throw new Exception("Aucune adresse IP locale valide trouvée.");
-        }
-    }
-    //--------------------------------------------------------------//
-    // Initialisation des sockets UDP pour l'image et les commandes
-    private void initializeSockets() throws SocketException {
-        this.socketImage = new DatagramSocket(this.port[1]);
-        this.socketCmd = new DatagramSocket(this.port[2]);
-        this.packet = new DatagramPacket(this.data, this.data.length);
-    }
-    //--------------------------------------------------------------//
-    // Initialisation des éléments de traitement d'image et création d'une image noire avec "START"
-    private void initializeImageProcessing() {
-        this.blackImage = new Mat(360, 640, CvType.CV_8UC3, new Scalar(0, 0, 0));
-        Size textSize = Imgproc.getTextSize("START", Imgproc.FONT_HERSHEY_SIMPLEX, 2.0, 3, null);
-        Point textOrg = new Point(
-            (this.blackImage.cols() - textSize.width) / 2,
-            (this.blackImage.rows() + textSize.height) / 2
-        );
-        Imgproc.putText(
-            this.blackImage,
-            "START",
-            textOrg,
-            Imgproc.FONT_HERSHEY_SIMPLEX,
-            2.0,
-            new Scalar(255, 255, 255),
-            3
-        );
-    }
-    //--------------------------------------------------------------//
-    // Démarrage des threads de réception et d'envoi
-    private void startThreads() {
-        this.reception = new thread_reception_image("client_UDP_image", this.socketImage, this.imageRecu);
-        this.reception.start();
-
-        this.cmd = new thread_reception_string("traitement_UDP_String", this.socketCmd);
-        this.cmd.start();
-
-        this.envoieCmd = new thread.thread_envoie_cmd("C", this.addressLocalStr, this.addressBroadcast, this.port[2]);
-        this.envoieCmd.start();
-    }
-    //--------------------------------------------------------------//
-    // Initialisation de l'interface graphique
-    private void initializeUI() {
-        ImageIcon icon = new ImageIcon("lib/logo.png"); // Remplacer par le chemin réel de l'icône
-        this.fenetreClient = new FenetreTraitement("client", icon, 1280, 0);
-    }
-    //--------------------------------------------------------------//
-    // Ajout d'un hook pour l'arrêt du programme
-    private void addShutdownHook() {
-        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-            try {
-                this.text = "C#remove?address#" + this.addressLocalStr;
-                sendTextUDP(this.text, this.addressBroadcast, this.port[2]);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }));
     }
     //--------------------------------------------------------------//
     // Boucle principale d'affichage
@@ -241,34 +237,21 @@ public class client {
         return ImageIO.read(bis);
     }
     //--------------------------------------------------------------//
-    // Méthode pour envoyer une image via UDP
-    private void sendImageUDP(byte[] imageData, String address, int port) throws IOException {
+    //--------------------------------------------------------------//
+    // Méthode pour envoyer un String via UDP
+    private void sendTextUDP(String data, String address, int port) throws IOException {
         DatagramSocket socket = null;
         try {
             socket = new DatagramSocket();
             InetAddress ipAddress = InetAddress.getByName(address);
-            DatagramPacket packet = new DatagramPacket(imageData, imageData.length, ipAddress, port);
-            socket.send(packet);
-            System.out.println("Image envoyée à " + address + ":" + port);
-        } finally {
-            if (socket != null && !socket.isClosed()) {
-                socket.close();
-            }
-        }
-    }
-    //--------------------------------------------------------------//
-    // Méthode pour envoyer un texte via UDP
-    private void sendTextUDP(String data, String address, int port) throws IOException {
-        DatagramSocket socket = null;
-        try {
-            socket = new DatagramSocket(); // Crée un socket UDP
-            InetAddress ipAddress = InetAddress.getByName(address); // Résolution de l'adresse IP
-            byte[] buffer = data.getBytes(); // Conversion du texte en tableau d'octets
+            byte[] buffer = data.getBytes();
             DatagramPacket packet = new DatagramPacket(buffer, buffer.length, ipAddress, port);
-            socket.send(packet); // Envoie du paquet UDP
+            socket.send(packet);
             System.out.println("Données envoyées à " + address + ":" + port);
             System.out.println("Données envoyées : " + data);
-        } finally {
+        } catch (Exception e) {
+            System.out.println("Erreur lors de l'envoi de l'image à " + address + " : " + e.getMessage());
+        }finally {
             if (socket != null && !socket.isClosed()) {
                 socket.close();
             }
