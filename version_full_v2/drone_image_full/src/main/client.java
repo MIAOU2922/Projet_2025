@@ -39,6 +39,9 @@ public class client {
     BufferedImage bufferedImage = null;
     String address_local_str;
 
+    // Définition du texte à envoyer
+    String text = "";
+
     public client () {
         // Définition des ports UDP
         int port[] = {
@@ -50,9 +53,6 @@ public class client {
         // Définition des adresses IP
         String address = "172.29.41.9";
         String address_broadcast = "172.29.255.255";
-
-        // Définition du texte à envoyer
-        String text = "";
 
         byte[] data = new byte[65536];
         DatagramSocket socket_image = null;
@@ -128,17 +128,20 @@ public class client {
         cmd.start();
 
         // Thread pour envoyer l'adresse IP locale toutes les 1 minute et 30 secondes
-        new Thread(() -> {
-            Thread.currentThread().setName("boucle d'afk");
-            while (true) {
-                try {
-                    sendTextUDP("C#"+getLastTwoSegments(address_local_str)+"?address#" + address_local_str + "?time#" + LocalDateTime.now(), address_broadcast, port[2]);
-                    Thread.sleep(30000); // attendre 30 secondes
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+        thread.thread_envoie_cmd envoie_cmd = new thread.thread_envoie_cmd("C", address_local_str, address_broadcast, port[2]);
+        envoie_cmd.start();
+
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            try {
+                text = "C#remove?address#" + this.address_local_str ;
+                sendTextUDP(text, address_broadcast, port[2]);
+                // Optionnel : mettre à jour l'état
+                // previousTraitement = currentTraitement;
+            } catch (IOException e) {
+                e.printStackTrace();
             }
-        }).start();
+        }));
+
 
         //--------------------------------------------------------------//
         // Charger l'icône depuis les ressources
@@ -183,7 +186,8 @@ public class client {
             currentTraitement = client.getTraitement();
             if (currentTraitement != previousTraitement) {
                 try {
-                    text = "address#" + address_local_str + ":" + port[1] + "?traitement#" + currentTraitement + "?time#" + client.getLastModifiedTime();
+                    text = "C#cmd?address#" + this.address_local_str + "?time#" + LocalDateTime.now() + "?traitement#" + currentTraitement ;
+                    
                     sendTextUDP(text, address_broadcast, port[2]);
                     previousTraitement = currentTraitement; // Mettre à jour l'état précédent
                 } catch (IOException e) {

@@ -23,34 +23,28 @@ public class thread_envoie_cmd extends Thread {
     private String address_local_str; // adresse IP locale
     private String address_broadcast; // adresse IP de broadcast
     private int port; // port de communication
+    private String text;
 
     public thread_envoie_cmd(String type, String address_local_str, String address_broadcast, int port) {
         this.type = type;
         this.address_local_str = address_local_str;
         this.address_broadcast = address_broadcast;
         this.port = port;
+        this.text = "";
     }
 
     @Override
     public void run() {
-        Thread.currentThread().setName("Envoie de commandes");
+        Thread.currentThread().setName("boucle d'ajout a liste");
         while (true) {
             try {
-                this.sendTextUDP(type+"#"+getLastTwoSegments(this.address_local_str)+"?address#" + this.address_local_str + "?time#" + LocalDateTime.now(), this.address_broadcast, this.port);
+                this.text = type +"#add?address#" + this.address_local_str + "?time#" + LocalDateTime.now();
+                this.sendTextUDP(this.text, this.address_broadcast, this.port);
                 Thread.sleep(30000); // attendre 30 secondes
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
-    }
-    //--------------------------------------------------------------//
-    // Méthode pour obtenir les deux derniers segments d'une adresse IP
-    public static String getLastTwoSegments(String ip) {
-        String[] parts = ip.split("\\.");
-        if (parts.length >= 2) {
-            return parts[parts.length - 2] + "." + parts[parts.length - 1];
-        }
-        return ip;
     }
     //--------------------------------------------------------------//
     // Méthode pour envoyer un String via UDP

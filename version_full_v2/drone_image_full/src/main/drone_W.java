@@ -32,17 +32,13 @@ import org.opencv.imgcodecs.Imgcodecs;
 import org.opencv.imgproc.Imgproc;
 import org.opencv.videoio.VideoCapture;
 
-import thread.thread_reception_string;
-import util.error;
+import thread.*;
+import util.*;
 
 public class drone_W {
     static {
         System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
     }
-
-    private ArrayList <String> client_address = new ArrayList<>();
-    private ArrayList <String> client_time = new ArrayList<>();
-
 
     public drone_W () {
         
@@ -57,7 +53,7 @@ public class drone_W {
         String address = "172.29.41.9";
         String address_broadcast = "172.29.255.255";
 
-        String messageRecu ;
+        String messageRecu , action;
         String[] parts;
         LocalDateTime Client_Time = LocalDateTime.now() , update_afk = LocalDateTime.now();
         
@@ -127,29 +123,8 @@ public class drone_W {
         thread_reception_string commande = new thread_reception_string("traitement_UDP_String", socket_cmd);
         commande.start();
         
-        // Thread pour vérifier les adresses toutes les minutes
-        new Thread(() -> {
-            Thread.currentThread().setName("boucle d'afk");
-            while (true) {
-                try {
-                    LocalDateTime now = LocalDateTime.now();
-                    for (int i = 0; i < client_time.size(); i++) {
-                        LocalDateTime clientTime = LocalDateTime.parse(client_time.get(i));
-                        if (ChronoUnit.MINUTES.between(clientTime, now) > 3) {
-                            System.out.println("Adresse " + client_address.get(i) + " supprimée pour inactivité.");
-                            client_address.remove(i);
-                            client_time.remove(i);
-                            i--; // Ajuster l'index après la suppression
-                        }
-                    }
-                    System.out.println("Liste des adresses : " + client_address + " (" + client_address.size() + ")" + client_time + " (" + client_time.size() + ")");
-                    Thread.sleep(10000); // Vérification toutes les 10 secondes
-                } catch (InterruptedException e) {
-                    Thread.currentThread().interrupt();
-                    break;
-                }
-            }
-        }).start();
+        thread_list_dynamic_ip list_dynamic_ip = new thread_list_dynamic_ip("drone - boucle de vérification de la liste d'addresses");
+        list_dynamic_ip.start();
 
 
         //--------------------------------------------------------------//
@@ -169,43 +144,27 @@ public class drone_W {
             // Traitement du message reçu
             messageRecu = commande.getMessageRecu();
 
-            if (messageRecu.startsWith("T#")) {
+            if (messageRecu.startsWith("T#")){
                 parts = messageRecu.split("\\?");
-                boolean isTraitement = false;
-                // Parcourir chaque partie de la trame
-                for (String part : parts) {
-                    if (part.startsWith("traitement#")) {
-                        // Pour la partie "client", on peut éventuellement extraire des infos spécifiques
-                        // ou simplement l'ignorer, car elle sert de signal pour lancer le traitement.
-                    } else if (part.startsWith("time#")) {
-                        String timeString = part.split("#")[1];
-                        DateTimeFormatter formatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
-                        if (isTraitement) {
-                            Client_Time = LocalDateTime.parse(timeString, formatter);
-                        }
-                        update_afk = LocalDateTime.parse(timeString, formatter);
-                    } else if (part.startsWith("address#")) {
-                        String clientAddressPort = part.split("#")[1];
-                        String[] addressPortParts = clientAddressPort.split(":");
-                        String clientAddress = addressPortParts[0];
-                        int index = client_address.indexOf(clientAddress);
-                        if (index == -1) {
-                            client_address.add(clientAddress);
-                            client_time.add(update_afk.toString());
-                        } else {
-                            client_time.set(index, update_afk.toString());
-                        }
-                    }
+
+                action = parts[0].split("#")[1];
+
+                if (action.equals("add")){
+                
+                list_dynamic_ip.addClient(parts[1].split("#")[1], parts[2].split("#")[1]);
+                
+                } else if (action.equals("remove")){
+                
+                list_dynamic_ip.removeClient(parts[1].split("#")[1]);
+                
+
                 }
-                // Réinitialisation facultative
-                messageRecu = "";
-                parts = null;
             } else {
-                // Le message ne commence pas par "traitement#" : aucun traitement n'est effectué.
+                System.out.println("la trame n'est pas émise par un serveur");
             }
-
-
-
+            // Réinitialisation des variables
+            messageRecu = "";
+            parts = null;
 
             // Redimensionner l'image
             Imgproc.resize(frame, frame, new Size(imgsize[0], imgsize[1]));
@@ -222,8 +181,8 @@ public class drone_W {
             // Envoi de l'image
 
             // Envoi de l'image à chaque adresse dans la liste
-            if (!client_address.isEmpty()) {
-                for (String addr : client_address) {
+            if (!list_dynamic_ip.getClientAddress().isEmpty()) {
+                for (String addr : list_dynamic_ip.getClientAddress()) {
                     try {
                         sendImageUDP(encodedData, addr, port[0]);
                         currentTime = System.nanoTime();

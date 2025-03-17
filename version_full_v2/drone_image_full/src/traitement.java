@@ -76,7 +76,7 @@ public class traitement {
     double fps = 0.0;
 
     Process process = null;
-    String address_local_str ;
+    String address_local_str , text ;
 
     public traitement () {
 
@@ -171,7 +171,9 @@ public class traitement {
             e.printStackTrace();
         }
 
-        
+        String action = "";
+
+
         // Définition de la taille de l'image
         int imgsize[] = {1280, 720};
     
@@ -187,6 +189,8 @@ public class traitement {
 
         int quality = 70; // Qualité initiale
         byte[] encodedData;
+
+        LocalDateTime droneTime , traitementTime ;
 
         // Taille maximale autorisée pour un paquet UDP (en bytes)
         int maxPacketSize = 65000; // 65536 - 8 (overhead UDP)
@@ -235,6 +239,20 @@ public class traitement {
         thread_envoie_cmd envoie_cmd = new thread_envoie_cmd("T", address_local_str, address_broadcast, port[2]);
         envoie_cmd.start();
 
+        thread_list_dynamic_ip list_dynamic_ip = new thread_list_dynamic_ip("traitement - boucle de vérification de la liste d'addresses");
+        list_dynamic_ip.start();
+
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            try {
+                text = "T#remove?address#" + this.address_local_str ;
+                sendTextUDP(text, address_broadcast, port[2]);
+                // Optionnel : mettre à jour l'état
+                // previousTraitement = currentTraitement;
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }));
+
 
         //--------------------------------------------------------------//
          // Charger l'icône depuis les ressources
@@ -268,49 +286,36 @@ public class traitement {
                 // Traitement du message reçu
                 messageRecu = commande.getMessageRecu();
 
-                if (messageRecu.startsWith("C#")) {
+                if (messageRecu.startsWith("C#")){
                     parts = messageRecu.split("\\?");
-                    boolean isTraitement = false;
-                    
-                    // Parcourir chaque partie de la trame
-                    for (String part : parts) {
-                        if (part.startsWith("C#")) {
-                            // Pour la partie "client", on peut éventuellement extraire des infos spécifiques
-                            // ou simplement l'ignorer, car elle sert de signal pour lancer le traitement.
-                        } else if (part.startsWith("traitement#")) {
-                            Client_traitement = Integer.parseInt(part.split("#")[1]);
-                            if (Client_traitement == 0 || Client_traitement == 1 || Client_traitement == 2 || Client_traitement == 3) {
-                                isTraitement = true;
-                            }
-                        } else if (part.startsWith("time#")) {
-                            String timeString = part.split("#")[1];
-                            DateTimeFormatter formatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
-                            if (isTraitement) {
-                                Client_Time = LocalDateTime.parse(timeString, formatter);
-                            }
-                        } else if (part.startsWith("address#")) {
-                            String clientAddressPort = part.split("#")[1];
-                            String[] addressPortParts = clientAddressPort.split(":");
-                            String clientAddress = addressPortParts[0];
-                            int index = thread_list_dynamic_ip.getClientAddress().indexOf(clientAddress);
-                            if (index == -1) {
-                                thread_list_dynamic_ip.addClient(clientAddress);
-                            } else {
-                                thread_list_dynamic_ip.updateClient(clientAddress);
-                            }
-                        }
-                    }
-                    // Réinitialisation facultative
-                    messageRecu = "";
-                    parts = null;
-                } else {
-                    // Le message ne commence pas par "client#" : aucun traitement n'est effectué.
-                }
 
+                    action = parts[0].split("#")[1];
+
+                    if (action.equals("add")){
+                    
+                    list_dynamic_ip.addClient(parts[1].split("#")[1], parts[2].split("#")[1]);
+                    
+                    } else if (action.equals("remove")){
+                    
+                    list_dynamic_ip.removeClient(parts[1].split("#")[1]);
+                    
+                    } else if (action.equals("cmd")){
+                    
+                    list_dynamic_ip.updateClient(parts[1].split("#")[1]);
+                    Client_Time = LocalDateTime.parse(parts[2].split("#")[1]);
+                    Client_traitement = Integer.parseInt(parts[3].split("#")[1]);
+
+                    }
+                } else {
+                    System.out.println("la trame n'est pas émise par un client ");
+                }
+                // Réinitialisation des variables
+                messageRecu = "";
+                parts = null;
 
                 // Comparer les temps de modification et mettre à jour la valeur de traitement
-                LocalDateTime droneTime = drone.getLastModifiedTime();
-                LocalDateTime traitementTime = traitement.getLastModifiedTime();
+                droneTime = drone.getLastModifiedTime();
+                traitementTime = traitement.getLastModifiedTime();
 
                 if (Client_Time.isAfter(droneTime) && Client_Time.isAfter(traitementTime)) {
                     traitements = Client_traitement;
@@ -411,8 +416,8 @@ public class traitement {
                 }
 
                 // Envoi de l'image à chaque adresse dans la liste
-                if (!thread_list_dynamic_ip.getClientAddress().isEmpty()) {
-                    for (String addr : thread_list_dynamic_ip.getClientAddress()) {
+                if (!list_dynamic_ip.getClientAddress().isEmpty()) {
+                    for (String addr : list_dynamic_ip.getClientAddress()) {
                         try {
                             sendImageUDP(encodedData, addr, port[1]);
                         } catch (IOException e) {

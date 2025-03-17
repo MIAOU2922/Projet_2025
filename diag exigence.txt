@@ -1,0 +1,21 @@
+Char terrestre
+    Mouvoir le char terrestre
+        Modes de pilotage
+            Automatique (reproduction de séquences de commandes)
+            Manuel (PC, interface haptique, application Android)
+    Visualiser la zone
+        Acquisition et diffusion du flux vidéo en temps réel
+        Création d’un environnement 3D augmenté avec télémétrie
+    Détecter les formes
+        Identification des contours et formes géométriques simples
+        Reconnaissance du véhicule sur le flux vidéo
+    Récupérer les informations de télémétrie
+        Température, pression, altitude, vitesse, niveau de batterie, GPS
+        Transmission et intégration dans l’environnement 3D
+    Superviser les données
+        Interface de supervision sur PC et Android
+        Intégration de la télémétrie et de la vidéo augmentée
+    Diffuser le flux vidéo et les données
+        PC
+        Android
+        Casque VR
