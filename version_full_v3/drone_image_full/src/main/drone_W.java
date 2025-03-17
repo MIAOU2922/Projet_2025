@@ -1,0 +1,222 @@
+/**
+ * -------------------------------------------------------------------
+ * Nom du fichier : drone.java
+ * Auteur         : BEAL JULIEN
+ * Version        : 3.0
+ * Date           : 11/02/2025
+ * Description    : Code drone pour envoi d'image
+ * -------------------------------------------------------------------
+ * © 2025 BEAL JULIEN - Tous droits réservés
+ */
+
+package main;
+
+import java.io.IOException;
+import java.net.*;
+import java.util.Enumeration;
+
+import org.opencv.core.Core;
+import org.opencv.core.Mat;
+import org.opencv.core.MatOfByte;
+import org.opencv.core.MatOfInt;
+import org.opencv.core.Size;
+import org.opencv.imgcodecs.Imgcodecs;
+import org.opencv.imgproc.Imgproc;
+import org.opencv.videoio.VideoCapture;
+
+import thread.*;
+import util.*;
+
+public class drone_W {
+    static {
+        System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
+    }
+
+    // Définition des ports UDP
+    private int[] port = {55000, 55001, 55002};
+
+    // Définition des adresses IP
+    private String address = "172.29.41.9";
+    private String addressBroadcast = "172.29.255.255";
+
+    // Variables réseau
+    private InetAddress addressLocal = null;
+    private String addressLocalStr = "";
+
+    // Variables UDP
+    private byte[] data = new byte[65536];
+    private DatagramSocket socketCmd;
+    private DatagramPacket packet;
+
+    // Variables de gestion d'image
+    private int[] imgSize = {1280, 720};
+    private int maxPacketSize = 65528; // Taille maximale d'un paquet UDP
+    private int quality = 70; // Qualité initiale de compression JPEG
+    private VideoCapture capture;
+    private Mat frame;
+
+    // Variables de gestion du temps
+    private long previousTime = System.nanoTime();
+
+    // Threads
+    private thread_reception_string commande;
+    private thread_list_dynamic_ip listDynamicIp;
+
+    //--------------------------------------------------------------//
+    public drone_W() {
+        try {
+            this.initializeNetwork();
+            this.initializeCamera();
+            this.startThreads();
+            error.printError();
+            this.mainLoop();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    //--------------------------------------------------------------//
+    // Initialisation du réseau
+    private void initializeNetwork() throws Exception {
+        Enumeration<NetworkInterface> interfaces = NetworkInterface.getNetworkInterfaces();
+        while (interfaces.hasMoreElements()) {
+            NetworkInterface networkInterface = interfaces.nextElement();
+            if (networkInterface.isLoopback() || !networkInterface.isUp()) {
+                continue;
+            }
+            Enumeration<InetAddress> addresses = networkInterface.getInetAddresses();
+            while (addresses.hasMoreElements()) {
+                InetAddress inetAddress = addresses.nextElement();
+                if (inetAddress instanceof Inet4Address) {
+                    String ip = inetAddress.getHostAddress();
+                    if (ip.startsWith("172.29")) {
+                        this.addressLocal = inetAddress;
+                        this.addressLocalStr = ip;
+                        break;
+                    }
+                }
+            }
+            if (this.addressLocal != null) {
+                break;
+            }
+        }
+
+        if (this.addressLocal == null) {
+            throw new Exception("Aucune adresse IP locale valide trouvée.");
+        }
+
+        this.socketCmd = new DatagramSocket(this.port[2]);
+        this.packet = new DatagramPacket(this.data, this.data.length);
+    }
+    //--------------------------------------------------------------//
+    // Initialisation de la caméra
+    private void initializeCamera() {
+        this.capture = new VideoCapture(0);
+        if (!this.capture.isOpened()) {
+            System.out.println("Erreur : Impossible d'ouvrir la caméra.");
+            return;
+        }
+        this.frame = new Mat();
+    }
+    //--------------------------------------------------------------//
+    // Lancement des threads
+    private void startThreads() {
+        this.commande = new thread_reception_string("traitement_UDP_String", this.socketCmd);
+        this.commande.start();
+
+        this.listDynamicIp = new thread_list_dynamic_ip("drone - boucle de vérification de la liste d'adresses");
+        this.listDynamicIp.start();
+    }
+    //--------------------------------------------------------------//
+    // Boucle principale
+    private void mainLoop() {
+        while (true) {
+            if (!this.capture.read(this.frame)) {
+                System.out.println("Erreur de capture d'image.");
+                break;
+            }
+
+            this.processReceivedMessage();
+            this.sendImage();
+
+            try {
+                Thread.sleep(20);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
+        }
+    }
+    //--------------------------------------------------------------//
+    // Traitement des messages reçus
+    private void processReceivedMessage() {
+        String messageRecu = this.commande.getMessageRecu();
+        if (messageRecu.startsWith("T#")) {
+            String[] parts = messageRecu.split("\\?");
+            String action = parts[0].split("#")[1];
+
+            if (action.equals("add")) {
+                this.listDynamicIp.addClient(parts[1].split("#")[1], parts[2].split("#")[1]);
+            } else if (action.equals("remove")) {
+                this.listDynamicIp.removeClient(parts[1].split("#")[1]);
+            }
+        }
+    }
+    //--------------------------------------------------------------//
+    // Envoi de l'image
+    private void sendImage() {
+        Imgproc.resize(this.frame, this.frame, new Size(this.imgSize[0], this.imgSize[1]));
+        this.quality = 70;
+
+        byte[] encodedData;
+        do {
+            encodedData = encodeImageToJPEG(this.frame, this.quality);
+            this.quality -= 5;
+        } while (encodedData.length > this.maxPacketSize && this.quality > 10);
+
+        if (!this.listDynamicIp.getClientAddress().isEmpty()) {
+            for (String addr : this.listDynamicIp.getClientAddress()) {
+                try {
+                    this.sendImageUDP(encodedData, addr, this.port[0]);
+
+                    long currentTime = System.nanoTime();
+                    double intervalInSeconds = (currentTime - this.previousTime) / 1_000_000_000.0;
+                    double fps = 1.0 / intervalInSeconds;
+                    // System.out.printf(" FPS: %.0f\n", fps);
+
+                    this.previousTime = currentTime;
+
+                } catch (IOException e) {
+                    System.out.println("Erreur lors de l'envoi de l'image : " + e.getMessage());
+                }
+            }
+        }
+    }
+    //--------------------------------------------------------------//
+    // Méthode pour envoyer une image via UDP
+    private void sendImageUDP(byte[] imageData, String address, int port) throws IOException {
+        try (DatagramSocket socket = new DatagramSocket()) {
+            InetAddress ipAddress = InetAddress.getByName(address);
+            DatagramPacket packet = new DatagramPacket(imageData, imageData.length, ipAddress, port);
+            socket.send(packet);
+        }
+    }
+    //--------------------------------------------------------------//
+    // Méthode pour envoyer un String via UDP
+    private void sendTextUDP(String data, String address, int port) throws IOException {
+        try (DatagramSocket socket = new DatagramSocket()) {
+            InetAddress ipAddress = InetAddress.getByName(address);
+            byte[] buffer = data.getBytes();
+            DatagramPacket packet = new DatagramPacket(buffer, buffer.length, ipAddress, port);
+            socket.send(packet);
+
+            System.out.println("Données envoyées à " + address + ":" + port);
+            System.out.println("Données envoyées : " + data);
+        }
+    }
+    //--------------------------------------------------------------//
+    // Méthode pour encoder une image en JPEG
+    private static byte[] encodeImageToJPEG(Mat image, int quality) {
+        MatOfByte matOfByte = new MatOfByte();
+        Imgcodecs.imencode(".jpg", image, matOfByte, new MatOfInt(Imgcodecs.IMWRITE_JPEG_QUALITY, quality));
+        return matOfByte.toArray();
+    }
+}
