@@ -306,8 +306,6 @@ public class traitement {
                     Client_traitement = Integer.parseInt(parts[3].split("#")[1]);
 
                     }
-                } else {
-                    System.out.println("la trame n'est pas émise par un client ");
                 }
                 // Réinitialisation des variables
                 messageRecu = "";

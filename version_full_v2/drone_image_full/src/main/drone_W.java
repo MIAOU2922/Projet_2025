@@ -159,8 +159,6 @@ public class drone_W {
                 
 
                 }
-            } else {
-                System.out.println("la trame n'est pas émise par un serveur");
             }
             // Réinitialisation des variables
             messageRecu = "";
