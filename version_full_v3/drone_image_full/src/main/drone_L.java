@@ -2,7 +2,7 @@
  * -------------------------------------------------------------------
  * Nom du fichier : drone.java
  * Auteur         : BEAL JULIEN
- * Version        : 2.0
+ * Version        : 3.0
  * Date           : 11/02/2025
  * Description    : Code drone pour envoi d'image
  * -------------------------------------------------------------------
@@ -12,16 +12,7 @@
 package main;
 
 import java.io.IOException;
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
-import java.net.Inet4Address;
-import java.net.InetAddress;
-import java.net.NetworkInterface;
-import java.net.URISyntaxException;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
+import java.net.*;
 import java.util.Enumeration;
 
 import org.opencv.core.Core;
@@ -33,20 +24,14 @@ import org.opencv.imgcodecs.Imgcodecs;
 import org.opencv.imgproc.Imgproc;
 import org.opencv.videoio.VideoCapture;
 
-import thread.thread_reception_string;
-import util.error;
+import thread.*;
+import util.*;
 
 public class drone_L {
     static {
-        /*
+        //System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
         try {
-            System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
-        } catch (Exception e) {
-            System.out.println("Erreur lors du chargement des librairies: " + e);
-        }
-        */
-        try {
-            String libPath = System.getProperty("user.dir") + "/lib/libopencv_java480.so";
+            String libPath = System.getProperty("user.dir") + "/lib/libopencv_java454.so";
             System.load(libPath);
             
         } catch (Exception e) {
@@ -54,35 +39,42 @@ public class drone_L {
         }
     }
 
-    private ArrayList <String> client_address = new ArrayList<>();
-    private ArrayList <String> client_time = new ArrayList<>();
+    // Définition des ports UDP
+    private int[] port = {55000, 55001, 55002};
 
+    // Définition des adresses IP
+    private String address = "172.29.41.9";
+    private String addressBroadcast = "172.29.255.255";
 
-    public drone_L () {
-        
-        // Définition des ports UDP
-        int port[] = {
-            55000, // Port de réception traitement
-            55001, // Port de réception client
-            55002 // Port de commande image
-            };
-        
-        // Définition des adresses IP
-        String address = "172.29.41.9";
-        String address_broadcast = "172.29.255.255";
+    // Variables réseau
+    private InetAddress addressLocal = null;
+    private String addressLocalStr = "";
 
-        String messageRecu ;
-        String[] parts;
-        LocalDateTime Client_Time = LocalDateTime.now() , update_afk = LocalDateTime.now();
-        
-        InetAddress address_local = null;
-        String address_local_str = "";
-        byte[] data = new byte[65536];
-        DatagramSocket socket_cmd = null;
-        DatagramPacket packet = null;
+    // Variables UDP
+    private byte[] data = new byte[65536];
+    private DatagramSocket socketCmd;
+    private DatagramPacket packet;
 
+    // Variables de gestion d'image
+    private int[] imgSize = {1280, 720};
+    private int maxPacketSize = 65528; // Taille maximale d'un paquet UDP
+    private int quality = 70; // Qualité initiale de compression JPEG
+    private VideoCapture capture;
+    private Mat frame;
+
+    // Variables de gestion du temps
+    private long previousTime = System.nanoTime();
+
+    // Threads
+    private thread_reception_string commande;
+    private thread_list_dynamic_ip listDynamicIp;
+
+    //--------------------------------------------------------------//
+    public drone_L() {
+
+        //--------------------------------------------------------------//
+        // Initialisation des adresses IP et des sockets UDP
         try {
-            // Obtenir l'adresse IP locale
             Enumeration<NetworkInterface> interfaces = NetworkInterface.getNetworkInterfaces();
             while (interfaces.hasMoreElements()) {
                 NetworkInterface networkInterface = interfaces.nextElement();
@@ -95,167 +87,74 @@ public class drone_L {
                     if (inetAddress instanceof Inet4Address) {
                         String ip = inetAddress.getHostAddress();
                         if (ip.startsWith("172.29")) {
-                            address_local = inetAddress;
-                            address_local_str = ip;
+                            this.addressLocal = inetAddress;
+                            this.addressLocalStr = ip;
                             break;
                         }
                     }
                 }
-                if (address_local != null) {
+                if (this.addressLocal != null) {
                     break;
                 }
             }
-
-            if (address_local == null) {
+    
+            if (this.addressLocal == null) {
                 throw new Exception("Aucune adresse IP locale valide trouvée.");
             }
-
-            // Initialisation du socket UDP
-
-            socket_cmd = new DatagramSocket(port[2]);
-            packet = new DatagramPacket(data, data.length);
-        } catch (Exception e) {
+    
+            this.socketCmd = new DatagramSocket(this.port[2]);
+            this.packet = new DatagramPacket(this.data, this.data.length);
+        }catch (Exception e) {
+            System.out.println("Erreur lors de l'initialisation des adresses IP et des sockets UDP");
             e.printStackTrace();
         }
-        
-        // Définition de la taille de l'image
-        int imgsize[] = {1280, 720};
-        // Initialisation des sockets
-        VideoCapture capture = new VideoCapture(0);
-        // Vérification si la caméra est ouverte
-        if (!capture.isOpened()) {
-            System.out.println("Erreur : Impossible d'ouvrir la caméra.");
-            return;
-        }
-        // Initialisation des matrices
-        Mat frame = new Mat();
-        // Taille maximale autorisée pour un paquet UDP (en bytes)
-        int maxPacketSize = 65528; // 65536 - 8 (overhead UDP)
-
-        long currentTime , previousTime =System.nanoTime() ;
-        double intervalInSeconds , fps;
-
-        int quality = 70; // Qualité initiale
-        byte[] encodedData;
-
-        thread_reception_string commande = new thread_reception_string("traitement_UDP_String", socket_cmd);
-        commande.start();
-        
-        // Thread pour vérifier les adresses toutes les minutes
-        new Thread(() -> {
-            Thread.currentThread().setName("boucle d'afk");
-            while (true) {
-                try {
-                    LocalDateTime now = LocalDateTime.now();
-                    for (int i = 0; i < client_time.size(); i++) {
-                        LocalDateTime clientTime = LocalDateTime.parse(client_time.get(i));
-                        if (ChronoUnit.MINUTES.between(clientTime, now) > 3) {
-                            System.out.println("Adresse " + client_address.get(i) + " supprimée pour inactivité.");
-                            client_address.remove(i);
-                            client_time.remove(i);
-                            i--; // Ajuster l'index après la suppression
-                        }
-                    }
-                    System.out.println("Liste des adresses : " + client_address + " (" + client_address.size() + ")" + client_time + " (" + client_time.size() + ")");
-                    Thread.sleep(10000); // Vérification toutes les 10 secondes
-                } catch (InterruptedException e) {
-                    Thread.currentThread().interrupt();
-                    break;
-                }
+        //--------------------------------------------------------------//
+        // Initialisation de la caméra
+        try {
+            this.capture = new VideoCapture(0);
+            if (!this.capture.isOpened()) {
+                System.out.println("Erreur : Impossible d'ouvrir la caméra.");
+                return;
             }
-        }).start();
-
-
+            this.frame = new Mat();
+        }catch (Exception e) {
+            System.out.println("Erreur lors de l'initialisation de la caméra");
+            e.printStackTrace();
+        }
         //--------------------------------------------------------------//
+        // Lancement des threads
+        try {
+            this.commande = new thread_reception_string("traitement_UDP_String", this.socketCmd);
+            this.commande.start();
+    
+            this.listDynamicIp = new thread_list_dynamic_ip("drone - boucle de vérification de la liste d'adresses");
+            this.listDynamicIp.start();
+        }catch (Exception e) {
+            System.out.println("Erreur lors du lancement des threads");
+            e.printStackTrace();
+        }
         //--------------------------------------------------------------//
-        //--------------------------- boucle ---------------------------//
-        //--------------------------------------------------------------//
-        //--------------------------------------------------------------//
-        error.printError();
-        // Boucle principale
+        // Boucle principale du drone
+        try {
+            error.printError();
+            this.mainLoop();
+        } catch (Exception e) {
+            System.out.println("Erreur lors de l'exécution de la boucle principale");
+            e.printStackTrace();
+        }
+    }
+    //--------------------------------------------------------------//
+    // Boucle principale
+    private void mainLoop() {
         while (true) {
-            // Capture d'une image
-            if (!capture.read(frame)) {
+            if (!this.capture.read(this.frame)) {
                 System.out.println("Erreur de capture d'image.");
                 break;
             }
 
-            // Traitement du message reçu
-            messageRecu = commande.getMessageRecu();
+            this.processReceivedMessage();
+            this.sendImage();
 
-            if (messageRecu.startsWith("T#")) {
-                parts = messageRecu.split("\\?");
-                boolean isTraitement = false;
-                // Parcourir chaque partie de la trame
-                for (String part : parts) {
-                    if (part.startsWith("traitement#")) {
-                        // Pour la partie "client", on peut éventuellement extraire des infos spécifiques
-                        // ou simplement l'ignorer, car elle sert de signal pour lancer le traitement.
-                    } else if (part.startsWith("time#")) {
-                        String timeString = part.split("#")[1];
-                        DateTimeFormatter formatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
-                        if (isTraitement) {
-                            Client_Time = LocalDateTime.parse(timeString, formatter);
-                        }
-                        update_afk = LocalDateTime.parse(timeString, formatter);
-                    } else if (part.startsWith("address#")) {
-                        String clientAddressPort = part.split("#")[1];
-                        String[] addressPortParts = clientAddressPort.split(":");
-                        String clientAddress = addressPortParts[0];
-                        int index = client_address.indexOf(clientAddress);
-                        if (index == -1) {
-                            client_address.add(clientAddress);
-                            client_time.add(update_afk.toString());
-                        } else {
-                            client_time.set(index, update_afk.toString());
-                        }
-                    }
-                }
-                // Réinitialisation facultative
-                messageRecu = "";
-                parts = null;
-            } else {
-                // Le message ne commence pas par "traitement#" : aucun traitement n'est effectué.
-            }
-
-
-
-
-            // Redimensionner l'image
-            Imgproc.resize(frame, frame, new Size(imgsize[0], imgsize[1]));
-            
-            // Ajuster dynamiquement le taux de compression
-            quality = 70; // Qualité initiale
-
-
-            // Encoder l'image en JPEG et ajuster la qualité si nécessaire
-            do {
-                encodedData = encodeImageToJPEG(frame, quality);
-                quality -= 5; // Réduire la qualité de compression
-            } while (encodedData.length > maxPacketSize && quality > 10); // Réduire jusqu'à ce que l'image tienne dans un paquet UDP
-            // Envoi de l'image
-
-            // Envoi de l'image à chaque adresse dans la liste
-            if (!client_address.isEmpty()) {
-                for (String addr : client_address) {
-                    try {
-                        sendImageUDP(encodedData, addr, port[0]);
-                        currentTime = System.nanoTime();
-                        intervalInSeconds = (currentTime - previousTime) / 1_000_000_000.0; // Intervalle en secondes
-                        fps = 1.0 / intervalInSeconds; // Calcul des FPS
-                        //System.out.printf(" FPS: %.0f\n", fps);
-        
-                        // Mettre à jour le temps précédent
-                        previousTime = currentTime;
-        
-                    } catch (IOException e) {
-                        System.out.println("Erreur lors de l'envoi de l'image : " + e.getMessage());
-                    }
-                }
-            } else {
-                //System.out.println("La liste des adresses est vide, aucune image n'a été envoyée.");
-            }
-            // Tempo
             try {
                 Thread.sleep(20);
             } catch (InterruptedException e) {
@@ -264,49 +163,63 @@ public class drone_L {
         }
     }
     //--------------------------------------------------------------//
+    // Traitement des messages reçus
+    private void processReceivedMessage() {
+        String messageRecu = this.commande.getMessageRecu();
+        if (messageRecu.startsWith("T#")) {
+            String[] parts = messageRecu.split("\\?");
+            String action = parts[0].split("#")[1];
+
+            if (action.equals("add")) {
+                this.listDynamicIp.addClient(parts[1].split("#")[1], parts[2].split("#")[1]);
+            } else if (action.equals("remove")) {
+                this.listDynamicIp.removeClient(parts[1].split("#")[1]);
+            }
+        }
+    }
+    //--------------------------------------------------------------//
+    // Envoi de l'image
+    private void sendImage() {
+        Imgproc.resize(this.frame, this.frame, new Size(this.imgSize[0], this.imgSize[1]));
+        this.quality = 70;
+
+        byte[] encodedData;
+        do {
+            encodedData = encodeImageToJPEG(this.frame, this.quality);
+            this.quality -= 5;
+        } while (encodedData.length > this.maxPacketSize && this.quality > 10);
+
+        if (!this.listDynamicIp.getClientAddress().isEmpty()) {
+            for (String addr : this.listDynamicIp.getClientAddress()) {
+                try {
+                    this.sendImageUDP(encodedData, addr, this.port[0]);
+
+                    long currentTime = System.nanoTime();
+                    double intervalInSeconds = (currentTime - this.previousTime) / 1_000_000_000.0;
+                    double fps = 1.0 / intervalInSeconds;
+                    // System.out.printf(" FPS: %.0f\n", fps);
+
+                    this.previousTime = currentTime;
+
+                } catch (IOException e) {
+                    System.out.println("Erreur lors de l'envoi de l'image : " + e.getMessage());
+                }
+            }
+        }
+    }
+    //--------------------------------------------------------------//
     // Méthode pour envoyer une image via UDP
     private void sendImageUDP(byte[] imageData, String address, int port) throws IOException {
-        DatagramSocket socket = null;
-        try {
-            socket = new DatagramSocket();
+        try (DatagramSocket socket = new DatagramSocket()) {
             InetAddress ipAddress = InetAddress.getByName(address);
             DatagramPacket packet = new DatagramPacket(imageData, imageData.length, ipAddress, port);
             socket.send(packet);
-            //System.out.println("Image envoyée à " + address + ":" + port );
-        } finally {
-            if (socket != null && !socket.isClosed()) {
-                socket.close();
-            }
-        }
-    }
-
-    //--------------------------------------------------------------//
-    // Méthode pour envoyer un String via UDP
-    private void sendTextUDP(String data, String address, int port) throws IOException {
-        DatagramSocket socket = null;
-        try {
-            socket = new DatagramSocket(); // Crée un socket UDP
-            InetAddress ipAddress = InetAddress.getByName(address); // Résolution de l'adresse IP
-            
-            byte[] buffer = data.getBytes(); // Convertir le texte en tableau d'octets
-            
-            DatagramPacket packet = new DatagramPacket(buffer, buffer.length, ipAddress, port);
-            socket.send(packet); // Envoie du paquet UDP
-            
-            System.out.println("Données envoyées à " + address + ":" + port );
-            System.out.println("Données envoyées : " + data);
-
-        } finally {
-            if (socket != null && !socket.isClosed()) {
-                socket.close(); // Ferme le socket proprement
-            }
         }
     }
     //--------------------------------------------------------------//
-    // Méthode pour encoder une image en JPEG avec un taux de compression donné
+    // Méthode pour encoder une image en JPEG
     private static byte[] encodeImageToJPEG(Mat image, int quality) {
         MatOfByte matOfByte = new MatOfByte();
-        // Encoder l'image en JPEG avec un taux de compression spécifique
         Imgcodecs.imencode(".jpg", image, matOfByte, new MatOfInt(Imgcodecs.IMWRITE_JPEG_QUALITY, quality));
         return matOfByte.toArray();
     }
