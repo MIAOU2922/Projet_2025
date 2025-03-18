@@ -123,7 +123,7 @@ public class traitement {
         //--------------------------------------------------------------//
         // Lancement du programme Chai3D
         try {
-            ProcessBuilder pb = new ProcessBuilder("F:\\BEAL_JULIEN_SN2\\_projet_2025\\git\\Chai3d-3.2.0\\bin\\win-x64\\00-drone-ju.exe");
+            ProcessBuilder pb = new ProcessBuilder("F:\\BEAL_JULIEN_SN2\\_projet_2025\\git\\@Chai3d-3.2.0_VisualStudio_2015_x64-VirtualDevice-Formes-08\\bin\\win-x64\\00-drone-ju.exe");
             this.process = pb.start();
             Runtime.getRuntime().addShutdownHook(new Thread(() -> {
                 if (this.process.isAlive()) {

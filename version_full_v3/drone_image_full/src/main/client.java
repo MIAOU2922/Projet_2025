@@ -237,7 +237,6 @@ public class client {
         return ImageIO.read(bis);
     }
     //--------------------------------------------------------------//
-    //--------------------------------------------------------------//
     // Méthode pour envoyer un String via UDP
     private void sendTextUDP(String data, String address, int port) throws IOException {
         DatagramSocket socket = null;

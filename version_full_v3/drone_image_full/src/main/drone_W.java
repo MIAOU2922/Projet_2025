@@ -36,8 +36,8 @@ public class drone_W {
     private int[] port = {55000, 55001, 55002};
 
     // Définition des adresses IP
-    private String address = "172.29.41.9";
-    private String addressBroadcast = "172.29.255.255";
+    private String address = "";
+
 
     // Variables réseau
     private InetAddress addressLocal = null;
@@ -147,6 +147,7 @@ public class drone_W {
 
             this.processReceivedMessage();
             this.sendImage();
+            
 
             try {
                 Thread.sleep(20);
