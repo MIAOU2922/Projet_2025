@@ -1,4 +1,0 @@
-﻿  04-bullet-tool.cpp
-F:\BEAL_JULIEN_SN2\_projet_2025\git\Chai3d-3.2.0\modules\BULLET\external\bullet\src\BulletCollision\CollisionDispatch\btManifoldResult.h(26,10): error C1083: Impossible d'ouvrir le fichier include : 'BulletCollision/NarrowPhaseCollision/btDiscreteCollisionDetectorInterface.h' : No such file or directory
-  (compiler le fichier source '04-bullet-tool.cpp')
-  
