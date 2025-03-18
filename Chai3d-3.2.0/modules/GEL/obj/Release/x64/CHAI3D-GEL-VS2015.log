@@ -1,1 +1,8 @@
-﻿
+﻿  CGELLinearSpring.cpp
+  CGELMassParticle.cpp
+  CGELMesh.cpp
+  CGELSkeletonLink.cpp
+  CGELSkeletonNode.cpp
+  CGELVertex.cpp
+  CGELWorld.cpp
+  CHAI3D-GEL-VS2015.vcxproj -> F:\BEAL_JULIEN_SN2\_projet_2025\git\Chai3d-3.2.0\modules\GEL\lib\Release\x64\chai3d-GEL.lib
