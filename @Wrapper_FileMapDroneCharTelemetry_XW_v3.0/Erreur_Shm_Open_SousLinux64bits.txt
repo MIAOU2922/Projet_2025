@@ -1,0 +1,6 @@
+ Modifier le fichier link.txt dans
+01-Compile_libniFalconMast_FalconFileMappingBridge_Linux64_C++_Java_Python2_v2.0/build/lang/swig/CMakeFiles/_pyfilemapping.dir/
+
+ajouter -lrt à la fin de la ligne
+
+/usr/bin/c++  -fPIC -std=c++11 -DREENTRANT -std=c++0x -D_REENTRANT -std=c++0x -D_THREAD_SAFE -std=c++0x -D_FILE_OFFSET_BITS=64 -std=c++0x -D_LARGEFILE_SOURCE -std=c++0x -D__STDC_LIMIT_MACROS -std=c++0x -L/lib64 -pthread -lrt -shared  -o ../../lib/_pyfilemapping.so CMakeFiles/_pyfilemapping.dir/libfilemapping_swigPYTHON_wrap.cxx.o CMakeFiles/_pyfilemapping.dir/__/src/FileMappingBridge.cpp.o  -L/home/adminuser/Documents/01-Compile_libniFalconMast_FalconFileMappingBridge_Linux64_C++_Java_Python2_v2.0/build/lib /usr/lib/x86_64-linux-gnu/libpython2.7.so.1.0 -Wl,-rpath,/usr/local/lib -lrt

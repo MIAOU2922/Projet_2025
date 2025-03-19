@@ -1,0 +1,13 @@
+undefined symbol: PyBytes_AsStringAndSize
+
+L'erreur ci-dessus est signalée car on utilise pip3 (python 3) et TF env est défini sur python2.7.
+
+Il faut installer pip2 pour python2
+
+
+
+ apt-get install python-pip
+ 
+ pip install envpy
+
+

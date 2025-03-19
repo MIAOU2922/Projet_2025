@@ -100,6 +100,8 @@ public class traitement {
     // Threads
     private thread_reception_image reception;
     private thread_reception_string commande;
+    private thread_reception_string telemetrie;
+
     private thread_detection_contours detection_contours;
     private thread_detection_formes detection_formes;
     private thread_envoie_cmd envoie_cmd;
@@ -199,8 +201,11 @@ public class traitement {
             this.reception = new thread_reception_image("traitement_UDP_image", this.socket_image, this.imageRecu);
             this.reception.start();
     
-            this.commande = new thread_reception_string("traitement_UDP_String", this.socket_cmd);
+            this.commande = new thread_reception_string("reception_cmd_traitement", this.socket_cmd);
             this.commande.start();
+
+            this.telemetrie = new thread_reception_string("reception_telemetrie_traitement", this.socket_cmd);
+            this.telemetrie.start();
     
             this.detection_contours = new thread_detection_contours(this.imageRecu, false);
             this.detection_contours.start();

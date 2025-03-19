@@ -1,0 +1,25 @@
+
+Py3
+python include dir
+/usr/local/include/python3.7m
+python library  et release
+/usr/lib/x86_64-linux-gnu/libpython3.4m.so.1.0
+
+Py2
+python include dir
+/usr/local/include/python3.7m
+python library  et release
+/usr/lib/x86_64-linux-gnu/libpython2.7.so.1.0
+
+pour python (erreur shm_open)
+-lrt au linkage dans le cmake-gui ajouter au 
+//CMAKE_EXE_LINKER_FLAGS    -lrt
+MAKE_MODULE_LINKER_FLAGS  -lrt
+
+
+Java
+/usr/lib/jvm/java-8-oracle/include
+/usr/lib/jvm/java-8-oracle/lib/amd64/libjawt.so
+/usr/lib/jvm/java-8-oracle/include
+/usr/lib/jvm/java-8-oracle/include/linux
+/usr/lib/jvm/java-8-oracle/jre/lib/amd64/server/libjvm.so
