@@ -262,7 +262,8 @@ public class traitement {
     //--------------------------------------------------------------//
     // Boucle principale de traitement
     private void mainLoop() {
-        String messageRecu;
+        String commandeRecu;
+        String telemetryRecu;
         String[] parts;
         String action = "";
         int quality = 70;
@@ -282,9 +283,9 @@ public class traitement {
 
                 //--------------------------------------------------------------//
                 // Traitement du message UDP reçu
-                messageRecu = this.commande.getMessageRecu();
-                if (messageRecu.startsWith("C#")) {
-                    parts = messageRecu.split("\\?");
+                commandeRecu = this.commande.getMessageRecu();
+                if (commandeRecu.startsWith("C#")) {
+                    parts = commandeRecu.split("\\?");
                     action = parts[0].split("#")[1];
                     if (action.equals("add")) {
                         this.list_dynamic_ip.addClient(parts[1].split("#")[1], parts[2].split("#")[1]);
@@ -297,7 +298,7 @@ public class traitement {
                     }
                 }
                 // Réinitialisation
-                messageRecu = "";
+                commandeRecu = "";
                 parts = null;
 
                 //--------------------------------------------------------------//
@@ -374,6 +375,17 @@ public class traitement {
                 for (int i = 0; i < this.length; i++) {
                     this.monServeurFMP.setMapFileOneByOneUnsignedChar(i, this.imageBytes[i]);
                 }
+
+                telemetryRecu = this.telemetrie.getMessageRecu();
+
+
+
+
+
+
+
+
+
                 for (int i = 0; i < this.length; i++) {
                     this.imageBytes[i] = (byte) this.monCLientFMP.getMapFileOneByOneUnsignedChar(i);
                 }
