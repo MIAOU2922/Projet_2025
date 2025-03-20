@@ -1,11 +1,11 @@
 /**
- *-
+ *-------------------------------------------------------------------
  * Nom du fichier : traitement.java
  * Auteur         : BEAL JULIEN
  * Version        : 2.0
  * Date           : 11/02/2025
  * Description    : Classe traitement pour gérer les images reçues et envoyées
- *-
+ *-------------------------------------------------------------------
  * © 2025 BEAL JULIEN - Tous droits réservés
  */
 
@@ -110,6 +110,17 @@ public class traitement {
     // Interfaces graphiques
     private FenetreTraitement droneFenetre;
     private FenetreTraitement fenetreTraitement;
+
+
+    // Variables
+    private String commandeRecu;
+    private String telemetryRecu;
+    private String[] parts;
+    private String action = "";
+    private int quality = 70;
+    private byte[] encodedData;
+    private long currentTime;
+    private double intervalInSeconds;
 
     //--------------------------------------------------------------//
     public traitement() {
@@ -262,14 +273,7 @@ public class traitement {
     //--------------------------------------------------------------//
     // Boucle principale de traitement
     private void mainLoop() {
-        String commandeRecu;
-        String telemetryRecu;
-        String[] parts;
-        String action = "";
-        int quality = 70;
-        byte[] encodedData;
-        long currentTime;
-        double intervalInSeconds;
+
 
         while (true) {
             this.imageRecu = this.reception.getImageRecu();
@@ -283,23 +287,23 @@ public class traitement {
 
                 //--------------------------------------------------------------//
                 // Traitement du message UDP reçu
-                commandeRecu = this.commande.getMessageRecu();
-                if (commandeRecu.startsWith("C#")) {
-                    parts = commandeRecu.split("\\?");
-                    action = parts[0].split("#")[1];
-                    if (action.equals("add")) {
-                        this.list_dynamic_ip.addClient(parts[1].split("#")[1], parts[2].split("#")[1]);
-                    } else if (action.equals("remove")) {
-                        this.list_dynamic_ip.removeClient(parts[1].split("#")[1]);
-                    } else if (action.equals("cmd")) {
-                        this.list_dynamic_ip.updateClient(parts[1].split("#")[1]);
-                        this.Client_Time = LocalDateTime.parse(parts[2].split("#")[1]);
-                        this.Client_traitement = Integer.parseInt(parts[3].split("#")[1]);
+                this.commandeRecu = this.commande.getMessageRecu();
+                if (this.commandeRecu.startsWith("C#")) {
+                    this.parts = this.commandeRecu.split("\\?");
+                    this.action = this.parts[0].split("#")[1];
+                    if (this.action.equals("add")) {
+                        this.list_dynamic_ip.addClient(this.parts[1].split("#")[1], this.parts[2].split("#")[1]);
+                    } else if (this.action.equals("remove")) {
+                        this.list_dynamic_ip.removeClient(this.parts[1].split("#")[1]);
+                    } else if (this.action.equals("cmd")) {
+                        this.list_dynamic_ip.updateClient(this.parts[1].split("#")[1]);
+                        this.Client_Time = LocalDateTime.parse(this.parts[2].split("#")[1]);
+                        this.Client_traitement = Integer.parseInt(this.parts[3].split("#")[1]);
                     }
                 }
                 // Réinitialisation
-                commandeRecu = "";
-                parts = null;
+                this.commandeRecu = "";
+                this.parts = null;
 
                 //--------------------------------------------------------------//
                 // Comparaison des temps de modification pour déterminer le type de traitement
@@ -376,11 +380,10 @@ public class traitement {
                     this.monServeurFMP.setMapFileOneByOneUnsignedChar(i, this.imageBytes[i]);
                 }
 
-                telemetryRecu = this.telemetrie.getMessageRecu();
+                this.telemetryRecu = this.telemetrie.getMessageRecu();
 
 
-
-
+                //--------------------------------------------------------------//
 
 
 
@@ -392,15 +395,15 @@ public class traitement {
 
                 //--------------------------------------------------------------//
                 // Ajustement dynamique du taux de compression
-                quality = 70;
+                this.quality = 70;
                 if (this.imageBytes.length > this.maxPacketSize) {
                     this.imageEnvoyer = jpegToMat(this.imageBytes);
                     do {
-                        encodedData = this.encodeImageToJPEG(this.imageEnvoyer, quality);
-                        quality -= 5;
-                    } while (encodedData.length > this.maxPacketSize && quality > 10);
+                        this.encodedData = this.encodeImageToJPEG(this.imageEnvoyer, this.quality);
+                        this.quality -= 5;
+                    } while (this.encodedData.length > this.maxPacketSize && this.quality > 10);
                 } else {
-                    encodedData = this.imageBytes;
+                    this.encodedData = this.imageBytes;
                 }
 
                 //--------------------------------------------------------------//
@@ -408,7 +411,7 @@ public class traitement {
                 if (!this.list_dynamic_ip.getClientAddress().isEmpty()) {
                     for (String addr : this.list_dynamic_ip.getClientAddress()) {
                         try {
-                            this.sendImageUDP(encodedData, addr, this.port[1]);
+                            this.sendImageUDP(this.encodedData, addr, this.port[1]);
                         } catch (IOException e) {
                             System.out.println("Erreur lors de l'envoi de l'image à " + addr + " : " + e.getMessage());
                         }
