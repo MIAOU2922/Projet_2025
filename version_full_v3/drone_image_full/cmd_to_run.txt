@@ -24,7 +24,7 @@ java -Djava.library.path="lib" -cp "lib/opencv-4100.jar;bin" _start._start_drone
 
 linux :
 
-java -Djava.library.path=lib -cp "lib/opencv-454.jar:bin" _start._start_drone_L
+java -Djava.library.path=lib -cp "lib/opencv-4100.jar:bin" _start._start_drone_L
 
 
 -----------------

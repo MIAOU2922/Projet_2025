@@ -67,11 +67,12 @@ public class traitement {
     private String address_local_str, text;
 
     // Configuration réseau et UDP
-    private int[] port = {55000, 55001, 55002};
+    private int[] port = {55000, 55001, 55002,55003};
     private String address_broadcast = "172.29.255.255";
     private byte[] data = new byte[65536];
     private DatagramSocket socket_image;
     private DatagramSocket socket_cmd;
+    private DatagramSocket socketTelemetrie;
     private DatagramPacket packet;
     private InetAddress localAddress;
 
@@ -110,6 +111,7 @@ public class traitement {
     // Interfaces graphiques
     private FenetreTraitement droneFenetre;
     private FenetreTraitement fenetreTraitement;
+    private TelemetryClientGUI gui = null;
 
 
     // Variables
@@ -187,6 +189,7 @@ public class traitement {
             // Initialisation des sockets UDP
             this.socket_image = new DatagramSocket(this.port[0]);
             this.socket_cmd = new DatagramSocket(this.port[2]);
+            this.socketTelemetrie = new DatagramSocket(this.port[3]);
             this.packet = new DatagramPacket(this.data, this.data.length);
         } catch (Exception e) {
             System.out.println("Erreur lors de l'initialisation des adresses IP et des sockets UDP");
@@ -215,7 +218,7 @@ public class traitement {
             this.commande = new thread_reception_string("reception_cmd_traitement", this.socket_cmd);
             this.commande.start();
 
-            this.telemetrie = new thread_reception_string("reception_telemetrie_traitement", this.socket_cmd);
+            this.telemetrie = new thread_reception_string("reception Telemetrie", this.socketTelemetrie);
             this.telemetrie.start();
     
             this.detection_contours = new thread_detection_contours(this.imageRecu, false);
@@ -240,6 +243,14 @@ public class traitement {
             this.droneFenetre = new FenetreTraitement("drone", icon, 0, 0);
             // Renommé pour éviter le conflit avec le nom de la classe
             this.fenetreTraitement = new FenetreTraitement("traitement", icon, 640, 0);
+        } catch (Exception e) {
+            System.out.println("Erreur lors de l'initialisation de l'interface graphique");
+            e.printStackTrace();
+        }
+        //--------------------------------------------------------------//
+        try {
+            this.gui = new TelemetryClientGUI();
+            this.gui.setVisible(true);
         } catch (Exception e) {
             System.out.println("Erreur lors de l'initialisation de l'interface graphique");
             e.printStackTrace();
@@ -382,11 +393,8 @@ public class traitement {
 
                 this.telemetryRecu = this.telemetrie.getMessageRecu();
 
-
-                //--------------------------------------------------------------//
-
-
-
+                this.telemetryRecu = this.gui.parseTelemetryData(this.telemetryRecu);
+                this.gui.appendTelemetryData(this.telemetryRecu);
 
 
                 for (int i = 0; i < this.length; i++) {

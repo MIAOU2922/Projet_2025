@@ -31,8 +31,17 @@ public class drone_L {
     static {
         //System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
         try {
-            String libPath = System.getProperty("user.dir") + "/lib/libopencv_java454.so";
+            /* 
+            String libPath = System.getProperty("user.dir") + "/lib/opencv_java4100.so";
             System.load(libPath);
+            */
+
+            System.load(drone_L.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath().toString() +"/lib/libopencv_java4100.so");
+            System.load(drone_L.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath().toString() +"/lib/libopencv_core.so.4.10.0");
+            System.load(drone_L.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath().toString() +"/lib/libopencv_videoio.so.4.10.0"); 
+            System.load(drone_L.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath().toString() +"/lib/libopencv_video.so.4.10.0");
+            System.load(drone_L.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath().toString() +"/lib/libopencv_xphoto.so.410");
+
             
         } catch (Exception e) {
             System.out.println("Erreur lors du chargement des librairies: " + e);
@@ -43,8 +52,8 @@ public class drone_L {
     private int[] port = {55000, 55001, 55002};
 
     // Définition des adresses IP
-    private String address = "172.29.41.9";
-    private String addressBroadcast = "172.29.255.255";
+    private String address = "";
+
 
     // Variables réseau
     private InetAddress addressLocal = null;
@@ -154,6 +163,7 @@ public class drone_L {
 
             this.processReceivedMessage();
             this.sendImage();
+            
 
             try {
                 Thread.sleep(20);
