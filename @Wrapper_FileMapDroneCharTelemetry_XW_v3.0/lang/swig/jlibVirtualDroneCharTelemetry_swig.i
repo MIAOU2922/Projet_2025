@@ -39,6 +39,7 @@ return $jnicall;
 	{
 		public:
 			bool MutexBlocAccess;
+			unsigned char* DroneCharTelemetryDataPtr;
 			float val_0;
 			float val_1;
 			float val_2;

@@ -99,34 +99,59 @@ return $jnicall;
 				LPWSTR ConvCharTabToLPWSTR(const char* msg);
 			#endif
 			
-			cVirtualDroneCharTelemetry* getVirtualDroneCharTelemetryPtr();
-			bool getDebugMode();
-			int getVirtualDroneCharTelemetryBatteryValue();
-			char* getVirtualDroneCharTelemetryDriveTime();
-			char* getVirtualDroneCharTelemetryTempC();
-			char* getVirtualDroneCharTelemetryTempF();
-			char* getVirtualDroneCharTelemetryAltitude();
-			double getVirtualDroneCharTelemetryAx();
-			double getVirtualDroneCharTelemetryAy();
-			double getVirtualDroneCharTelemetryAz();
-			double getVirtualDroneCharTelemetryFrontDistance();
-			double getVirtualDroneCharTelemetryBackDistance();
-			double getVirtualDroneCharTelemetryPressure();
-			bool getVirtualDroneCharTelemetryMutexBlocAccess();
 			
-			void setVirtualDroneCharTelemetryPtr(cVirtualDroneCharTelemetry* VPStruct);
+			bool getDebugMode();
+			cVirtualDroneCharTelemetry* getVirtualDroneCharTelemetryPtr();
+			bool getVirtualDroneCharTelemetryMutexBlocAccess();
+
+			double get_val_0();
+			double get_val_1();
+			double get_val_2();
+			double get_val_3();
+			double get_val_4();
+			double get_val_5();
+			double get_val_6();
+			double get_val_7();
+			double get_val_8();
+			double get_val_9();
+			double get_val_10();
+			double get_val_11();
+			double get_val_12();
+			double get_val_13();
+			double get_val_14();
+			double get_val_15();
+			double get_val_16();
+			double get_val_17();
+			double get_val_18();
+			double get_val_19();
+
+
 			void setDebugMode(bool _DebugMode);
-			void setVirtualDroneCharTelemetryBatteryValue(int value);
-			void setVirtualDroneCharTelemetryDriveTime(char* DriveTime);
-			void setVirtualDroneCharTelemetryTempC(char* TempC);
-			void setVirtualDroneCharTelemetryTempF(char* TempF);
-			void setVirtualDroneCharTelemetryAltitude(char* Altitude);
-			void setVirtualDroneCharTelemetryAx(double Ax);
-			void setVirtualDroneCharTelemetryAy(double Ay);
-			void setVirtualDroneCharTelemetryAz(double Az);
-			void setVirtualDroneCharTelemetryFrontDistance(double FrontDistance);
-			void setVirtualDroneCharTelemetryBackDistance(double BackDistance);
-			void setVirtualDroneCharTelemetryPressure(double Pressure);
+			void setVirtualDroneCharTelemetryPtr(cVirtualDroneCharTelemetry* VTStruct);
 			void setVirtualDroneCharTelemetryMutexBlocAccess(bool blocaccess);
+
+			void set_val_0(double _val_0);
+			void set_val_1(double _val_1);
+			void set_val_2(double _val_2);
+			void set_val_3(double _val_3);
+			void set_val_4(double _val_4);
+			void set_val_5(double _val_5);
+			void set_val_6(double _val_6);
+			void set_val_7(double _val_7);
+			void set_val_8(double _val_8);
+			void set_val_9(double _val_9);
+			void set_val_10(double _val_10);
+			void set_val_11(double _val_11);
+			void set_val_12(double _val_12);
+			void set_val_13(double _val_13);
+			void set_val_14(double _val_14);
+			void set_val_15(double _val_15);
+			void set_val_16(double _val_16);
+			void set_val_17(double _val_17);
+			void set_val_18(double _val_18);
+			void set_val_19(double _val_19);
+
+
+
 	};
 #endif

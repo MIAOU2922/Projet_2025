@@ -27,18 +27,28 @@
 	struct cVirtualDroneCharTelemetry
 	{
 		public:
-			bool			MutexBlocAccess;			// Mutex to protect ressouce access
-			int				BatteryValue;				// Drone Battery Value
-			char 			DriveTime[30];				// Drone Drive Time
-			char 			TempC[30];					// Drone Temp Celsius
-			char 			TempF[30];					// Drone Temp Farenheit
-			char 			Altitude[30];				// Drone Altitude
-			double			Ax;							// Drone acceleration X
-			double			Ay;							// Drone acceleration Y
-			double			Az;							// Drone acceleration Z
-			double			FrontDistance;				// Drone FrontDistance
-			double			BackDistance;				// Drone BackDistance
-			double			Pressure;					// Drone Pressure
-			unsigned char*	DroneCharTelemetryDataPtr;	// Pointer on DroneCharTelemetry data buffer
+			bool MutexBlocAccess;
+			unsigned char* DroneCharTelemetryDataPtr;
+			float val_0;
+			float val_1;
+			float val_2;
+			float val_3;
+			float val_4;
+			float val_5;
+			float val_6;
+			float val_7;
+			float val_8;
+			float val_9;
+			float val_10;
+			float val_11;
+			float val_12;
+			float val_13;
+			float val_14;
+			float val_15;
+			float val_16;
+			float val_17;
+			float val_18;
+			float val_19;
+
 	};
 #endif // VIRTUALDRONECHARTELEMETRY_H

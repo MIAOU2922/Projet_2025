@@ -308,12 +308,8 @@ void cFileMappingDroneCharTelemetryClient::PrintStruct(cVirtualDroneCharTelemetr
 #endif
 
 //===========================================================================
-/*!
-This method getVirtualDroneCharTelemetryPtr get the virtual map structure pointer.
-
-\Parameters
-\return true or false
-*/
+//===========================================================================
+// getter
 //===========================================================================
 cVirtualDroneCharTelemetry* cFileMappingDroneCharTelemetryClient::getVirtualDroneCharTelemetryPtr()
 {
@@ -321,240 +317,15 @@ cVirtualDroneCharTelemetry* cFileMappingDroneCharTelemetryClient::getVirtualDron
 		return (cVirtualDroneCharTelemetry*)this->pFileDataStruct;
 	else
 	{
-		PrintDebug("getVirtualDroneCharTelemetryPtr: Error pFileDataStruct = nullptr",true);
+		PrintDebug("getVirtualDroneCharTelemetryPtr: Error pFileDataStruct = nullptr", true);
 		return nullptr;
 	}
 }
-
-//===========================================================================
-/*!
-This methode get Debug mode to show additional informations
-
-\Parameters
-\return Debug mode state true or false
-*/
 //===========================================================================
 bool cFileMappingDroneCharTelemetryClient::getDebugMode()
 {
 	return this->DebugFlag;
 }
-
-//===========================================================================
-/*!
-This method getVirtualDroneCharTelemetryBatteryValue get the virtual Telemetry Battery Value.
-
-\Parameters
-\return integer Battery value
-*/
-//===========================================================================
-int cFileMappingDroneCharTelemetryClient::getVirtualDroneCharTelemetryBatteryValue()
-{
-	if (this->pFileDataStruct != nullptr)
-		return (int)((cVirtualDroneCharTelemetry*)this->pFileDataStruct)->BatteryValue;
-	else
-	{
-		PrintDebug("getVirtualDroneCharTelemetryBatteryValue: Error pFileDataStruct = nullptr", true);
-		return -1;
-	}
-}
-
-//===========================================================================
-/*!
-This method getVirtualDroneCharTelemetryDriveTime get the virtual Telemetry DriveTime.
-
-\Parameters
-\return string Drive Time value
-*/
-//===========================================================================
-char* cFileMappingDroneCharTelemetryClient::getVirtualDroneCharTelemetryDriveTime()
-{
-	if (this->pFileDataStruct != nullptr)
-		return (char*)((cVirtualDroneCharTelemetry*)this->pFileDataStruct)->DriveTime;
-	else
-	{
-		PrintDebug("getVirtualDroneCharTelemetryDriveTimeValue: Error pFileDataStruct = nullptr", true);
-		return 0x00;
-	}
-}
-
-//===========================================================================
-/*!
-This method getVirtualDroneCharTelemetryTempC get the virtual Telemetry Temperature Celsius.
-
-\Parameters
-\return string Celsius Temperature value
-*/
-//===========================================================================
-char* cFileMappingDroneCharTelemetryClient::getVirtualDroneCharTelemetryTempC()
-{
-	if (this->pFileDataStruct != nullptr)
-		return (char*)((cVirtualDroneCharTelemetry*)this->pFileDataStruct)->TempC;
-	else
-	{
-		PrintDebug("getVirtualDroneCharTelemetryTempCValue: Error pFileDataStruct = nullptr", true);
-		return 0x00;
-	}
-}
-
-//===========================================================================
-/*!
-This method getVirtualDroneCharTelemetryTempF get the virtual Telemetry Temperature Farenheit.
-
-\Parameters
-\return string Farenheit Temperature value
-*/
-//===========================================================================
-char* cFileMappingDroneCharTelemetryClient::getVirtualDroneCharTelemetryTempF()
-{
-	if (this->pFileDataStruct != nullptr)
-		return (char*)((cVirtualDroneCharTelemetry*)this->pFileDataStruct)->TempF;
-	else
-	{
-		PrintDebug("getVirtualDroneCharTelemetryTempFValue: Error pFileDataStruct = nullptr", true);
-		return 0x00;
-	}
-}
-
-//===========================================================================
-/*!
-This method getVirtualDroneCharTelemetryAltitude get the virtual Telemetry Altitude.
-
-\Parameters
-\return string Altitude value
-*/
-//===========================================================================
-char* cFileMappingDroneCharTelemetryClient::getVirtualDroneCharTelemetryAltitude()
-{
-	if (this->pFileDataStruct != nullptr)
-		return (char*)((cVirtualDroneCharTelemetry*)this->pFileDataStruct)->Altitude;
-	else
-	{
-		PrintDebug("getVirtualDroneCharTelemetryAltitudeValue: Error pFileDataStruct = nullptr", true);
-		return 0x00;
-	}
-}
-
-//===========================================================================
-/*!
-This method getVirtualDroneCharTelemetryAx get the virtual Telemetry X acceleration.
-
-\Parameters
-\return double X acceleration
-*/
-//===========================================================================
-double cFileMappingDroneCharTelemetryClient::getVirtualDroneCharTelemetryAx()
-{
-	if (this->pFileDataStruct != nullptr)
-		return (double)((cVirtualDroneCharTelemetry*)this->pFileDataStruct)->Ax;
-	else
-	{
-		PrintDebug("getVirtualDroneCharTelemetryAxValue: Error pFileDataStruct = nullptr", true);
-		return 0xFFFFFFFF;
-	}
-}
-
-//===========================================================================
-/*!
-This method getVirtualDroneCharTelemetryAy get the virtual Telemetry Y acceleration.
-
-\Parameters
-\return double Y acceleration
-*/
-//===========================================================================
-double cFileMappingDroneCharTelemetryClient::getVirtualDroneCharTelemetryAy()
-{
-	if (this->pFileDataStruct != nullptr)
-		return (double)((cVirtualDroneCharTelemetry*)this->pFileDataStruct)->Ay;
-	else
-	{
-		PrintDebug("getVirtualDroneCharTelemetryAyValue: Error pFileDataStruct = nullptr", true);
-		return 0xFFFFFFFF;
-	}
-}
-
-//===========================================================================
-/*!
-This method getVirtualDroneCharTelemetryAz get the virtual Telemetry Z acceleration.
-
-\Parameters
-\return double Z acceleration
-*/
-//===========================================================================
-double cFileMappingDroneCharTelemetryClient::getVirtualDroneCharTelemetryAz()
-{
-	if (this->pFileDataStruct != nullptr)
-		return (double)((cVirtualDroneCharTelemetry*)this->pFileDataStruct)->Az;
-	else
-	{
-		PrintDebug("getVirtualDroneCharTelemetryAzValue: Error pFileDataStruct = nullptr", true);
-		return 0xFFFFFFFF;
-	}
-}
-
-//===========================================================================
-/*!
-This method getVirtualDroneCharTelemetryFrontDistance get the virtual Telemetry Front Distance.
-
-\Parameters
-\return double Front Distance
-*/
-//===========================================================================
-double cFileMappingDroneCharTelemetryClient::getVirtualDroneCharTelemetryFrontDistance()
-{
-	if (this->pFileDataStruct != nullptr)
-		return (double)((cVirtualDroneCharTelemetry*)this->pFileDataStruct)->FrontDistance;
-	else
-	{
-		PrintDebug("getVirtualDroneCharTelemetryFrontDistanceValue: Error pFileDataStruct = nullptr", true);
-		return -1.0;
-	}
-}
-
-//===========================================================================
-/*!
-This method getVirtualDroneCharTelemetryBackDistance get the virtual Telemetry Back Distance.
-
-\Parameters
-\return double Back Distance
-*/
-//===========================================================================
-double cFileMappingDroneCharTelemetryClient::getVirtualDroneCharTelemetryBackDistance()
-{
-	if (this->pFileDataStruct != nullptr)
-		return (double)((cVirtualDroneCharTelemetry*)this->pFileDataStruct)->BackDistance;
-	else
-	{
-		PrintDebug("getVirtualDroneCharTelemetryBackDistanceValue: Error pFileDataStruct = nullptr", true);
-		return -1.0;
-	}
-}
-
-//===========================================================================
-/*!
-This method getVirtualDroneCharTelemetryPressure get the virtual Telemetry Pressure.
-
-\Parameters
-\return double Pressure
-*/
-//===========================================================================
-double cFileMappingDroneCharTelemetryClient::getVirtualDroneCharTelemetryPressure()
-{
-	if (this->pFileDataStruct != nullptr)
-		return (double)((cVirtualDroneCharTelemetry*)this->pFileDataStruct)->Pressure;
-	else
-	{
-		PrintDebug("getVirtualDroneCharTelemetryPressureValue: Error pFileDataStruct = nullptr", true);
-		return -1.0;
-	}
-}
-
-//===========================================================================
-/*!
-This method getVirtualDroneCharTelemetryMutexBlocAccess get the virtual Telemetry Bloc Access Mutex state.
-
-\Parameters
-\return datas number in octets
-*/
 //===========================================================================
 bool cFileMappingDroneCharTelemetryClient::getVirtualDroneCharTelemetryMutexBlocAccess()
 {
@@ -562,221 +333,127 @@ bool cFileMappingDroneCharTelemetryClient::getVirtualDroneCharTelemetryMutexBloc
 		return (this->pFileDataStruct)->MutexBlocAccess;
 	else
 	{
-		PrintDebug("getVirtualDroneCharTelemetryMutexBlocAccess: Error, pFileDataStruct = nullptr",true);
+		PrintDebug("getVirtualDroneCharTelemetryMutexBlocAccess: Error, pFileDataStruct = nullptr", true);
 		return false;
 	}
 }
-
 //===========================================================================
-/*!
-This method setVirtualDroneCharTelemetryPtr set the virtual map structure pointer.
-
-\Parameters virtual DroneCharTelemetry structure pointer
-*/
+double cFileMappingDroneCharTelemetryClient::get_val_0()
+{
+	return (double)((cVirtualDroneCharTelemetry*)this->pFileDataStruct)->val_0;
+}
 //===========================================================================
-void cFileMappingDroneCharTelemetryClient::setVirtualDroneCharTelemetryPtr(cVirtualDroneCharTelemetry* VPStruct)
+double cFileMappingDroneCharTelemetryClient::get_val_1()
+{
+	return (double)((cVirtualDroneCharTelemetry*)this->pFileDataStruct)->val_1;
+}
+//===========================================================================
+double cFileMappingDroneCharTelemetryClient::get_val_2()
+{
+	return (double)((cVirtualDroneCharTelemetry*)this->pFileDataStruct)->val_2;
+}
+//===========================================================================
+double cFileMappingDroneCharTelemetryClient::get_val_3()
+{
+	return (double)((cVirtualDroneCharTelemetry*)this->pFileDataStruct)->val_3;
+}
+//===========================================================================
+double cFileMappingDroneCharTelemetryClient::get_val_4()
+{
+	return (double)((cVirtualDroneCharTelemetry*)this->pFileDataStruct)->val_4;
+}
+//===========================================================================
+double cFileMappingDroneCharTelemetryClient::get_val_5()
+{
+	return (double)((cVirtualDroneCharTelemetry*)this->pFileDataStruct)->val_5;
+}
+//===========================================================================
+double cFileMappingDroneCharTelemetryClient::get_val_6()
+{
+	return (double)((cVirtualDroneCharTelemetry*)this->pFileDataStruct)->val_6;
+}
+//===========================================================================
+double cFileMappingDroneCharTelemetryClient::get_val_7()
+{
+	return (double)((cVirtualDroneCharTelemetry*)this->pFileDataStruct)->val_7;
+}
+//===========================================================================
+double cFileMappingDroneCharTelemetryClient::get_val_8()
+{
+	return (double)((cVirtualDroneCharTelemetry*)this->pFileDataStruct)->val_8;
+}
+//===========================================================================
+double cFileMappingDroneCharTelemetryClient::get_val_9()
+{
+	return (double)((cVirtualDroneCharTelemetry*)this->pFileDataStruct)->val_9;
+}
+//===========================================================================
+double cFileMappingDroneCharTelemetryClient::get_val_10()
+{
+	return (double)((cVirtualDroneCharTelemetry*)this->pFileDataStruct)->val_10;
+}
+//===========================================================================
+double cFileMappingDroneCharTelemetryClient::get_val_11()
+{
+	return (double)((cVirtualDroneCharTelemetry*)this->pFileDataStruct)->val_11;
+}
+//===========================================================================
+double cFileMappingDroneCharTelemetryClient::get_val_12()
+{
+	return (double)((cVirtualDroneCharTelemetry*)this->pFileDataStruct)->val_12;
+}
+//===========================================================================
+double cFileMappingDroneCharTelemetryClient::get_val_13()
+{
+	return (double)((cVirtualDroneCharTelemetry*)this->pFileDataStruct)->val_13;
+}
+//===========================================================================
+double cFileMappingDroneCharTelemetryClient::get_val_14()
+{
+	return (double)((cVirtualDroneCharTelemetry*)this->pFileDataStruct)->val_14;
+}
+//===========================================================================
+double cFileMappingDroneCharTelemetryClient::get_val_15()
+{
+	return (double)((cVirtualDroneCharTelemetry*)this->pFileDataStruct)->val_15;
+}
+//===========================================================================
+double cFileMappingDroneCharTelemetryClient::get_val_16()
+{
+	return (double)((cVirtualDroneCharTelemetry*)this->pFileDataStruct)->val_16;
+}
+//===========================================================================
+double cFileMappingDroneCharTelemetryClient::get_val_17()
+{
+	return (double)((cVirtualDroneCharTelemetry*)this->pFileDataStruct)->val_17;
+}
+//===========================================================================
+double cFileMappingDroneCharTelemetryClient::get_val_18()
+{
+	return (double)((cVirtualDroneCharTelemetry*)this->pFileDataStruct)->val_18;
+}
+//===========================================================================
+double cFileMappingDroneCharTelemetryClient::get_val_19()
+{
+	return (double)((cVirtualDroneCharTelemetry*)this->pFileDataStruct)->val_19;
+}
+//===========================================================================
+//===========================================================================
+// setter
+//===========================================================================
+void cFileMappingDroneCharTelemetryClient::setVirtualDroneCharTelemetryPtr(cVirtualDroneCharTelemetry *VPStruct)
 {
 	if (this->pFileDataStruct != nullptr && VPStruct != nullptr)
 //		(cVirtualDroneCharTelemetry*)this->pFileDataStruct = VPStruct;
 		this->pFileDataStruct = VPStruct;
 	else
-		PrintDebug("setVirtualDroneCharTelemetryPtr: Error pFileDataStruct = nullptr or VPStruct = nullptr",true);
+		PrintDebug("setVirtualDroneCharTelemetryPtr: Error pFileDataStruct = nullptr or VPStruct = nullptr", true);
 }
-
-//===========================================================================
-/*!
-This methode set Debug mode to show additional informations
-
-\Parameters boolean Debug mode set true or false
-*/
 //===========================================================================
 void cFileMappingDroneCharTelemetryClient::setDebugMode(bool _DebugMode)
 {
 	this->DebugFlag = _DebugMode;
 }
-
-//===========================================================================
-/*!
-This method setVirtualDroneCharTelemetryBatteryValue set the virtual Telemetry batterie value.
-
-\Parameters int battery value
-*/
-//===========================================================================
-void cFileMappingDroneCharTelemetryClient::setVirtualDroneCharTelemetryBatteryValue(int value)
-{
-	if (this->pFileDataStruct != nullptr)
-//		(int)((cVirtualDroneCharTelemetry*)this->pFileDataStruct)->BatteryValue = value;
-		this->pFileDataStruct->BatteryValue = value;
-	else
-		PrintDebug("setVirtualDroneCharTelemetryDataSize: Error pFileDataStruct = nullptr", true);
-}
-
-//===========================================================================
-/*!
-This method setVirtualDroneCharTelemetryDriveTime set the virtual Telemetry Fly Time.
-
-\Parameters char * DriveTime
-*/
-//===========================================================================
-void cFileMappingDroneCharTelemetryClient::setVirtualDroneCharTelemetryDriveTime(char* DriveTime)
-{
-#if defined(__WIN32__) || defined(_WIN32) || defined(WIN32) || defined(__WINDOWS__) || defined(__TOS_WIN__) 																							 
-	strcpy_s(this->pFileDataStruct->DriveTime, DriveTime);
-#else
-	strcpy(this->pFileDataStruct->DriveTime, DriveTime);
-#endif
-}
-
-//===========================================================================
-/*!
-This method setVirtualDroneCharTelemetryTempC set the virtual Telemetry Temperature Celsius.
-
-\Parameters char * TempC
-*/
-//===========================================================================
-void cFileMappingDroneCharTelemetryClient::setVirtualDroneCharTelemetryTempC(char* TempC)
-{
-#if defined(__WIN32__) || defined(_WIN32) || defined(WIN32) || defined(__WINDOWS__) || defined(__TOS_WIN__) 																							 
-	strcpy_s(this->pFileDataStruct->TempC, TempC);
-#else
-	strcpy(this->pFileDataStruct->TempC, TempC);
-#endif
-}
-
-//===========================================================================
-/*!
-This method setVirtualDroneCharTelemetryTempF set the virtual Telemetry Temperature Farenheit.
-
-\Parameters char * TempF
-*/
-//===========================================================================
-void cFileMappingDroneCharTelemetryClient::setVirtualDroneCharTelemetryTempF(char* TempF)
-{
-#if defined(__WIN32__) || defined(_WIN32) || defined(WIN32) || defined(__WINDOWS__) || defined(__TOS_WIN__) 																							 
-	strcpy_s(this->pFileDataStruct->TempF, TempF);
-#else
-	strcpy(this->pFileDataStruct->TempF, TempF);
-#endif
-}
-
-//===========================================================================
-/*!
-This method setVirtualDroneCharTelemetryAltitude set the virtual Telemetry Altitude.
-
-\Parameters char * Altitude
-*/
-//===========================================================================
-void cFileMappingDroneCharTelemetryClient::setVirtualDroneCharTelemetryAltitude(char* Altitude)
-{
-#if defined(__WIN32__) || defined(_WIN32) || defined(WIN32) || defined(__WINDOWS__) || defined(__TOS_WIN__) 																							 
-	strcpy_s(this->pFileDataStruct->Altitude, Altitude);
-#else
-	strcpy(this->pFileDataStruct->Altitude, Altitude);
-#endif
-}
-
-//===========================================================================
-/*!
-This method setVirtualDroneCharTelemetryAx set the virtual Telemetry X acceleration value.
-
-\Parameters double battery value
-*/
-//===========================================================================
-void cFileMappingDroneCharTelemetryClient::setVirtualDroneCharTelemetryAx(double value)
-{
-	if (this->pFileDataStruct != nullptr)
-//		(double)((cVirtualDroneCharTelemetry*)this->pFileDataStruct)->Ax = value;
-		(this->pFileDataStruct)->Ax = value;
-	else
-		PrintDebug("setVirtualDroneCharTelemetryDataSize: Error pFileDataStruct = nullptr", true);
-}
-
-//===========================================================================
-/*!
-This method setVirtualDroneCharTelemetryAy set the virtual Telemetry Y acceleration value.
-
-\Parameters double battery value
-*/
-//===========================================================================
-void cFileMappingDroneCharTelemetryClient::setVirtualDroneCharTelemetryAy(double value)
-{
-	if (this->pFileDataStruct != nullptr)
-//		(double)((cVirtualDroneCharTelemetry*)this->pFileDataStruct)->Ay = value;
-		(this->pFileDataStruct)->Ay = value;
-	else
-		PrintDebug("setVirtualDroneCharTelemetryDataSize: Error pFileDataStruct = nullptr", true);
-}
-
-//===========================================================================
-/*!
-This method setVirtualDroneCharTelemetryAz set the virtual Telemetry Z acceleration value.
-
-\Parameters double battery value
-*/
-//===========================================================================
-void cFileMappingDroneCharTelemetryClient::setVirtualDroneCharTelemetryAz(double value)
-{
-	if (this->pFileDataStruct != nullptr)
-//		(double)((cVirtualDroneCharTelemetry*)this->pFileDataStruct)->Az = value;
-		(this->pFileDataStruct)->Az = value;
-	else
-		PrintDebug("setVirtualDroneCharTelemetryDataSize: Error pFileDataStruct = nullptr", true);
-}
-
-//===========================================================================
-/*!
-This method setVirtualDroneCharTelemetryFrontDistance set the virtual Telemetry Front Distance.
-
-\Parameters double Front Distance value
-*/
-//===========================================================================
-void cFileMappingDroneCharTelemetryClient::setVirtualDroneCharTelemetryFrontDistance(double value)
-{
-	if (this->pFileDataStruct != nullptr)
-//		(double)((cVirtualDroneCharTelemetry*)this->pFileDataStruct)->FrontDistance = value;
-		(this->pFileDataStruct)->FrontDistance = value;
-	else
-		PrintDebug("setVirtualDroneCharTelemetryDataSize: Error pFileDataStruct = nullptr", true);
-}
-
-//===========================================================================
-/*!
-This method setVirtualDroneCharTelemetryBackDistance set the virtual Telemetry Back Distance.
-
-\Parameters double Back Distance value
-*/
-//===========================================================================
-void cFileMappingDroneCharTelemetryClient::setVirtualDroneCharTelemetryBackDistance(double value)
-{
-	if (this->pFileDataStruct != nullptr)
-//		(double)((cVirtualDroneCharTelemetry*)this->pFileDataStruct)->BackDistance = value;
-		(this->pFileDataStruct)->BackDistance = value;
-	else
-		PrintDebug("setVirtualDroneCharTelemetryDataSize: Error pFileDataStruct = nullptr", true);
-}
-
-//===========================================================================
-/*!
-This method setVirtualDroneCharTelemetryPressure set the virtual Telemetry Pressure.
-
-\Parameters double Pressure value
-*/
-//===========================================================================
-void cFileMappingDroneCharTelemetryClient::setVirtualDroneCharTelemetryPressure(double value)
-{
-	if (this->pFileDataStruct != nullptr)
-//		(double)((cVirtualDroneCharTelemetry*)this->pFileDataStruct)->Pressure = value;
-		(this->pFileDataStruct)->Pressure = value;
-	else
-		PrintDebug("setVirtualDroneCharTelemetryDataSize: Error pFileDataStruct = nullptr", true);
-}
-
-//===========================================================================
-/*!
-This method set the virtual Telemetry Bloc Access Mutex state.
-
-\Parameters char * path of the physical file
-*/
 //===========================================================================
 void  cFileMappingDroneCharTelemetryClient::setVirtualDroneCharTelemetryMutexBlocAccess(bool blocaccess)
 {
@@ -785,4 +462,184 @@ void  cFileMappingDroneCharTelemetryClient::setVirtualDroneCharTelemetryMutexBlo
 		(this->pFileDataStruct)->MutexBlocAccess = blocaccess;
 	else
 		PrintDebug("setVirtualDroneCharTelemetryMutexBlocAccess: Error pFileDataStruct = nullptr", true);
+}
+//===========================================================================
+void cFileMappingDroneCharTelemetryClient::set_val_0(double value)
+{
+	if (this->pFileDataStruct != nullptr)
+//		(double)((cVirtualDroneCharTelemetry*)this->pFileDataStruct)->Pressure = value;
+		(this->pFileDataStruct)->val_0 = value;
+	else
+		PrintDebug("setVirtualPictureDataSize: Error pFileDataStruct = nullptr", true);
+}
+//===========================================================================
+void cFileMappingDroneCharTelemetryClient::set_val_1(double value)
+{
+	if (this->pFileDataStruct != nullptr)
+//		(double)((cVirtualDroneCharTelemetry*)this->pFileDataStruct)->Pressure = value;
+		(this->pFileDataStruct)->val_1 = value;
+	else
+		PrintDebug("setVirtualPictureDataSize: Error pFileDataStruct = nullptr", true);
+}
+//===========================================================================
+void cFileMappingDroneCharTelemetryClient::set_val_2(double value)
+{
+	if (this->pFileDataStruct != nullptr)
+//		(double)((cVirtualDroneCharTelemetry*)this->pFileDataStruct)->Pressure = value;
+		(this->pFileDataStruct)->val_2 = value;
+	else
+		PrintDebug("setVirtualPictureDataSize: Error pFileDataStruct = nullptr", true);
+}
+//===========================================================================
+void cFileMappingDroneCharTelemetryClient::set_val_3(double value)
+{
+	if (this->pFileDataStruct != nullptr)
+//		(double)((cVirtualDroneCharTelemetry*)this->pFileDataStruct)->Pressure = value;
+		(this->pFileDataStruct)->val_3 = value;
+	else
+		PrintDebug("setVirtualPictureDataSize: Error pFileDataStruct = nullptr", true);
+}
+//===========================================================================
+void cFileMappingDroneCharTelemetryClient::set_val_4(double value)
+{
+	if (this->pFileDataStruct != nullptr)
+//		(double)((cVirtualDroneCharTelemetry*)this->pFileDataStruct)->Pressure = value;
+		(this->pFileDataStruct)->val_4 = value;
+	else
+		PrintDebug("setVirtualPictureDataSize: Error pFileDataStruct = nullptr", true);
+}
+//===========================================================================
+void cFileMappingDroneCharTelemetryClient::set_val_5(double value)
+{
+	if (this->pFileDataStruct != nullptr)
+//		(double)((cVirtualDroneCharTelemetry*)this->pFileDataStruct)->Pressure = value;
+		(this->pFileDataStruct)->val_5 = value;
+	else
+		PrintDebug("setVirtualPictureDataSize: Error pFileDataStruct = nullptr", true);
+}
+//===========================================================================
+void cFileMappingDroneCharTelemetryClient::set_val_6(double value)
+{
+	if (this->pFileDataStruct != nullptr)
+//		(double)((cVirtualDroneCharTelemetry*)this->pFileDataStruct)->Pressure = value;
+		(this->pFileDataStruct)->val_6 = value;
+	else
+		PrintDebug("setVirtualPictureDataSize: Error pFileDataStruct = nullptr", true);
+}
+//===========================================================================
+void cFileMappingDroneCharTelemetryClient::set_val_7(double value)
+{
+	if (this->pFileDataStruct != nullptr)
+//		(double)((cVirtualDroneCharTelemetry*)this->pFileDataStruct)->Pressure = value;
+		(this->pFileDataStruct)->val_7 = value;
+	else
+		PrintDebug("setVirtualPictureDataSize: Error pFileDataStruct = nullptr", true);
+}
+//===========================================================================
+void cFileMappingDroneCharTelemetryClient::set_val_8(double value)
+{
+	if (this->pFileDataStruct != nullptr)
+//		(double)((cVirtualDroneCharTelemetry*)this->pFileDataStruct)->Pressure = value;
+		(this->pFileDataStruct)->val_8 = value;
+	else
+		PrintDebug("setVirtualPictureDataSize: Error pFileDataStruct = nullptr", true);
+}
+//===========================================================================
+void cFileMappingDroneCharTelemetryClient::set_val_9(double value)
+{
+	if (this->pFileDataStruct != nullptr)
+//		(double)((cVirtualDroneCharTelemetry*)this->pFileDataStruct)->Pressure = value;
+		(this->pFileDataStruct)->val_9 = value;
+	else
+		PrintDebug("setVirtualPictureDataSize: Error pFileDataStruct = nullptr", true);
+}
+//===========================================================================
+void cFileMappingDroneCharTelemetryClient::set_val_10(double value)
+{
+	if (this->pFileDataStruct != nullptr)
+//		(double)((cVirtualDroneCharTelemetry*)this->pFileDataStruct)->Pressure = value;
+		(this->pFileDataStruct)->val_10 = value;
+	else
+		PrintDebug("setVirtualPictureDataSize: Error pFileDataStruct = nullptr", true);
+}
+//===========================================================================
+void cFileMappingDroneCharTelemetryClient::set_val_11(double value)
+{
+	if (this->pFileDataStruct != nullptr)
+//		(double)((cVirtualDroneCharTelemetry*)this->pFileDataStruct)->Pressure = value;
+		(this->pFileDataStruct)->val_11 = value;
+	else
+		PrintDebug("setVirtualPictureDataSize: Error pFileDataStruct = nullptr", true);
+}
+//===========================================================================
+void cFileMappingDroneCharTelemetryClient::set_val_12(double value)
+{
+	if (this->pFileDataStruct != nullptr)
+//		(double)((cVirtualDroneCharTelemetry*)this->pFileDataStruct)->Pressure = value;
+		(this->pFileDataStruct)->val_12 = value;
+	else
+		PrintDebug("setVirtualPictureDataSize: Error pFileDataStruct = nullptr", true);
+}
+//===========================================================================
+void cFileMappingDroneCharTelemetryClient::set_val_13(double value)
+{
+	if (this->pFileDataStruct != nullptr)
+//		(double)((cVirtualDroneCharTelemetry*)this->pFileDataStruct)->Pressure = value;
+		(this->pFileDataStruct)->val_13 = value;
+	else
+		PrintDebug("setVirtualPictureDataSize: Error pFileDataStruct = nullptr", true);
+}
+//===========================================================================
+void cFileMappingDroneCharTelemetryClient::set_val_14(double value)
+{
+	if (this->pFileDataStruct != nullptr)
+//		(double)((cVirtualDroneCharTelemetry*)this->pFileDataStruct)->Pressure = value;
+		(this->pFileDataStruct)->val_14 = value;
+	else
+		PrintDebug("setVirtualPictureDataSize: Error pFileDataStruct = nullptr", true);
+}
+//===========================================================================
+void cFileMappingDroneCharTelemetryClient::set_val_15(double value)
+{
+	if (this->pFileDataStruct != nullptr)
+//		(double)((cVirtualDroneCharTelemetry*)this->pFileDataStruct)->Pressure = value;
+		(this->pFileDataStruct)->val_15 = value;
+	else
+		PrintDebug("setVirtualPictureDataSize: Error pFileDataStruct = nullptr", true);
+}
+//===========================================================================
+void cFileMappingDroneCharTelemetryClient::set_val_16(double value)
+{
+	if (this->pFileDataStruct != nullptr)
+//		(double)((cVirtualDroneCharTelemetry*)this->pFileDataStruct)->Pressure = value;
+		(this->pFileDataStruct)->val_16 = value;
+	else
+		PrintDebug("setVirtualPictureDataSize: Error pFileDataStruct = nullptr", true);
+}
+//===========================================================================
+void cFileMappingDroneCharTelemetryClient::set_val_17(double value)
+{
+	if (this->pFileDataStruct != nullptr)
+//		(double)((cVirtualDroneCharTelemetry*)this->pFileDataStruct)->Pressure = value;
+		(this->pFileDataStruct)->val_17 = value;
+	else
+		PrintDebug("setVirtualPictureDataSize: Error pFileDataStruct = nullptr", true);
+}
+//===========================================================================
+void cFileMappingDroneCharTelemetryClient::set_val_18(double value)
+{
+	if (this->pFileDataStruct != nullptr)
+//		(double)((cVirtualDroneCharTelemetry*)this->pFileDataStruct)->Pressure = value;
+		(this->pFileDataStruct)->val_18 = value;
+	else
+		PrintDebug("setVirtualPictureDataSize: Error pFileDataStruct = nullptr", true);
+}
+//===========================================================================
+void cFileMappingDroneCharTelemetryClient::set_val_19(double value)
+{
+	if (this->pFileDataStruct != nullptr)
+//		(double)((cVirtualDroneCharTelemetry*)this->pFileDataStruct)->Pressure = value;
+		(this->pFileDataStruct)->val_19 = value;
+	else
+		PrintDebug("setVirtualPictureDataSize: Error pFileDataStruct = nullptr", true);
 }

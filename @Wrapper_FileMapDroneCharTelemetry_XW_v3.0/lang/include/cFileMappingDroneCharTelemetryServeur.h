@@ -161,96 +161,60 @@ using namespace std;
 				LPWSTR ConvCharTabToLPWSTR(const char* msg);
 			#endif
 			
-			//--------------------------------------------------------------------------
-			// PUBLIC GETTERS:
-			//--------------------------------------------------------------------------
-		public:
-			//! This method getVirtualDroneCharTelemetryPtr get the virtual map structure pointer.
-			cVirtualDroneCharTelemetry* getVirtualDroneCharTelemetryPtr();
 
-			//! This methode get Debug mode to show additional informations
+		public:
 			bool getDebugMode();
-			
-			//! This method getVirtualDroneCharTelemetryBatteryValue get the virtual Telemetry battery value.
-			int getVirtualDroneCharTelemetryBatteryValue();
-			
-			//! This method getVirtualDroneCharTelemetryDriveTime get the virtual Telemetry DriveTime.
-			char* getVirtualDroneCharTelemetryDriveTime();
-			
-			//! This method getVirtualDroneCharTelemetryTempC get the virtual Telemetry Celsius Temperature.
-			char* getVirtualDroneCharTelemetryTempC();
-			
-			//! This method getVirtualDroneCharTelemetryTempF get the virtual Telemetry Farenheit Temperature.
-			char* getVirtualDroneCharTelemetryTempF();
-			
-			//! This method getVirtualDroneCharTelemetryAltitude get the virtual Telemetry Altitude.
-			char* getVirtualDroneCharTelemetryAltitude();
-			
-			//! This method getVirtualDroneCharTelemetryAx get the virtual Telemetry X acceleration.
-			double getVirtualDroneCharTelemetryAx();
-			
-			//! This method getVirtualDroneCharTelemetryAy get the virtual Telemetry Y acceleration.
-			double getVirtualDroneCharTelemetryAy();
-			
-			//! This method getVirtualDroneCharTelemetryAz get the virtual Telemetry Z acceleration.
-			double getVirtualDroneCharTelemetryAz();
-			
-			//! This method getVirtualDroneCharTelemetryFrontDistance get the virtual Telemetry Front Distance.
-			double getVirtualDroneCharTelemetryFrontDistance();
-			
-			//! This method getVirtualDroneCharTelemetryBackDistance get the virtual Telemetry Back Distance.
-			double getVirtualDroneCharTelemetryBackDistance();
-			
-			//! This method getVirtualDroneCharTelemetryPressure get the virtual Telemetry Pressure.
-			double getVirtualDroneCharTelemetryPressure();
-			
-			//! This method getVirtualDroneCharTelemetryMutexBlocAccess get the virtual Telemetry Bloc Access Mutex state.
+			cVirtualDroneCharTelemetry* getVirtualDroneCharTelemetryPtr();
 			bool getVirtualDroneCharTelemetryMutexBlocAccess();
 
-			//--------------------------------------------------------------------------
-			// PUBLIC SETTERS:
-			//--------------------------------------------------------------------------
-		public:
-			//! This method setVirtualDroneCharTelemetryPtr set the virtual map structure pointer.
-			void setVirtualDroneCharTelemetryPtr(cVirtualDroneCharTelemetry* VTStruct);
+			double get_val_0();
+			double get_val_1();
+			double get_val_2();
+			double get_val_3();
+			double get_val_4();
+			double get_val_5();
+			double get_val_6();
+			double get_val_7();
+			double get_val_8();
+			double get_val_9();
+			double get_val_10();
+			double get_val_11();
+			double get_val_12();
+			double get_val_13();
+			double get_val_14();
+			double get_val_15();
+			double get_val_16();
+			double get_val_17();
+			double get_val_18();
+			double get_val_19();
 
-			//! This methode set Debug mode to show additional informations
+
 			void setDebugMode(bool _DebugMode);
-			
-			//! This method setVirtualDroneCharTelemetryBatteryValue set the virtual Telemetry battery value.
-			void setVirtualDroneCharTelemetryBatteryValue(int value);
-			
-			//! This method setVirtualDroneCharTelemetryDriveTime set the virtual Telemetry Fly Time.
-			void setVirtualDroneCharTelemetryDriveTime(char* DriveTime);
-			
-			//! This method setVirtualDroneCharTelemetryTempC set the virtual Telemetry Celsius Temperature.
-			void setVirtualDroneCharTelemetryTempC(char* TempC);
-			
-			//! This method setVirtualDroneCharTelemetryTempF set the virtual Telemetry Farenheit Temperature.
-			void setVirtualDroneCharTelemetryTempF(char* TempF);
-			
-			//! This method setVirtualDroneCharTelemetryAltitude set the virtual Telemetry Altitude.
-			void setVirtualDroneCharTelemetryAltitude(char* Altitude);
-			
-			//! This method setVirtualDroneCharTelemetryAx set the virtual Telemetry X acceleration.
-			void setVirtualDroneCharTelemetryAx(double Ax);
-			
-			//! This method setVirtualDroneCharTelemetryAy set the virtual Telemetry y acceleration.
-			void setVirtualDroneCharTelemetryAy(double Ay);
-			
-			//! This method setVirtualDroneCharTelemetryAz set the virtual Telemetry z acceleration.
-			void setVirtualDroneCharTelemetryAz(double Az);
-			
-			//! This method setVirtualDroneCharTelemetryFrontDistance set the virtual Telemetry Front Distance.
-			void setVirtualDroneCharTelemetryFrontDistance(double FrontDistance);
-
-			//! This method setVirtualDroneCharTelemetryBackDistance set the virtual Telemetry Back Distance.
-			void setVirtualDroneCharTelemetryBackDistance(double BackDistance);
-			
-			//! This method setVirtualDroneCharTelemetryPressure set the virtual Telemetry Pressure.
-			void setVirtualDroneCharTelemetryPressure(double Pressure);
-			
-			//! This method set the virtual Telemetry Bloc Access Mutex state.
+			void setVirtualDroneCharTelemetryPtr(cVirtualDroneCharTelemetry* VTStruct);
 			void setVirtualDroneCharTelemetryMutexBlocAccess(bool blocaccess);
+
+			void set_val_0(double _val_0);
+			void set_val_1(double _val_1);
+			void set_val_2(double _val_2);
+			void set_val_3(double _val_3);
+			void set_val_4(double _val_4);
+			void set_val_5(double _val_5);
+			void set_val_6(double _val_6);
+			void set_val_7(double _val_7);
+			void set_val_8(double _val_8);
+			void set_val_9(double _val_9);
+			void set_val_10(double _val_10);
+			void set_val_11(double _val_11);
+			void set_val_12(double _val_12);
+			void set_val_13(double _val_13);
+			void set_val_14(double _val_14);
+			void set_val_15(double _val_15);
+			void set_val_16(double _val_16);
+			void set_val_17(double _val_17);
+			void set_val_18(double _val_18);
+			void set_val_19(double _val_19);
+
+
+
 	};
 #endif // !FILEMAPPINGDRONECHARTELEMETRYSERVEUR_H
