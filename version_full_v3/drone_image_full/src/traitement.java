@@ -1,3 +1,4 @@
+
 /**
  *-------------------------------------------------------------------
  * Nom du fichier : traitement.java
@@ -11,6 +12,7 @@
 
 import java.awt.image.BufferedImage;
 import java.io.*;
+import java.lang.reflect.Method;
 import java.net.*;
 import java.time.LocalDateTime;
 import java.util.Enumeration;
@@ -45,6 +47,18 @@ public class traitement {
             e.printStackTrace();
         }
         try {
+            System.loadLibrary("JNIFileMappingDroneCharTelemetryServeur");
+        } catch (Exception e) {
+            System.err.println("Erreur lors du chargement de la librairie JNIFileMappingDroneCharTelemetryServeur");
+            e.printStackTrace();
+        }
+        try {
+            System.loadLibrary("JNIVirtualDroneCharTelemetry");
+        } catch (Exception e) {
+            System.err.println("Erreur lors du chargement de la librairie JNIVirtualDroneCharTelemetry");
+            e.printStackTrace();
+        }
+        try {
             System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
         } catch (Exception e) {
             System.err.println("Erreur lors du chargement de la librairie OpenCV");
@@ -53,8 +67,11 @@ public class traitement {
     }
 
     // Déclarations des objets FileMapping
-    private cFileMappingPictureClient monCLientFMP = new cFileMappingPictureClient(false);
-    private cFileMappingPictureServeur monServeurFMP = new cFileMappingPictureServeur(true);
+    private cFileMappingPictureClient client_filemap_image = new cFileMappingPictureClient(false);
+    private cFileMappingPictureServeur serveur_filemap_image = new cFileMappingPictureServeur(true);
+
+    private cFileMappingDroneCharTelemetryServeur serveur_filemap_telemetrie = new cFileMappingDroneCharTelemetryServeur(
+            false);
 
     // Variables liées aux images et au traitement
     private byte[] imageBytes;
@@ -67,7 +84,7 @@ public class traitement {
     private String address_local_str, text;
 
     // Configuration réseau et UDP
-    private int[] port = {55000, 55001, 55002,55003};
+    private int[] port = { 55000, 55001, 55002, 55003 };
     private String address_broadcast = "172.29.255.255";
     private byte[] data = new byte[65536];
     private DatagramSocket socket_image;
@@ -77,7 +94,7 @@ public class traitement {
     private InetAddress localAddress;
 
     // Paramètres d'image
-    private int[] imgsize = {1280, 720};
+    private int[] imgsize = { 1280, 720 };
     private int maxPacketSize = 65000; // 65536 - 8 (overhead UDP)
 
     // Variables pour la gestion des images OpenCV
@@ -111,8 +128,6 @@ public class traitement {
     // Interfaces graphiques
     private FenetreTraitement droneFenetre;
     private FenetreTraitement fenetreTraitement;
-    private TelemetryClientGUI gui = null;
-
 
     // Variables
     private String commandeRecu;
@@ -124,21 +139,41 @@ public class traitement {
     private long currentTime;
     private double intervalInSeconds;
 
-    //--------------------------------------------------------------//
+    // --------------------------------------------------------------//
     public traitement() {
 
-        //--------------------------------------------------------------//
+        // --------------------------------------------------------------//
         // Ouverture du serveur de FileMapping pour l'image
         try {
-            this.monServeurFMP.OpenServer("img_java_to_c");
+            this.serveur_filemap_image.OpenServer("img_java_to_c");
         } catch (Exception e) {
             System.out.println("Erreur lors de l'ouverture du serveur img_java_to_c");
             e.printStackTrace();
         }
-        //--------------------------------------------------------------//
+        // --------------------------------------------------------------//
+        // Ouverture du serveur de FileMapping pour la telemetrie
+        try {
+            this.serveur_filemap_telemetrie.OpenServer("telemetrie_java_to_c");
+        } catch (Exception e) {
+            System.out.println("Erreur lors de l'ouverture du serveur telemetrie_java_to_c");
+            e.printStackTrace();
+        }
+        // --------------------------------------------------------------//
+        // init du filemap de telemetrie a 0
+        for (int i = 0; i < 20; i++) {
+            try {
+                Method method = this.serveur_filemap_telemetrie.getClass()
+                        .getMethod("set_val_" + i, double.class);
+                method.invoke(this.serveur_filemap_telemetrie, (double) i);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        // --------------------------------------------------------------//
         // Lancement du programme Chai3D
         try {
-            ProcessBuilder pb = new ProcessBuilder("F:\\BEAL_JULIEN_SN2\\_projet_2025\\git\\@Chai3d-3.2.0_VisualStudio_2015_x64-VirtualDevice-Formes-08\\bin\\win-x64\\00-drone-ju.exe");
+            ProcessBuilder pb = new ProcessBuilder(
+                    "F:\\BEAL_JULIEN_SN2\\_projet_2025\\git\\@Chai3d-3.2.0_VisualStudio_2015_x64-VirtualDevice-Formes-08\\bin\\win-x64\\00-drone-ju.exe");
             this.process = pb.start();
             Runtime.getRuntime().addShutdownHook(new Thread(() -> {
                 if (this.process.isAlive()) {
@@ -149,16 +184,16 @@ public class traitement {
             System.out.println("Erreur lors du lancement du programme Chai3D");
             e.printStackTrace();
         }
-        //--------------------------------------------------------------//
+        // --------------------------------------------------------------//
         // Ouverture du client de FileMapping pour l'image
         try {
-            this.monCLientFMP.OpenClient("img_java_to_c");
-            //this.monCLientFMP.OpenClient("img_c_to_java");
+            this.client_filemap_image.OpenClient("img_java_to_c");
+            // this.client_filemap_image.OpenClient("img_c_to_java");
         } catch (Exception e) {
             System.out.println("Erreur lors de l'ouverture du client img_c_to_java");
             e.printStackTrace();
         }
-        //--------------------------------------------------------------//
+        // --------------------------------------------------------------//
         // Initialisation des adresses IP et des sockets UDP
         try {
             Enumeration<NetworkInterface> interfaces = NetworkInterface.getNetworkInterfaces();
@@ -195,48 +230,52 @@ public class traitement {
             System.out.println("Erreur lors de l'initialisation des adresses IP et des sockets UDP");
             e.printStackTrace();
         }
-        //--------------------------------------------------------------//
+        // --------------------------------------------------------------//
         // Initialisation de l'image noire
         try {
             // Création d'une image noire avec le texte "START"
             this.blackImage = new Mat(360, 640, CvType.CV_8UC3, new Scalar(0, 0, 0));
             Size textSize = Imgproc.getTextSize("START", Imgproc.FONT_HERSHEY_SIMPLEX, 2.0, 3, null);
-            Point textOrg = new Point((this.blackImage.cols() - textSize.width) / 2,(this.blackImage.rows() + textSize.height) / 2);
-            Imgproc.putText(this.blackImage,"START",textOrg,Imgproc.FONT_HERSHEY_SIMPLEX,2.0,new Scalar(255, 255, 255),3);
-            // Initialisation de displayFrameHalfSize (sera mis à jour dès la première image reçue)
+            Point textOrg = new Point((this.blackImage.cols() - textSize.width) / 2,
+                    (this.blackImage.rows() + textSize.height) / 2);
+            Imgproc.putText(this.blackImage, "START", textOrg, Imgproc.FONT_HERSHEY_SIMPLEX, 2.0,
+                    new Scalar(255, 255, 255), 3);
+            // Initialisation de displayFrameHalfSize (sera mis à jour dès la première image
+            // reçue)
             this.displayFrameHalfSize = new Size(0, 0);
         } catch (Exception e) {
             System.out.println("Erreur lors de l'initialisation de l'image noire");
             e.printStackTrace();
         }
-        //--------------------------------------------------------------//
+        // --------------------------------------------------------------//
         // Lancement des threads
         try {
             this.reception = new thread_reception_image("traitement_UDP_image", this.socket_image, this.imageRecu);
             this.reception.start();
-    
+
             this.commande = new thread_reception_string("reception_cmd_traitement", this.socket_cmd);
             this.commande.start();
 
             this.telemetrie = new thread_reception_string("reception Telemetrie", this.socketTelemetrie);
             this.telemetrie.start();
-    
+
             this.detection_contours = new thread_detection_contours(this.imageRecu, false);
             this.detection_contours.start();
-    
+
             this.detection_formes = new thread_detection_formes(this.imageRecu, false);
             this.detection_formes.start();
-    
+
             this.envoie_cmd = new thread_envoie_cmd("T", this.address_local_str, this.address_broadcast, this.port[2]);
             this.envoie_cmd.start();
-    
-            this.list_dynamic_ip = new thread_list_dynamic_ip("traitement - boucle de vérification de la liste d'addresses");
+
+            this.list_dynamic_ip = new thread_list_dynamic_ip(
+                    "traitement - boucle de vérification de la liste d'addresses");
             this.list_dynamic_ip.start();
         } catch (Exception e) {
             System.out.println("Erreur lors du lancement des threads");
             e.printStackTrace();
         }
-        //--------------------------------------------------------------//
+        // --------------------------------------------------------------//
         // Initialisation de l'interface graphique
         try {
             ImageIcon icon = new ImageIcon("lib/logo.png");
@@ -247,15 +286,7 @@ public class traitement {
             System.out.println("Erreur lors de l'initialisation de l'interface graphique");
             e.printStackTrace();
         }
-        //--------------------------------------------------------------//
-        try {
-            this.gui = new TelemetryClientGUI();
-            this.gui.setVisible(true);
-        } catch (Exception e) {
-            System.out.println("Erreur lors de l'initialisation de l'interface graphique");
-            e.printStackTrace();
-        }
-        //--------------------------------------------------------------//
+        // --------------------------------------------------------------//
         // Ajout du shutdown hook pour supprimer l'adresse de la liste
         try {
             Runtime.getRuntime().addShutdownHook(new Thread(() -> {
@@ -270,7 +301,7 @@ public class traitement {
             System.out.println("Erreur lors de l'ajout du shutdown hook");
             e.printStackTrace();
         }
-        //--------------------------------------------------------------//
+        // --------------------------------------------------------------//
         // Boucle principale de traitement
         try {
             error.printError();
@@ -281,10 +312,9 @@ public class traitement {
         }
     }
 
-    //--------------------------------------------------------------//
+    // --------------------------------------------------------------//
     // Boucle principale de traitement
     private void mainLoop() {
-
 
         while (true) {
             this.imageRecu = this.reception.getImageRecu();
@@ -296,8 +326,9 @@ public class traitement {
                 // Stocker la dernière image valide
                 this.dermiereImageValide = this.imageRecu.clone();
 
-                //--------------------------------------------------------------//
+                // --------------------------------------------------------------//
                 // Traitement du message UDP reçu
+                this.parts = null;
                 this.commandeRecu = this.commande.getMessageRecu();
                 if (this.commandeRecu.startsWith("C#")) {
                     this.parts = this.commandeRecu.split("\\?");
@@ -316,7 +347,7 @@ public class traitement {
                 this.commandeRecu = "";
                 this.parts = null;
 
-                //--------------------------------------------------------------//
+                // --------------------------------------------------------------//
                 // Comparaison des temps de modification pour déterminer le type de traitement
                 this.droneTime = this.droneFenetre.getLastModifiedTime();
                 this.traitementTime = this.fenetreTraitement.getLastModifiedTime();
@@ -328,7 +359,7 @@ public class traitement {
                     this.traitements = this.fenetreTraitement.getTraitement();
                 }
 
-                //--------------------------------------------------------------//
+                // --------------------------------------------------------------//
                 // Application du traitement selon la valeur déterminée
                 switch (this.traitements) {
                     case 0:
@@ -361,7 +392,7 @@ public class traitement {
                         break;
                 }
 
-                //--------------------------------------------------------------//
+                // --------------------------------------------------------------//
                 // Calcul des FPS
                 currentTime = System.nanoTime();
                 intervalInSeconds = (currentTime - this.previousTime) / 1_000_000_000.0;
@@ -371,9 +402,10 @@ public class traitement {
                         new Scalar(0, 255, 0), 2);
                 this.previousTime = currentTime;
 
-                //--------------------------------------------------------------//
+                // --------------------------------------------------------------//
                 // Redimensionner les images pour l'affichage
-                Imgproc.resize(this.dermiereImageValide, this.dermiereImageValide_resizedImage, this.displayFrameHalfSize);
+                Imgproc.resize(this.dermiereImageValide, this.dermiereImageValide_resizedImage,
+                        this.displayFrameHalfSize);
                 Imgproc.resize(this.imageEnvoyer, this.imageEnvoyer_resizedImage, this.displayFrameHalfSize);
                 if (this.firstImageReceived) {
                     this.imageAfficher_source = this.dermiereImageValide_resizedImage;
@@ -383,48 +415,94 @@ public class traitement {
                     this.imageAfficher_envoyer = this.blackImage;
                 }
 
-                //--------------------------------------------------------------//
+                // --------------------------------------------------------------//
                 // Mise à jour du FileMapping pour Chai3D
                 this.imageBytes = this.encodeImageToJPEG(this.imageEnvoyer, 100);
                 this.length = this.imageBytes.length;
                 for (int i = 0; i < this.length; i++) {
-                    this.monServeurFMP.setMapFileOneByOneUnsignedChar(i, this.imageBytes[i]);
+                    this.serveur_filemap_image.setMapFileOneByOneUnsignedChar(i, this.imageBytes[i]);
                 }
 
-                this.telemetryRecu = this.telemetrie.getMessageRecu();
-
-                this.telemetryRecu = this.gui.parseTelemetryData(this.telemetryRecu);
-                this.gui.appendTelemetryData(this.telemetryRecu);
-
-
+                // --------------------------------------------------------------//
+                /*
+                 * 
+                 * // Traitement du message UDP reçu
+                 * this.parts = null;
+                 * this.telemetryRecu = this.telemetrie.getMessageRecu();
+                 * if (this.telemetryRecu != ""){
+                 * this.parts = this.telemetryRecu.split(";");
+                 * for (String part : this.parts) {
+                 * String[] keyValue = part.split(":");
+                 * if (keyValue.length == 2) { // Vérification pour éviter les erreurs d'index
+                 * String key = keyValue[0].trim(); // Nom de la clé
+                 * String value = keyValue[1].trim(); // Valeur associée
+                 * if (key.equals("dist")) {
+                 * this.serveur_filemap_telemetrie.set_val_0(Double.parseDouble(value));
+                 * }
+                 * if (key.equals("temp")) {
+                 * this.serveur_filemap_telemetrie.set_val_1(Double.parseDouble(value));
+                 * }
+                 * if (key.equals("alt")) {
+                 * this.serveur_filemap_telemetrie.set_val_2(Double.parseDouble(value));
+                 * }
+                 * if (key.equals("baro")) {
+                 * this.serveur_filemap_telemetrie.set_val_3(Double.parseDouble(value));
+                 * }
+                 * if (key.equals("agx")) {
+                 * this.serveur_filemap_telemetrie.set_val_4(Double.parseDouble(value));
+                 * }
+                 * if (key.equals("agy")) {
+                 * this.serveur_filemap_telemetrie.set_val_5(Double.parseDouble(value));
+                 * }
+                 * if (key.equals("agz")) {
+                 * this.serveur_filemap_telemetrie.set_val_6(Double.parseDouble(value));
+                 * }
+                 * if (key.equals("none")) {
+                 * this.serveur_filemap_telemetrie.set_val_7(Double.parseDouble(value));
+                 * }
+                 * if (key.equals("none")) {
+                 * this.serveur_filemap_telemetrie.set_val_8(Double.parseDouble(value));
+                 * }
+                 * if (key.equals("none")) {
+                 * this.serveur_filemap_telemetrie.set_val_9(Double.parseDouble(value));
+                 * }
+                 * }
+                 * }
+                 * }
+                 * // Réinitialisation
+                 * this.telemetryRecu = "";
+                 * this.parts = null;
+                 */
                 for (int i = 0; i < this.length; i++) {
-                    this.imageBytes[i] = (byte) this.monCLientFMP.getMapFileOneByOneUnsignedChar(i);
+                    this.imageBytes[i] = (byte) this.client_filemap_image.getMapFileOneByOneUnsignedChar(i);
                 }
-
-                //--------------------------------------------------------------//
-                // Ajustement dynamique du taux de compression
-                this.quality = 70;
-                if (this.imageBytes.length > this.maxPacketSize) {
-                    this.imageEnvoyer = jpegToMat(this.imageBytes);
-                    do {
-                        this.encodedData = this.encodeImageToJPEG(this.imageEnvoyer, this.quality);
-                        this.quality -= 5;
-                    } while (this.encodedData.length > this.maxPacketSize && this.quality > 10);
-                } else {
-                    this.encodedData = this.imageBytes;
-                }
-
-                //--------------------------------------------------------------//
-                // Envoi de l'image UDP à chaque adresse de la liste
-                if (!this.list_dynamic_ip.getClientAddress().isEmpty()) {
-                    for (String addr : this.list_dynamic_ip.getClientAddress()) {
-                        try {
-                            this.sendImageUDP(this.encodedData, addr, this.port[1]);
-                        } catch (IOException e) {
-                            System.out.println("Erreur lors de l'envoi de l'image à " + addr + " : " + e.getMessage());
-                        }
-                    }
-                }
+                /*
+                 * //--------------------------------------------------------------//
+                 * // Ajustement dynamique du taux de compression
+                 * this.quality = 70;
+                 * if (this.imageBytes.length > this.maxPacketSize) {
+                 * this.imageEnvoyer = jpegToMat(this.imageBytes);
+                 * do {
+                 * this.encodedData = this.encodeImageToJPEG(this.imageEnvoyer, this.quality);
+                 * this.quality -= 5;
+                 * } while (this.encodedData.length > this.maxPacketSize && this.quality > 10);
+                 * } else {
+                 * this.encodedData = this.imageBytes;
+                 * }
+                 * 
+                 * //--------------------------------------------------------------//
+                 * // Envoi de l'image UDP à chaque adresse de la liste
+                 * if (!this.list_dynamic_ip.getClientAddress().isEmpty()) {
+                 * for (String addr : this.list_dynamic_ip.getClientAddress()) {
+                 * try {
+                 * this.sendImageUDP(this.encodedData, addr, this.port[1]);
+                 * } catch (IOException e) {
+                 * System.out.println("Erreur lors de l'envoi de l'image à " + addr + " : " +
+                 * e.getMessage());
+                 * }
+                 * }
+                 * }
+                 */
             } else {
                 // Aucun image reçue : afficher l'image noire ou la dernière image valide
                 if (this.dermiereImageValide != null) {
@@ -440,19 +518,22 @@ public class traitement {
                     this.imageAfficher_envoyer = this.blackImage;
                 }
             }
-            //--------------------------------------------------------------//
+            // --------------------------------------------------------------//
             // Mise à jour des fenêtres d'affichage
             try {
-                this.bufferedImage_source = this.byteArrayToBufferedImage(this.encodeImageToJPEG(this.imageAfficher_source, 100));
+                this.bufferedImage_source = this
+                        .byteArrayToBufferedImage(this.encodeImageToJPEG(this.imageAfficher_source, 100));
                 this.droneFenetre.setImage(this.bufferedImage_source);
             } catch (IOException e) {
                 e.printStackTrace();
             }
             try {
                 if (this.imageBytes != null) {
-                    this.bufferedImage_envoyer = this.byteArrayToBufferedImage(resizeJPEGImage(this.imageBytes, this.displayFrameHalfSize));
+                    this.bufferedImage_envoyer = this
+                            .byteArrayToBufferedImage(resizeJPEGImage(this.imageBytes, this.displayFrameHalfSize));
                 } else {
-                    this.bufferedImage_envoyer = this.byteArrayToBufferedImage(this.encodeImageToJPEG(this.imageAfficher_envoyer, 100));
+                    this.bufferedImage_envoyer = this
+                            .byteArrayToBufferedImage(this.encodeImageToJPEG(this.imageAfficher_envoyer, 100));
                 }
                 this.fenetreTraitement.setImage(this.bufferedImage_envoyer);
             } catch (IOException e) {
@@ -461,7 +542,8 @@ public class traitement {
             new tempo(1);
         }
     }
-    //--------------------------------------------------------------//
+
+    // --------------------------------------------------------------//
     // Méthode pour envoyer une image via UDP
     private void sendImageUDP(byte[] imageData, String address, int port) throws IOException {
         DatagramSocket socket = null;
@@ -472,13 +554,14 @@ public class traitement {
             socket.send(packet);
         } catch (Exception e) {
             System.out.println("Erreur lors de l'envoi de l'image à " + address + " : " + e.getMessage());
-        }finally {
+        } finally {
             if (socket != null && !socket.isClosed()) {
                 socket.close();
             }
         }
     }
-    //--------------------------------------------------------------//
+
+    // --------------------------------------------------------------//
     // Méthode pour envoyer un String via UDP
     private void sendTextUDP(String data, String address, int port) throws IOException {
         DatagramSocket socket = null;
@@ -492,30 +575,33 @@ public class traitement {
             System.out.println("Données envoyées : " + data);
         } catch (Exception e) {
             System.out.println("Erreur lors de l'envoi de l'image à " + address + " : " + e.getMessage());
-        }finally {
+        } finally {
             if (socket != null && !socket.isClosed()) {
                 socket.close();
             }
         }
     }
-    //--------------------------------------------------------------//
+
+    // --------------------------------------------------------------//
     // Méthode pour encoder une image en JPEG avec une qualité donnée
     private byte[] encodeImageToJPEG(Mat image, int quality) {
         MatOfByte matOfByte = new MatOfByte();
         Imgcodecs.imencode(".jpg", image, matOfByte, new MatOfInt(Imgcodecs.IMWRITE_JPEG_QUALITY, quality));
         return matOfByte.toArray();
     }
-    //--------------------------------------------------------------//
+
+    // --------------------------------------------------------------//
     // Méthode pour convertir un tableau d'octets en BufferedImage
     private BufferedImage byteArrayToBufferedImage(byte[] byteArray) throws IOException {
         ByteArrayInputStream bis = new ByteArrayInputStream(byteArray);
         return ImageIO.read(bis);
     }
-    //--------------------------------------------------------------//
+
+    // --------------------------------------------------------------//
     // Méthode pour ajouter les différences entre deux images sur une image source
     public Mat additionDesDifferences(Mat img1, Mat img2, Mat source) {
         if (img1.size().equals(img2.size()) && img1.type() == img2.type() &&
-            img1.size().equals(source.size()) && img1.type() == source.type()) {
+                img1.size().equals(source.size()) && img1.type() == source.type()) {
             Mat diff = new Mat();
             Core.absdiff(img1, img2, diff);
             Mat result = source.clone();
@@ -525,7 +611,8 @@ public class traitement {
             throw new IllegalArgumentException("Les dimensions ou types des images ne correspondent pas");
         }
     }
-    //--------------------------------------------------------------//
+
+    // --------------------------------------------------------------//
     // Méthode pour redimensionner une image JPEG
     public static byte[] resizeJPEGImage(byte[] jpegImageBytes, Size newSize) {
         MatOfByte mob = new MatOfByte(jpegImageBytes);
@@ -540,7 +627,8 @@ public class traitement {
         Imgcodecs.imencode(".jpg", resizedImage, mobResized);
         return mobResized.toArray();
     }
-    //--------------------------------------------------------------//
+
+    // --------------------------------------------------------------//
     // Méthode pour convertir un tableau de bytes JPEG en Mat
     public static Mat jpegToMat(byte[] jpegBytes) {
         MatOfByte mob = new MatOfByte(jpegBytes);

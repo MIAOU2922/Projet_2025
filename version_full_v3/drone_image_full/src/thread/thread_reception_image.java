@@ -17,6 +17,8 @@ import java.net.DatagramSocket;
 import org.opencv.core.*;
 import org.opencv.imgcodecs.Imgcodecs;
 
+import util.tempo;
+
 
 // Réception de l'image via UDP
 public class thread_reception_image extends Thread {
