@@ -20,4 +20,4 @@ javac -cp "lib/opencv-4100.jar" -d "bin" src/_start/*.java src/thread/*.java src
 
 echo 2
 # Exécuter le script Java
-java $JAVA_OPTS _start._start_drone_L
+java $JAVA_OPTS _start._start_drone

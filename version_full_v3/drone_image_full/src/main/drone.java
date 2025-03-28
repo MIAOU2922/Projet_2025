@@ -29,7 +29,7 @@ import org.opencv.videoio.VideoCapture;
 import thread.*;
 import util.*;
 
-public class drone_W {
+public class drone {
 
     static {
 
@@ -75,7 +75,7 @@ public class drone_W {
     private long t0, t1, t2;
 
     // --------------------------------------------------------------//
-    public drone_W() {
+    public drone() {
 
         // --------------------------------------------------------------//
         // Initialisation des adresses IP et des sockets UDP
