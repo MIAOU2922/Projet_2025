@@ -1,30 +1,30 @@
 
-/**
- *-------------------------------------------------------------------
- * Nom du fichier : traitement.java
- * Auteur         : BEAL JULIEN
- * Version        : 2.0
- * Date           : 11/02/2025
- * Description    : Classe traitement pour gérer les images reçues et envoyées
- *-------------------------------------------------------------------
- * © 2025 BEAL JULIEN - Tous droits réservés
- */
+/
+ -------------------------------------------------------------------
+  Nom du fichier : traitement.java
+  Auteur         : BEAL JULIEN
+  Version        : 2.0
+  Date           : 11/02/2025
+  Description    : Classe traitement pour gérer les images reçues et envoyées
+ -------------------------------------------------------------------
+  © 2025 BEAL JULIEN - Tous droits réservés
+ /
 
 import java.awt.image.BufferedImage;
-import java.io.*;
+import java.io.;
 import java.lang.reflect.Method;
-import java.net.*;
+import java.net.;
 import java.time.LocalDateTime;
 import java.util.Enumeration;
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 
-import org.opencv.core.*;
+import org.opencv.core.;
 import org.opencv.imgcodecs.Imgcodecs;
 import org.opencv.imgproc.Imgproc;
 
-import thread.*;
-import util.*;
+import thread.;
+import util.;
 
 public class traitement {
     static {
@@ -424,85 +424,84 @@ public class traitement {
                 }
 
                 // --------------------------------------------------------------//
-                /*
-                 * 
-                 * // Traitement du message UDP reçu
-                 * this.parts = null;
-                 * this.telemetryRecu = this.telemetrie.getMessageRecu();
-                 * if (this.telemetryRecu != ""){
-                 * this.parts = this.telemetryRecu.split(";");
-                 * for (String part : this.parts) {
-                 * String[] keyValue = part.split(":");
-                 * if (keyValue.length == 2) { // Vérification pour éviter les erreurs d'index
-                 * String key = keyValue[0].trim(); // Nom de la clé
-                 * String value = keyValue[1].trim(); // Valeur associée
-                 * if (key.equals("dist")) {
-                 * this.serveur_filemap_telemetrie.set_val_0(Double.parseDouble(value));
-                 * }
-                 * if (key.equals("temp")) {
-                 * this.serveur_filemap_telemetrie.set_val_1(Double.parseDouble(value));
-                 * }
-                 * if (key.equals("alt")) {
-                 * this.serveur_filemap_telemetrie.set_val_2(Double.parseDouble(value));
-                 * }
-                 * if (key.equals("baro")) {
-                 * this.serveur_filemap_telemetrie.set_val_3(Double.parseDouble(value));
-                 * }
-                 * if (key.equals("agx")) {
-                 * this.serveur_filemap_telemetrie.set_val_4(Double.parseDouble(value));
-                 * }
-                 * if (key.equals("agy")) {
-                 * this.serveur_filemap_telemetrie.set_val_5(Double.parseDouble(value));
-                 * }
-                 * if (key.equals("agz")) {
-                 * this.serveur_filemap_telemetrie.set_val_6(Double.parseDouble(value));
-                 * }
-                 * if (key.equals("none")) {
-                 * this.serveur_filemap_telemetrie.set_val_7(Double.parseDouble(value));
-                 * }
-                 * if (key.equals("none")) {
-                 * this.serveur_filemap_telemetrie.set_val_8(Double.parseDouble(value));
-                 * }
-                 * if (key.equals("none")) {
-                 * this.serveur_filemap_telemetrie.set_val_9(Double.parseDouble(value));
-                 * }
-                 * }
-                 * }
-                 * }
-                 * // Réinitialisation
-                 * this.telemetryRecu = "";
-                 * this.parts = null;
-                 */
+                
+                
+                // Traitement du message UDP reçu
+                this.parts = null;
+                this.telemetryRecu = this.telemetrie.getMessageRecu();
+                if (this.telemetryRecu != ""){
+                    this.parts = this.telemetryRecu.split(";");
+                    for (String part : this.parts) {
+                        String[] keyValue = part.split(":");
+                        if (keyValue.length == 2) { // Vérification pour éviter les erreurs d'index
+                            String key = keyValue[0].trim(); // Nom de la clé
+                            String value = keyValue[1].trim(); // Valeur associée
+                            if (key.equals("dist")) {
+                                this.serveur_filemap_telemetrie.set_val_0(Double.parseDouble(value));
+                            }
+                            if (key.equals("temp")) {
+                                this.serveur_filemap_telemetrie.set_val_1(Double.parseDouble(value));
+                            }
+                            if (key.equals("alt")) {
+                                this.serveur_filemap_telemetrie.set_val_2(Double.parseDouble(value));
+                            }
+                            if (key.equals("baro")) {
+                                this.serveur_filemap_telemetrie.set_val_3(Double.parseDouble(value));
+                            }
+                            if (key.equals("agx")) {
+                                this.serveur_filemap_telemetrie.set_val_4(Double.parseDouble(value));
+                            }
+                            if (key.equals("agy")) {
+                                this.serveur_filemap_telemetrie.set_val_5(Double.parseDouble(value));
+                            }
+                            if (key.equals("agz")) {
+                                this.serveur_filemap_telemetrie.set_val_6(Double.parseDouble(value));
+                            }
+                            if (key.equals("none")) {
+                                this.serveur_filemap_telemetrie.set_val_7(Double.parseDouble(value));
+                            }
+                            if (key.equals("none")) {
+                                this.serveur_filemap_telemetrie.set_val_8(Double.parseDouble(value));
+                            }
+                            if (key.equals("none")) {
+                                this.serveur_filemap_telemetrie.set_val_9(Double.parseDouble(value));
+                            }
+                        }
+                    }
+                }
+                // Réinitialisation
+                this.telemetryRecu = "";
+                this.parts = null;
+                
                 for (int i = 0; i < this.length; i++) {
                     this.imageBytes[i] = (byte) this.client_filemap_image.getMapFileOneByOneUnsignedChar(i);
                 }
-                /*
-                 * //--------------------------------------------------------------//
-                 * // Ajustement dynamique du taux de compression
-                 * this.quality = 70;
-                 * if (this.imageBytes.length > this.maxPacketSize) {
-                 * this.imageEnvoyer = jpegToMat(this.imageBytes);
-                 * do {
-                 * this.encodedData = this.encodeImageToJPEG(this.imageEnvoyer, this.quality);
-                 * this.quality -= 5;
-                 * } while (this.encodedData.length > this.maxPacketSize && this.quality > 10);
-                 * } else {
-                 * this.encodedData = this.imageBytes;
-                 * }
-                 * 
-                 * //--------------------------------------------------------------//
-                 * // Envoi de l'image UDP à chaque adresse de la liste
-                 * if (!this.list_dynamic_ip.getClientAddress().isEmpty()) {
-                 * for (String addr : this.list_dynamic_ip.getClientAddress()) {
-                 * try {
-                 * this.sendImageUDP(this.encodedData, addr, this.port[1]);
-                 * } catch (IOException e) {
-                 * System.out.println("Erreur lors de l'envoi de l'image à " + addr + " : " +
-                 * e.getMessage());
-                 * }
-                 * }
-                 * }
-                 */
+                
+                //--------------------------------------------------------------//
+                // Ajustement dynamique du taux de compression
+                this.quality = 55;
+                if (this.imageBytes.length > this.maxPacketSize) {
+                    this.imageEnvoyer = jpegToMat(this.imageBytes);
+                    do {
+                        this.encodedData = this.encodeImageToJPEG(this.imageEnvoyer, this.quality);
+                        this.quality -= 5;
+                    } while (this.encodedData.length > this.maxPacketSize && this.quality > 10);
+                } else {
+                    this.encodedData = this.imageBytes;
+                }
+                
+                //--------------------------------------------------------------//
+                // Envoi de l'image UDP à chaque adresse de la liste
+                if (!this.list_dynamic_ip.getClientAddress().isEmpty()) {
+                    for (String addr : this.list_dynamic_ip.getClientAddress()) {
+                        try {
+                            this.sendImageUDP(this.encodedData, addr, this.port[1]);
+                            } catch (IOException e) {
+                            System.out.println("Erreur lors de l'envoi de l'image à " + addr + " : " +
+                            e.getMessage());
+                        }
+                    }
+                }
             } else {
                 // Aucun image reçue : afficher l'image noire ou la dernière image valide
                 if (this.dermiereImageValide != null) {

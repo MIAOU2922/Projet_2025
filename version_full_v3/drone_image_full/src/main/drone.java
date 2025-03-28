@@ -64,19 +64,15 @@ public class drone {
     private int quality; // Qualité initiale de compression JPEG
     private VideoCapture capture;
     private Mat frame;
-
-    // Variables de gestion du temps
-    private long previousTime = System.nanoTime();
-
+    private byte[] encodedData;
+    // time
+    private long currentTime = System.ccurrentTimeMillis();
+    private long previousTime = System.currentTimeMillis();
     // Threads
     private thread_reception_string commande;
     private thread_list_dynamic_ip listDynamicIp;
-
-    private long t0, t1, t2;
-
     // --------------------------------------------------------------//
     public drone() {
-
         // --------------------------------------------------------------//
         // Initialisation des adresses IP et des sockets UDP
         try {
@@ -102,11 +98,9 @@ public class drone {
                     break;
                 }
             }
-
             if (this.addressLocal == null) {
                 throw new Exception("Aucune adresse IP locale valide trouvée.");
             }
-
             this.socketCmd = new DatagramSocket(this.port[2]);
             this.packet = new DatagramPacket(this.data, this.data.length);
         } catch (Exception e) {
@@ -148,27 +142,19 @@ public class drone {
             e.printStackTrace();
         }
     }
-
     // --------------------------------------------------------------//
     // Boucle principale
     private void mainLoop() {
-
-        long currentTime;
-        long previousTime = System.currentTimeMillis();
-
         while (true) {
             if (!this.capture.read(this.frame)) {
                 System.out.println("Erreur de capture d'image.");
                 break;
             }
-
             this.processReceivedMessage();
             this.sendImage();
-
             currentTime = System.currentTimeMillis();
             System.out.println("fps " + (1000 / (currentTime - previousTime)));
             previousTime = currentTime;
-
             try {
                 Thread.sleep(1);
             } catch (InterruptedException e) {
@@ -176,7 +162,6 @@ public class drone {
             }
         }
     }
-
     // --------------------------------------------------------------//
     // Traitement des messages reçus
     private void processReceivedMessage() {
@@ -184,7 +169,6 @@ public class drone {
         if (messageRecu.startsWith("T#")) {
             String[] parts = messageRecu.split("\\?");
             String action = parts[0].split("#")[1];
-
             if (action.equals("add")) {
                 this.listDynamicIp.addClient(parts[1].split("#")[1], parts[2].split("#")[1]);
             } else if (action.equals("remove")) {
@@ -192,43 +176,21 @@ public class drone {
             }
         }
     }
-
     // --------------------------------------------------------------//
     // Envoi de l'image
     private void sendImage() {
         Imgproc.resize(this.frame, this.frame, new Size(this.imgSize[0], this.imgSize[1]));
-
-        /*
-        if (System.currentTimeMillis() - this.last_update_quality > this.intervale_update_quality) {
-            this.last_update_quality = System.currentTimeMillis();
-            this.quality = this.initial_quality;
-        }
-
-        */
-        byte[] encodedData;
         encodedData = encodeImageToJPEG(this.frame, 50);
-
-        /*
-        this.quality += 5;
-        do {
-            this.quality -= 5;
-            encodedData = encodeImageToJPEG(this.frame, this.quality);
-
-        } while (encodedData.length > this.maxPacketSize && this.quality > 10);
-        */
-
         if (!this.listDynamicIp.getClientAddress().isEmpty()) {
             for (String addr : this.listDynamicIp.getClientAddress()) {
                 try {
                     this.sendImageUDP(encodedData, addr, this.port[0]);
-
                 } catch (IOException e) {
                     System.out.println("Erreur lors de l'envoi de l'image : " + e.getMessage());
                 }
             }
         }
     }
-
     // --------------------------------------------------------------//
     // Méthode pour envoyer une image via UDP
     private void sendImageUDP(byte[] imageData, String address, int port) throws IOException {
@@ -238,7 +200,6 @@ public class drone {
             socket.send(packet);
         }
     }
-
     // --------------------------------------------------------------//
     // Méthode pour encoder une image en JPEG
     private static byte[] encodeImageToJPEG(Mat image, int quality) {

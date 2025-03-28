@@ -33,13 +33,11 @@ public class client {
     static {
         System.loadLibrary(Core.NATIVE_LIBRARY_NAME); // Charger la bibliothèque OpenCV
     }
-
     // Variables d'image et d'affichage
     private Mat imageRecu = new Mat();
     private BufferedImage bufferedImage = null;
     private String addressLocalStr;
     private String text = "";
-
     // Configuration réseau
     private int[] port = {55000, 55001, 55002};
     private String address = "172.29.41.9";
@@ -49,27 +47,22 @@ public class client {
     private DatagramSocket socketCmd;
     private DatagramPacket packet;
     private InetAddress localAddress;
-
     // Variables pour le traitement d'image et l'affichage
     private Mat lastValidImage = null;
     private Mat displayImage = new Mat();
     private Mat resizedValidImage = new Mat();
     private Mat blackImage;
-
     // Mesure du FPS
     private long previousTime = System.nanoTime();
-
     // Threads
     private thread_reception_image reception;
     private thread_reception_string cmd;
     private thread.thread_envoie_cmd envoieCmd;
-
     // Interface graphique
     private FenetreTraitement fenetreClient;
 
     //--------------------------------------------------------------//
     public client() {
-
         //--------------------------------------------------------------//
         // Initialisation des adresses IP et des sockets UDP
         try {
@@ -120,12 +113,13 @@ public class client {
         //--------------------------------------------------------------//
         // lancement des threads
         try {
+            //image
             this.reception = new thread_reception_image("client_UDP_image", this.socketImage, this.imageRecu);
             this.reception.start();
-    
+            //reception commande
             this.cmd = new thread_reception_string("traitement_UDP_String", this.socketCmd);
             this.cmd.start();
-    
+            //envoie commande
             this.envoieCmd = new thread.thread_envoie_cmd("C", this.addressLocalStr, this.addressBroadcast, this.port[2]);
             this.envoieCmd.start();
         } catch (Exception e) {
@@ -173,7 +167,6 @@ public class client {
         int currentTraitement = 0;
         while (true) {
             this.imageRecu = this.reception.getImageRecu();
-
             if (this.imageRecu.empty()) {
                 if (this.lastValidImage != null) {
                     this.displayImage = this.resizedValidImage;
@@ -195,12 +188,10 @@ public class client {
                     2
                 );
                 this.previousTime = currentTime;
-
                 Size displayFrameHalfSize = new Size(this.imageRecu.width() / 2, this.imageRecu.height() / 2);
                 Imgproc.resize(this.lastValidImage, this.resizedValidImage, displayFrameHalfSize);
                 this.displayImage = this.resizedValidImage;
             }
-
             try {
                 byte[] encodedImage = encodeImageToJPEG(this.displayImage, 100);
                 this.bufferedImage = byteArrayToBufferedImage(encodedImage);
@@ -208,7 +199,6 @@ public class client {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-
             currentTraitement = this.fenetreClient.getTraitement();
             if (currentTraitement != previousTraitement) {
                 try {
@@ -219,7 +209,6 @@ public class client {
                     e.printStackTrace();
                 }
             }
-
             new tempo(10);
         }
     }
@@ -261,7 +250,7 @@ public class client {
     public static String getLastTwoSegments(String ip) {
         String[] parts = ip.split("\\.");
         if (parts.length >= 2) {
-            return parts[parts.length - 2] + ".." + parts[parts.length - 1];
+            return parts[parts.length - 2] + "." + parts[parts.length - 1];
         }
         return ip;
     }
