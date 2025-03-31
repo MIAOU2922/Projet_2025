@@ -5,7 +5,11 @@ sudo chmod 777 -R ./
 #!/bin/bash
 
 # Chemin vers les bibliothèques OpenCV
-OPENCV_LIB_PATH="/home/Partage/drone_image_full/lib"
+
+# OPENCV_LIB_PATH="/home/Partage/drone_image_full/lib"
+
+OPENCV_LIB_PATH="$(pwd)/lib"
+
 
 echo 0
 
