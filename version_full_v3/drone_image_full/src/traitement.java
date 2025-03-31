@@ -1,30 +1,30 @@
 
-/
- -------------------------------------------------------------------
-  Nom du fichier : traitement.java
-  Auteur         : BEAL JULIEN
-  Version        : 2.0
-  Date           : 11/02/2025
-  Description    : Classe traitement pour gérer les images reçues et envoyées
- -------------------------------------------------------------------
-  © 2025 BEAL JULIEN - Tous droits réservés
- /
+/*
+*-------------------------------------------------------------------
+* Nom du fichier : traitement.java
+* Auteur         : BEAL JULIEN
+* Version        : 3.1
+* Date           : 11/02/2025
+* Description    : Classe traitement pour gérer les images reçues et envoyées
+*-------------------------------------------------------------------
+* © 2025 BEAL JULIEN - Tous droits réservés
+*/
 
 import java.awt.image.BufferedImage;
-import java.io.;
+import java.io.*;
 import java.lang.reflect.Method;
-import java.net.;
+import java.net.*;
 import java.time.LocalDateTime;
 import java.util.Enumeration;
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 
-import org.opencv.core.;
+import org.opencv.core.*;
 import org.opencv.imgcodecs.Imgcodecs;
 import org.opencv.imgproc.Imgproc;
 
-import thread.;
-import util.;
+import thread.*;
+import util.*;
 
 public class traitement {
     static {
