@@ -153,7 +153,7 @@ public class drone {
             this.processReceivedMessage();
             this.sendImage();
             currentTime = System.currentTimeMillis();
-            System.out.println("fps " + (1000 / (currentTime - previousTime)));
+            System.out.println("fps: " + (1000 / (currentTime - previousTime)));
             previousTime = currentTime;
             try {
                 Thread.sleep(1);
