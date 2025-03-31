@@ -66,7 +66,7 @@ public class drone {
     private Mat frame;
     private byte[] encodedData;
     // time
-    private long currentTime = System.ccurrentTimeMillis();
+    private long currentTime = System.currentTimeMillis();
     private long previousTime = System.currentTimeMillis();
     // Threads
     private thread_reception_string commande;
