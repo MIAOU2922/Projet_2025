@@ -187,7 +187,7 @@ public class client {
                     new Scalar(255, 0, 0),
                     2
                 );
-                System.out.println("fps "+ String.format("FPS: %.0f", fps));
+                System.out.println(String.format("fps: %.0f", fps));
                 this.previousTime = currentTime;
                 Size displayFrameHalfSize = new Size(this.imageRecu.width() / 2, this.imageRecu.height() / 2);
                 Imgproc.resize(this.lastValidImage, this.resizedValidImage, displayFrameHalfSize);
