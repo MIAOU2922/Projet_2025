@@ -209,7 +209,7 @@ public class client {
                     e.printStackTrace();
                 }
             }
-            new tempo(10);
+            new tempo(1);
         }
     }
     //--------------------------------------------------------------//
