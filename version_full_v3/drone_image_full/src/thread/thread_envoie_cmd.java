@@ -59,8 +59,8 @@ public class thread_envoie_cmd extends Thread {
             DatagramPacket packet = new DatagramPacket(buffer, buffer.length, ipAddress, port);
             socket.send(packet); // Envoie du paquet UDP
             
-            System.out.println("\nDonnées envoyées à " + address + ":" + port );
-            System.out.println("\nDonnées envoyées : " + data);
+            // System.out.println("\nDonnées envoyées à " + address + ":" + port );
+            // System.out.println("\nDonnées envoyées : " + data);
 
         } finally {
             if (socket != null && !socket.isClosed()) {

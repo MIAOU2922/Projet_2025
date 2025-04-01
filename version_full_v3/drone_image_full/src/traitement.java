@@ -404,6 +404,7 @@ public class traitement {
                 Imgproc.putText(this.imageEnvoyer, String.format("FPS: %.0f", this.fps),
                         new Point(10, 30), Imgproc.FONT_HERSHEY_SIMPLEX, 1,
                         new Scalar(0, 255, 0), 2);
+                System.out.print("\033[K");  // Efface la ligne
                 System.out.print(String.format("\rfps: %.0f   ", fps));
                 this.previousTime = currentTime;
 
@@ -523,8 +524,8 @@ public class traitement {
             byte[] buffer = data.getBytes();
             DatagramPacket packet = new DatagramPacket(buffer, buffer.length, ipAddress, port);
             socket.send(packet);
-            System.out.println("\nDonnées envoyées à " + address + ":" + port);
-            System.out.println("\nDonnées envoyées : " + data);
+            // System.out.println("\nDonnées envoyées à " + address + ":" + port);
+            // System.out.println("\nDonnées envoyées : " + data);
         } catch (Exception e) {
             System.out.println("\nErreur lors de l'envoi de l'image à " + address + " : " + e.getMessage());
         } finally {

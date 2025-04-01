@@ -187,6 +187,7 @@ public class client {
                     new Scalar(255, 0, 0),
                     2
                 );
+                System.out.print("\033[K");  // Efface la ligne
                 System.out.print(String.format("\rfps: %.0f   ", fps));
                 this.previousTime = currentTime;
                 Size displayFrameHalfSize = new Size(this.imageRecu.width() / 2, this.imageRecu.height() / 2);
@@ -236,8 +237,8 @@ public class client {
             byte[] buffer = data.getBytes();
             DatagramPacket packet = new DatagramPacket(buffer, buffer.length, ipAddress, port);
             socket.send(packet);
-            System.out.println("\nDonnées envoyées à " + address + ":" + port);
-            System.out.println("\nDonnées envoyées : " + data);
+            // System.out.println("\nDonnées envoyées à " + address + ":" + port);
+            // System.out.println("\nDonnées envoyées : " + data);
         } catch (Exception e) {
             System.out.println("\nErreur lors de l'envoi de l'image à " + address + " : " + e.getMessage());
         }finally {

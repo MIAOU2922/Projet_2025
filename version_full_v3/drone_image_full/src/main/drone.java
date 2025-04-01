@@ -153,6 +153,7 @@ public class drone {
             this.processReceivedMessage();
             this.sendImage();
             currentTime = System.currentTimeMillis();
+            System.out.print("\033[K");  // Efface la ligne
             System.out.print(String.format("\rfps: %d   ", (1000 / (currentTime - previousTime))));
 
             previousTime = currentTime;
