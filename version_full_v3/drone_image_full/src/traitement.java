@@ -70,9 +70,6 @@ public class traitement {
     private cFileMappingPictureClient client_filemap_image = new cFileMappingPictureClient(false);
     private cFileMappingPictureServeur serveur_filemap_image = new cFileMappingPictureServeur(true);
 
-    private cFileMappingDroneCharTelemetryServeur serveur_filemap_telemetrie = new cFileMappingDroneCharTelemetryServeur(
-            false);
-
     // Variables liées aux images et au traitement
     private byte[] imageBytes;
     private int length;
@@ -118,7 +115,7 @@ public class traitement {
     // Threads
     private thread_reception_image reception;
     private thread_reception_string commande;
-    private thread_reception_string telemetrie;
+    private thread_traitement_telemtrie telemetrie_traitement;
 
     private thread_detection_contours detection_contours;
     private thread_detection_formes detection_formes;
@@ -149,25 +146,6 @@ public class traitement {
         } catch (Exception e) {
             System.out.println("Erreur lors de l'ouverture du serveur img_java_to_c");
             e.printStackTrace();
-        }
-        // --------------------------------------------------------------//
-        // Ouverture du serveur de FileMapping pour la telemetrie
-        try {
-            this.serveur_filemap_telemetrie.OpenServer("telemetrie_java_to_c");
-        } catch (Exception e) {
-            System.out.println("Erreur lors de l'ouverture du serveur telemetrie_java_to_c");
-            e.printStackTrace();
-        }
-        // --------------------------------------------------------------//
-        // init du filemap de telemetrie a 0
-        for (int i = 0; i < 20; i++) {
-            try {
-                Method method = this.serveur_filemap_telemetrie.getClass()
-                        .getMethod("set_val_" + i, double.class);
-                method.invoke(this.serveur_filemap_telemetrie, (double) i);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
         }
         // --------------------------------------------------------------//
         // Lancement du programme Chai3D
@@ -247,32 +225,55 @@ public class traitement {
             System.out.println("Erreur lors de l'initialisation de l'image noire");
             e.printStackTrace();
         }
-        // --------------------------------------------------------------//
-        // Lancement des threads
+       // --------------------------------------------------------------//
+        // Lancement des threads avec gestion individuelle des exceptions
         try {
             this.reception = new thread_reception_image("traitement_UDP_image", this.socket_image, this.imageRecu);
             this.reception.start();
-
+        } catch (Exception e) {
+            System.out.println("Erreur lors du lancement du thread de réception d'image");
+            e.printStackTrace();
+        }
+        try {
             this.commande = new thread_reception_string("reception_cmd_traitement", this.socket_cmd);
             this.commande.start();
-
-            this.telemetrie = new thread_reception_string("reception Telemetrie", this.socketTelemetrie);
-            this.telemetrie.start();
-
+        } catch (Exception e) {
+            System.out.println("Erreur lors du lancement du thread de réception de commande");
+            e.printStackTrace();
+        }
+        try {
+            this.telemetrie_traitement = new thread_traitement_telemtrie("reception_Telemetrie", this.socketTelemetrie);
+            this.telemetrie_traitement.start();
+        } catch (Exception e) {
+            System.out.println("Erreur lors du lancement du thread de réception télémétrie");
+            e.printStackTrace();
+        }
+        try {
             this.detection_contours = new thread_detection_contours(this.imageRecu, false);
             this.detection_contours.start();
-
+        } catch (Exception e) {
+            System.out.println("Erreur lors du lancement du thread de détection des contours");
+            e.printStackTrace();
+        }
+        try {
             this.detection_formes = new thread_detection_formes(this.imageRecu, false);
             this.detection_formes.start();
-
+        } catch (Exception e) {
+            System.out.println("Erreur lors du lancement du thread de détection des formes");
+            e.printStackTrace();
+        }
+        try {
             this.envoie_cmd = new thread_envoie_cmd("T", this.address_local_str, this.address_broadcast, this.port[2]);
             this.envoie_cmd.start();
-
-            this.list_dynamic_ip = new thread_list_dynamic_ip(
-                    "traitement - boucle de vérification de la liste d'addresses");
+        } catch (Exception e) {
+            System.out.println("Erreur lors du lancement du thread d'envoi de commande");
+            e.printStackTrace();
+        }
+        try {
+            this.list_dynamic_ip = new thread_list_dynamic_ip("traitement - boucle de vérification de la liste d'adresses");
             this.list_dynamic_ip.start();
         } catch (Exception e) {
-            System.out.println("Erreur lors du lancement des threads");
+            System.out.println("Erreur lors du lancement du thread de gestion des IP dynamiques");
             e.printStackTrace();
         }
         // --------------------------------------------------------------//
@@ -422,56 +423,6 @@ public class traitement {
                 for (int i = 0; i < this.length; i++) {
                     this.serveur_filemap_image.setMapFileOneByOneUnsignedChar(i, this.imageBytes[i]);
                 }
-
-                // --------------------------------------------------------------//
-                
-                
-                // Traitement du message UDP reçu
-                this.parts = null;
-                this.telemetryRecu = this.telemetrie.getMessageRecu();
-                if (this.telemetryRecu != ""){
-                    this.parts = this.telemetryRecu.split(";");
-                    for (String part : this.parts) {
-                        String[] keyValue = part.split(":");
-                        if (keyValue.length == 2) { // Vérification pour éviter les erreurs d'index
-                            String key = keyValue[0].trim(); // Nom de la clé
-                            String value = keyValue[1].trim(); // Valeur associée
-                            if (key.equals("dist")) {
-                                this.serveur_filemap_telemetrie.set_val_0(Double.parseDouble(value));
-                            }
-                            if (key.equals("temp")) {
-                                this.serveur_filemap_telemetrie.set_val_1(Double.parseDouble(value));
-                            }
-                            if (key.equals("alt")) {
-                                this.serveur_filemap_telemetrie.set_val_2(Double.parseDouble(value));
-                            }
-                            if (key.equals("baro")) {
-                                this.serveur_filemap_telemetrie.set_val_3(Double.parseDouble(value));
-                            }
-                            if (key.equals("agx")) {
-                                this.serveur_filemap_telemetrie.set_val_4(Double.parseDouble(value));
-                            }
-                            if (key.equals("agy")) {
-                                this.serveur_filemap_telemetrie.set_val_5(Double.parseDouble(value));
-                            }
-                            if (key.equals("agz")) {
-                                this.serveur_filemap_telemetrie.set_val_6(Double.parseDouble(value));
-                            }
-                            if (key.equals("none")) {
-                                this.serveur_filemap_telemetrie.set_val_7(Double.parseDouble(value));
-                            }
-                            if (key.equals("none")) {
-                                this.serveur_filemap_telemetrie.set_val_8(Double.parseDouble(value));
-                            }
-                            if (key.equals("none")) {
-                                this.serveur_filemap_telemetrie.set_val_9(Double.parseDouble(value));
-                            }
-                        }
-                    }
-                }
-                // Réinitialisation
-                this.telemetryRecu = "";
-                this.parts = null;
                 
                 for (int i = 0; i < this.length; i++) {
                     this.imageBytes[i] = (byte) this.client_filemap_image.getMapFileOneByOneUnsignedChar(i);
