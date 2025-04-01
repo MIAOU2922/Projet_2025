@@ -27,19 +27,19 @@ public class thread_traitement_telemtrie extends Thread {
         try {
             System.loadLibrary("JNIFileMappingDroneCharTelemetryServeur");
         } catch (Exception e) {
-            System.err.println("Erreur lors du chargement de la librairie JNIFileMappingDroneCharTelemetryServeur");
+            System.err.println("\nErreur lors du chargement de la librairie JNIFileMappingDroneCharTelemetryServeur");
             e.printStackTrace();
         }
         try {
             System.loadLibrary("JNIVirtualDroneCharTelemetry");
         } catch (Exception e) {
-            System.err.println("Erreur lors du chargement de la librairie JNIVirtualDroneCharTelemetry");
+            System.err.println("\nErreur lors du chargement de la librairie JNIVirtualDroneCharTelemetry");
             e.printStackTrace();
         }
         try {
             System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
         } catch (Exception e) {
-            System.err.println("Erreur lors du chargement de la librairie OpenCV");
+            System.err.println("\nErreur lors du chargement de la librairie OpenCV");
             e.printStackTrace();
         }
     }
@@ -81,7 +81,7 @@ public class thread_traitement_telemtrie extends Thread {
         try {
             this.serveur_filemap_telemetrie.OpenServer("telemetrie_java_to_c");
         } catch (Exception e) {
-            System.out.println("Erreur lors de l'ouverture du serveur telemetrie_java_to_c");
+            System.out.println("\nErreur lors de l'ouverture du serveur telemetrie_java_to_c");
             e.printStackTrace();
         }
         // --------------------------------------------------------------//
@@ -102,7 +102,7 @@ public class thread_traitement_telemtrie extends Thread {
             this.telemetrie = new thread_reception_string(this.name, this.socketTelemetrie);
             this.telemetrie.start();
         } catch (Exception e) {
-            System.out.println("Erreur lors du lancement des threads");
+            System.out.println("\nErreur lors du lancement des threads");
             e.printStackTrace();
         }
         // --------------------------------------------------------------//
@@ -111,7 +111,7 @@ public class thread_traitement_telemtrie extends Thread {
             error.printError();
             this.mainLoop();
         } catch (Exception e) {
-            System.out.println("Erreur lors de la boucle principale de traitement");
+            System.out.println("\nErreur lors de la boucle principale de traitement");
             e.printStackTrace();
         }
     }

@@ -95,7 +95,7 @@ public class client {
             this.socketCmd = new DatagramSocket(this.port[2]);
             this.packet = new DatagramPacket(this.data, this.data.length);
         } catch (Exception e) {
-            System.out.println("Erreur lors de l'initialisation des adresses IP et des sockets UDP");
+            System.out.println("\nErreur lors de l'initialisation des adresses IP et des sockets UDP");
             e.printStackTrace();
         }
         //--------------------------------------------------------------//
@@ -103,11 +103,11 @@ public class client {
         try {
             // Création d'une image noire avec le texte "START"
             this.blackImage = new Mat(360, 640, CvType.CV_8UC3, new Scalar(0, 0, 0));
-            Size textSize = Imgproc.getTextSize("START", Imgproc.FONT_HERSHEY_SIMPLEX, 2.0, 3, null);
+            Size textSize = Imgproc.getTextSize("No Image", Imgproc.FONT_HERSHEY_SIMPLEX, 2.0, 3, null);
             Point textOrg = new Point((this.blackImage.cols() - textSize.width) / 2,(this.blackImage.rows() + textSize.height) / 2);
-            Imgproc.putText(this.blackImage,"START",textOrg,Imgproc.FONT_HERSHEY_SIMPLEX,2.0,new Scalar(255, 255, 255),3);
+            Imgproc.putText(this.blackImage,"No Image",textOrg,Imgproc.FONT_HERSHEY_SIMPLEX,2.0,new Scalar(255, 255, 255),3);
         } catch (Exception e) {
-            System.out.println("Erreur lors de l'initialisation de l'image noire");
+            System.out.println("\nErreur lors de l'initialisation de l'image noire");
             e.printStackTrace();
         }
         //--------------------------------------------------------------//
@@ -123,7 +123,7 @@ public class client {
             this.envoieCmd = new thread.thread_envoie_cmd("C", this.addressLocalStr, this.addressBroadcast, this.port[2]);
             this.envoieCmd.start();
         } catch (Exception e) {
-            System.out.println("Erreur lors du lancement des threads");
+            System.out.println("\nErreur lors du lancement des threads");
             e.printStackTrace();
         }
         //--------------------------------------------------------------//
@@ -132,7 +132,7 @@ public class client {
             ImageIcon icon = new ImageIcon("lib/logo.png"); // Remplacer par le chemin réel de l'icône
             this.fenetreClient = new FenetreTraitement("client", icon, 1280, 0);
         }catch (Exception e) {
-            System.out.println("Erreur lors de l'initialisation de l'interface graphique");
+            System.out.println("\nErreur lors de l'initialisation de l'interface graphique");
             e.printStackTrace();
         }
         //--------------------------------------------------------------//
@@ -147,7 +147,7 @@ public class client {
                 }
             }));
         } catch (Exception e) {
-            System.out.println("Erreur lors de l'ajout du shutdown hook");
+            System.out.println("\nErreur lors de l'ajout du shutdown hook");
             e.printStackTrace();
         }
         //--------------------------------------------------------------//
@@ -156,7 +156,7 @@ public class client {
             error.printError();
             mainLoop();
         } catch (Exception e) {
-            System.out.println("Erreur lors de la boucle principale du client");
+            System.out.println("\nErreur lors de la boucle principale du client");
             e.printStackTrace();
         }
     }
@@ -236,10 +236,10 @@ public class client {
             byte[] buffer = data.getBytes();
             DatagramPacket packet = new DatagramPacket(buffer, buffer.length, ipAddress, port);
             socket.send(packet);
-            System.out.println("Données envoyées à " + address + ":" + port);
-            System.out.println("Données envoyées : " + data);
+            System.out.println("\nDonnées envoyées à " + address + ":" + port);
+            System.out.println("\nDonnées envoyées : " + data);
         } catch (Exception e) {
-            System.out.println("Erreur lors de l'envoi de l'image à " + address + " : " + e.getMessage());
+            System.out.println("\nErreur lors de l'envoi de l'image à " + address + " : " + e.getMessage());
         }finally {
             if (socket != null && !socket.isClosed()) {
                 socket.close();

@@ -42,10 +42,10 @@ public class thread_reception_string extends Thread {
                 messageRecu = new String(packet.getData(), 0, packet.getLength(), StandardCharsets.UTF_8);
 
                 // Affichage du message reçu
-                //System.out.println("Message reçu : " + messageRecu);
+                //System.out.println("\nMessage reçu : " + messageRecu);
 
             } catch (Exception e) {
-                System.out.println("Erreur de réception du message : " + e.getMessage());
+                System.out.println("\nErreur de réception du message : " + e.getMessage());
             }
         }
     }

@@ -31,37 +31,37 @@ public class traitement {
         try {
             System.loadLibrary("JNIFileMappingPictureClient");
         } catch (Exception e) {
-            System.err.println("Erreur lors du chargement de la librairie JNIFileMappingPictureClient");
+            System.err.println("\nErreur lors du chargement de la librairie JNIFileMappingPictureClient");
             e.printStackTrace();
         }
         try {
             System.loadLibrary("JNIFileMappingPictureServeur");
         } catch (Exception e) {
-            System.err.println("Erreur lors du chargement de la librairie JNIFileMappingPictureServeur");
+            System.err.println("\nErreur lors du chargement de la librairie JNIFileMappingPictureServeur");
             e.printStackTrace();
         }
         try {
             System.loadLibrary("JNIVirtualPicture");
         } catch (Exception e) {
-            System.err.println("Erreur lors du chargement de la librairie JNIVirtualPicture");
+            System.err.println("\nErreur lors du chargement de la librairie JNIVirtualPicture");
             e.printStackTrace();
         }
         try {
             System.loadLibrary("JNIFileMappingDroneCharTelemetryServeur");
         } catch (Exception e) {
-            System.err.println("Erreur lors du chargement de la librairie JNIFileMappingDroneCharTelemetryServeur");
+            System.err.println("\nErreur lors du chargement de la librairie JNIFileMappingDroneCharTelemetryServeur");
             e.printStackTrace();
         }
         try {
             System.loadLibrary("JNIVirtualDroneCharTelemetry");
         } catch (Exception e) {
-            System.err.println("Erreur lors du chargement de la librairie JNIVirtualDroneCharTelemetry");
+            System.err.println("\nErreur lors du chargement de la librairie JNIVirtualDroneCharTelemetry");
             e.printStackTrace();
         }
         try {
             System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
         } catch (Exception e) {
-            System.err.println("Erreur lors du chargement de la librairie OpenCV");
+            System.err.println("\nErreur lors du chargement de la librairie OpenCV");
             e.printStackTrace();
         }
     }
@@ -144,7 +144,7 @@ public class traitement {
         try {
             this.serveur_filemap_image.OpenServer("img_java_to_c");
         } catch (Exception e) {
-            System.out.println("Erreur lors de l'ouverture du serveur img_java_to_c");
+            System.out.println("\nErreur lors de l'ouverture du serveur img_java_to_c");
             e.printStackTrace();
         }
         // --------------------------------------------------------------//
@@ -159,7 +159,7 @@ public class traitement {
                 }
             }));
         } catch (IOException e) {
-            System.out.println("Erreur lors du lancement du programme Chai3D");
+            System.out.println("\nErreur lors du lancement du programme Chai3D");
             e.printStackTrace();
         }
         // --------------------------------------------------------------//
@@ -168,7 +168,7 @@ public class traitement {
             this.client_filemap_image.OpenClient("img_java_to_c");
             // this.client_filemap_image.OpenClient("img_c_to_java");
         } catch (Exception e) {
-            System.out.println("Erreur lors de l'ouverture du client img_c_to_java");
+            System.out.println("\nErreur lors de l'ouverture du client img_c_to_java");
             e.printStackTrace();
         }
         // --------------------------------------------------------------//
@@ -205,7 +205,7 @@ public class traitement {
             this.socketTelemetrie = new DatagramSocket(this.port[3]);
             this.packet = new DatagramPacket(this.data, this.data.length);
         } catch (Exception e) {
-            System.out.println("Erreur lors de l'initialisation des adresses IP et des sockets UDP");
+            System.out.println("\nErreur lors de l'initialisation des adresses IP et des sockets UDP");
             e.printStackTrace();
         }
         // --------------------------------------------------------------//
@@ -213,67 +213,68 @@ public class traitement {
         try {
             // Création d'une image noire avec le texte "START"
             this.blackImage = new Mat(360, 640, CvType.CV_8UC3, new Scalar(0, 0, 0));
-            Size textSize = Imgproc.getTextSize("START", Imgproc.FONT_HERSHEY_SIMPLEX, 2.0, 3, null);
+            Size textSize = Imgproc.getTextSize("No Image", Imgproc.FONT_HERSHEY_SIMPLEX, 2.0, 3, null);
             Point textOrg = new Point((this.blackImage.cols() - textSize.width) / 2,
                     (this.blackImage.rows() + textSize.height) / 2);
-            Imgproc.putText(this.blackImage, "START", textOrg, Imgproc.FONT_HERSHEY_SIMPLEX, 2.0,
+            Imgproc.putText(this.blackImage, "No Image", textOrg, Imgproc.FONT_HERSHEY_SIMPLEX, 2.0,
                     new Scalar(255, 255, 255), 3);
             // Initialisation de displayFrameHalfSize (sera mis à jour dès la première image
             // reçue)
             this.displayFrameHalfSize = new Size(0, 0);
         } catch (Exception e) {
-            System.out.println("Erreur lors de l'initialisation de l'image noire");
+            System.out.println("\nErreur lors de l'initialisation de l'image noire");
             e.printStackTrace();
         }
-       // --------------------------------------------------------------//
+        // --------------------------------------------------------------//
         // Lancement des threads avec gestion individuelle des exceptions
         try {
             this.reception = new thread_reception_image("traitement_UDP_image", this.socket_image, this.imageRecu);
             this.reception.start();
         } catch (Exception e) {
-            System.out.println("Erreur lors du lancement du thread de réception d'image");
+            System.out.println("\nErreur lors du lancement du thread de réception d'image");
             e.printStackTrace();
         }
         try {
             this.commande = new thread_reception_string("reception_cmd_traitement", this.socket_cmd);
             this.commande.start();
         } catch (Exception e) {
-            System.out.println("Erreur lors du lancement du thread de réception de commande");
+            System.out.println("\nErreur lors du lancement du thread de réception de commande");
             e.printStackTrace();
         }
         try {
             this.telemetrie_traitement = new thread_traitement_telemtrie("reception_Telemetrie", this.socketTelemetrie);
             this.telemetrie_traitement.start();
         } catch (Exception e) {
-            System.out.println("Erreur lors du lancement du thread de réception télémétrie");
+            System.out.println("\nErreur lors du lancement du thread de réception télémétrie");
             e.printStackTrace();
         }
         try {
             this.detection_contours = new thread_detection_contours(this.imageRecu, false);
             this.detection_contours.start();
         } catch (Exception e) {
-            System.out.println("Erreur lors du lancement du thread de détection des contours");
+            System.out.println("\nErreur lors du lancement du thread de détection des contours");
             e.printStackTrace();
         }
         try {
             this.detection_formes = new thread_detection_formes(this.imageRecu, false);
             this.detection_formes.start();
         } catch (Exception e) {
-            System.out.println("Erreur lors du lancement du thread de détection des formes");
+            System.out.println("\nErreur lors du lancement du thread de détection des formes");
             e.printStackTrace();
         }
         try {
             this.envoie_cmd = new thread_envoie_cmd("T", this.address_local_str, this.address_broadcast, this.port[2]);
             this.envoie_cmd.start();
         } catch (Exception e) {
-            System.out.println("Erreur lors du lancement du thread d'envoi de commande");
+            System.out.println("\nErreur lors du lancement du thread d'envoi de commande");
             e.printStackTrace();
         }
         try {
-            this.list_dynamic_ip = new thread_list_dynamic_ip("traitement - boucle de vérification de la liste d'adresses");
+            this.list_dynamic_ip = new thread_list_dynamic_ip(
+                    "traitement - boucle de vérification de la liste d'adresses");
             this.list_dynamic_ip.start();
         } catch (Exception e) {
-            System.out.println("Erreur lors du lancement du thread de gestion des IP dynamiques");
+            System.out.println("\nErreur lors du lancement du thread de gestion des IP dynamiques");
             e.printStackTrace();
         }
         // --------------------------------------------------------------//
@@ -284,7 +285,7 @@ public class traitement {
             // Renommé pour éviter le conflit avec le nom de la classe
             this.fenetreTraitement = new FenetreTraitement("traitement", icon, 640, 0);
         } catch (Exception e) {
-            System.out.println("Erreur lors de l'initialisation de l'interface graphique");
+            System.out.println("\nErreur lors de l'initialisation de l'interface graphique");
             e.printStackTrace();
         }
         // --------------------------------------------------------------//
@@ -299,7 +300,7 @@ public class traitement {
                 }
             }));
         } catch (Exception e) {
-            System.out.println("Erreur lors de l'ajout du shutdown hook");
+            System.out.println("\nErreur lors de l'ajout du shutdown hook");
             e.printStackTrace();
         }
         // --------------------------------------------------------------//
@@ -308,7 +309,7 @@ public class traitement {
             error.printError();
             this.mainLoop();
         } catch (Exception e) {
-            System.out.println("Erreur lors de la boucle principale de traitement");
+            System.out.println("\nErreur lors de la boucle principale de traitement");
             e.printStackTrace();
         }
     }
@@ -331,17 +332,19 @@ public class traitement {
                 // Traitement du message UDP reçu
                 this.parts = null;
                 this.commandeRecu = this.commande.getMessageRecu();
-                if (this.commandeRecu.startsWith("C#")) {
-                    this.parts = this.commandeRecu.split("\\?");
-                    this.action = this.parts[0].split("#")[1];
-                    if (this.action.equals("add")) {
-                        this.list_dynamic_ip.addClient(this.parts[1].split("#")[1], this.parts[2].split("#")[1]);
-                    } else if (this.action.equals("remove")) {
-                        this.list_dynamic_ip.removeClient(this.parts[1].split("#")[1]);
-                    } else if (this.action.equals("cmd")) {
-                        this.list_dynamic_ip.updateClient(this.parts[1].split("#")[1]);
-                        this.Client_Time = LocalDateTime.parse(this.parts[2].split("#")[1]);
-                        this.Client_traitement = Integer.parseInt(this.parts[3].split("#")[1]);
+                if (!this.commandeRecu.isEmpty()) {
+                    if (this.commandeRecu.startsWith("C#")) {
+                        this.parts = this.commandeRecu.split("\\?");
+                        this.action = this.parts[0].split("#")[1];
+                        if (this.action.equals("add")) {
+                            this.list_dynamic_ip.addClient(this.parts[1].split("#")[1], this.parts[2].split("#")[1]);
+                        } else if (this.action.equals("remove")) {
+                            this.list_dynamic_ip.removeClient(this.parts[1].split("#")[1]);
+                        } else if (this.action.equals("cmd")) {
+                            this.list_dynamic_ip.updateClient(this.parts[1].split("#")[1]);
+                            this.Client_Time = LocalDateTime.parse(this.parts[2].split("#")[1]);
+                            this.Client_traitement = Integer.parseInt(this.parts[3].split("#")[1]);
+                        }
                     }
                 }
                 // Réinitialisation
@@ -401,6 +404,7 @@ public class traitement {
                 Imgproc.putText(this.imageEnvoyer, String.format("FPS: %.0f", this.fps),
                         new Point(10, 30), Imgproc.FONT_HERSHEY_SIMPLEX, 1,
                         new Scalar(0, 255, 0), 2);
+                System.out.print(String.format("\rfps: %.0f   ", fps));
                 this.previousTime = currentTime;
 
                 // --------------------------------------------------------------//
@@ -415,7 +419,6 @@ public class traitement {
                     this.imageAfficher_source = this.blackImage;
                     this.imageAfficher_envoyer = this.blackImage;
                 }
-
                 // --------------------------------------------------------------//
                 // Mise à jour du FileMapping pour Chai3D
                 this.imageBytes = this.encodeImageToJPEG(this.imageEnvoyer, 100);
@@ -423,12 +426,11 @@ public class traitement {
                 for (int i = 0; i < this.length; i++) {
                     this.serveur_filemap_image.setMapFileOneByOneUnsignedChar(i, this.imageBytes[i]);
                 }
-                
+
                 for (int i = 0; i < this.length; i++) {
                     this.imageBytes[i] = (byte) this.client_filemap_image.getMapFileOneByOneUnsignedChar(i);
                 }
-                
-                //--------------------------------------------------------------//
+                // --------------------------------------------------------------//
                 // Ajustement dynamique du taux de compression
                 this.quality = 55;
                 if (this.imageBytes.length > this.maxPacketSize) {
@@ -440,16 +442,16 @@ public class traitement {
                 } else {
                     this.encodedData = this.imageBytes;
                 }
-                
-                //--------------------------------------------------------------//
+
+                // --------------------------------------------------------------//
                 // Envoi de l'image UDP à chaque adresse de la liste
                 if (!this.list_dynamic_ip.getClientAddress().isEmpty()) {
                     for (String addr : this.list_dynamic_ip.getClientAddress()) {
                         try {
                             this.sendImageUDP(this.encodedData, addr, this.port[1]);
-                            } catch (IOException e) {
-                            System.out.println("Erreur lors de l'envoi de l'image à " + addr + " : " +
-                            e.getMessage());
+                        } catch (IOException e) {
+                            System.out.println("\nErreur lors de l'envoi de l'image à " + addr + " : " +
+                                    e.getMessage());
                         }
                     }
                 }
@@ -503,7 +505,7 @@ public class traitement {
             DatagramPacket packet = new DatagramPacket(imageData, imageData.length, ipAddress, port);
             socket.send(packet);
         } catch (Exception e) {
-            System.out.println("Erreur lors de l'envoi de l'image à " + address + " : " + e.getMessage());
+            System.out.println("\nErreur lors de l'envoi de l'image à " + address + " : " + e.getMessage());
         } finally {
             if (socket != null && !socket.isClosed()) {
                 socket.close();
@@ -521,10 +523,10 @@ public class traitement {
             byte[] buffer = data.getBytes();
             DatagramPacket packet = new DatagramPacket(buffer, buffer.length, ipAddress, port);
             socket.send(packet);
-            System.out.println("Données envoyées à " + address + ":" + port);
-            System.out.println("Données envoyées : " + data);
+            System.out.println("\nDonnées envoyées à " + address + ":" + port);
+            System.out.println("\nDonnées envoyées : " + data);
         } catch (Exception e) {
-            System.out.println("Erreur lors de l'envoi de l'image à " + address + " : " + e.getMessage());
+            System.out.println("\nErreur lors de l'envoi de l'image à " + address + " : " + e.getMessage());
         } finally {
             if (socket != null && !socket.isClosed()) {
                 socket.close();
@@ -568,7 +570,7 @@ public class traitement {
         MatOfByte mob = new MatOfByte(jpegImageBytes);
         Mat image = Imgcodecs.imdecode(mob, Imgcodecs.IMREAD_COLOR);
         if (image.empty()) {
-            System.err.println("Erreur lors du décodage de l'image JPEG.");
+            System.err.println("\nErreur lors du décodage de l'image JPEG.");
             return null;
         }
         Mat resizedImage = new Mat();

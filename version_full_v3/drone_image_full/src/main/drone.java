@@ -36,7 +36,7 @@ public class drone {
         try {
             System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
         } catch (Exception e) {
-            System.out.println("Erreur lors du chargement des librairies: " + e);
+            System.out.println("\nErreur lors du chargement des librairies: " + e);
         }
     }
 
@@ -104,7 +104,7 @@ public class drone {
             this.socketCmd = new DatagramSocket(this.port[2]);
             this.packet = new DatagramPacket(this.data, this.data.length);
         } catch (Exception e) {
-            System.out.println("Erreur lors de l'initialisation des adresses IP et des sockets UDP");
+            System.out.println("\nErreur lors de l'initialisation des adresses IP et des sockets UDP");
             e.printStackTrace();
         }
         // --------------------------------------------------------------//
@@ -112,12 +112,12 @@ public class drone {
         try {
             this.capture = new VideoCapture(0);
             if (!this.capture.isOpened()) {
-                System.out.println("Erreur : Impossible d'ouvrir la caméra.");
+                System.out.println("\nErreur : Impossible d'ouvrir la caméra.");
                 return;
             }
             this.frame = new Mat();
         } catch (Exception e) {
-            System.out.println("Erreur lors de l'initialisation de la caméra");
+            System.out.println("\nErreur lors de l'initialisation de la caméra");
             e.printStackTrace();
         }
         // --------------------------------------------------------------//
@@ -129,7 +129,7 @@ public class drone {
             this.listDynamicIp = new thread_list_dynamic_ip("drone - boucle de vérification de la liste d'adresses");
             this.listDynamicIp.start();
         } catch (Exception e) {
-            System.out.println("Erreur lors du lancement des threads");
+            System.out.println("\nErreur lors du lancement des threads");
             e.printStackTrace();
         }
         // --------------------------------------------------------------//
@@ -138,7 +138,7 @@ public class drone {
             error.printError();
             this.mainLoop();
         } catch (Exception e) {
-            System.out.println("Erreur lors de l'exécution de la boucle principale");
+            System.out.println("\nErreur lors de l'exécution de la boucle principale");
             e.printStackTrace();
         }
     }
@@ -147,13 +147,14 @@ public class drone {
     private void mainLoop() {
         while (true) {
             if (!this.capture.read(this.frame)) {
-                System.out.println("Erreur de capture d'image.");
+                System.out.println("\nErreur de capture d'image.");
                 break;
             }
             this.processReceivedMessage();
             this.sendImage();
             currentTime = System.currentTimeMillis();
-            System.out.println("fps: " + (1000 / (currentTime - previousTime)));
+            System.out.print(String.format("\rfps: %d   ", (1000 / (currentTime - previousTime))));
+
             previousTime = currentTime;
             try {
                 Thread.sleep(1);
@@ -186,7 +187,7 @@ public class drone {
                 try {
                     this.sendImageUDP(encodedData, addr, this.port[0]);
                 } catch (IOException e) {
-                    System.out.println("Erreur lors de l'envoi de l'image : " + e.getMessage());
+                    System.out.println("\nErreur lors de l'envoi de l'image : " + e.getMessage());
                 }
             }
         }

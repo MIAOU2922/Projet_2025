@@ -39,13 +39,13 @@ public class thread_list_dynamic_ip extends Thread {
                 for (int i = 0; i < this.client_time.size(); i++) {
                     this.clientTime = LocalDateTime.parse(this.client_time.get(i));
                     if (ChronoUnit.MINUTES.between(this.clientTime, now) > 3) {
-                        System.out.println("Adresse " + this.client_address.get(i) + " supprimée pour inactivité.");
+                        System.out.println("\nAdresse " + this.client_address.get(i) + " supprimée pour inactivité.");
                         this.client_address.remove(i);
                         this.client_time.remove(i);
                         i--; // Ajuster l'index après la suppression
                     }
                 }
-                System.out.println("Liste des adresses : " + client_address + " (" + client_address.size() + ") "+ client_time + " (" + client_time.size() + ")");
+                System.out.println("\nListe des adresses : " + client_address + " (" + client_address.size() + ") "+ client_time + " (" + client_time.size() + ")");
                 Thread.sleep(10000); // Vérification toutes les 10 secondes
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
