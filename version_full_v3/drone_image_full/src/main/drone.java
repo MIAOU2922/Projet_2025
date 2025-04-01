@@ -11,17 +11,11 @@
 
 package main;
 
-import java.io.IOException;
+import java.io.*;
 import java.net.*;
-import java.util.Enumeration;
+import java.util.*;
 
-import org.opencv.core.Core;
-import org.opencv.core.Mat;
-import org.opencv.core.MatOfByte;
-import org.opencv.core.MatOfInt;
-import org.opencv.core.Point;
-import org.opencv.core.Scalar;
-import org.opencv.core.Size;
+import org.opencv.core.*;
 import org.opencv.imgcodecs.Imgcodecs;
 import org.opencv.imgproc.Imgproc;
 import org.opencv.videoio.VideoCapture;
@@ -71,6 +65,7 @@ public class drone {
     // Threads
     private thread_reception_string commande;
     private thread_list_dynamic_ip listDynamicIp;
+
     // --------------------------------------------------------------//
     public drone() {
         // --------------------------------------------------------------//
@@ -142,6 +137,7 @@ public class drone {
             e.printStackTrace();
         }
     }
+
     // --------------------------------------------------------------//
     // Boucle principale
     private void mainLoop() {
@@ -153,7 +149,7 @@ public class drone {
             this.processReceivedMessage();
             this.sendImage();
             currentTime = System.currentTimeMillis();
-            System.out.print("\033[K");  // Efface la ligne
+            System.out.print("\033[K"); // Efface la ligne
             System.out.print(String.format("\rfps: %d   ", (1000 / (currentTime - previousTime))));
 
             previousTime = currentTime;
@@ -164,6 +160,7 @@ public class drone {
             }
         }
     }
+
     // --------------------------------------------------------------//
     // Traitement des messages reçus
     private void processReceivedMessage() {
@@ -178,6 +175,7 @@ public class drone {
             }
         }
     }
+
     // --------------------------------------------------------------//
     // Envoi de l'image
     private void sendImage() {
@@ -193,6 +191,7 @@ public class drone {
             }
         }
     }
+
     // --------------------------------------------------------------//
     // Méthode pour envoyer une image via UDP
     private void sendImageUDP(byte[] imageData, String address, int port) throws IOException {
@@ -202,6 +201,7 @@ public class drone {
             socket.send(packet);
         }
     }
+
     // --------------------------------------------------------------//
     // Méthode pour encoder une image en JPEG
     private static byte[] encodeImageToJPEG(Mat image, int quality) {

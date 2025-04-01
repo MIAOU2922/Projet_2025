@@ -404,7 +404,7 @@ public class traitement {
                 Imgproc.putText(this.imageEnvoyer, String.format("FPS: %.0f", this.fps),
                         new Point(10, 30), Imgproc.FONT_HERSHEY_SIMPLEX, 1,
                         new Scalar(0, 255, 0), 2);
-                System.out.print("\033[K");  // Efface la ligne
+                System.out.print("\033[K"); // Efface la ligne
                 System.out.print(String.format("\rfps: %.0f   ", fps));
                 this.previousTime = currentTime;
 
