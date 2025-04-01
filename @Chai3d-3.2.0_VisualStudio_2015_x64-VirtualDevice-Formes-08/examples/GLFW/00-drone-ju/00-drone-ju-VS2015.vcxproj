@@ -261,6 +261,20 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="00-drone-ju.cpp" />
+    <ClCompile Include="cFileMappingDroneCharTelemetryClient.cpp" />
+    <ClCompile Include="cFileMappingDroneCharTelemetryServeur.cpp" />
+    <ClCompile Include="cFileMappingPictureClient.cpp" />
+    <ClCompile Include="cFileMappingPictureServeur.cpp" />
+    <ClCompile Include="cVirtualDroneCharTelemetry.cpp" />
+    <ClCompile Include="cVirtualPicture.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="cFileMappingDroneCharTelemetryClient.h" />
+    <ClInclude Include="cFileMappingDroneCharTelemetryServeur.h" />
+    <ClInclude Include="cFileMappingPictureClient.h" />
+    <ClInclude Include="cFileMappingPictureServeur.h" />
+    <ClInclude Include="cVirtualDroneCharTelemetry.h" />
+    <ClInclude Include="cVirtualPicture.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)/Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
