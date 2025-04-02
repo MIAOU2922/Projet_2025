@@ -165,8 +165,8 @@ public class traitement {
         // --------------------------------------------------------------//
         // Ouverture du client de FileMapping pour l'image
         try {
-            this.client_filemap_image.OpenClient("img_java_to_c");
-            // this.client_filemap_image.OpenClient("img_c_to_java");
+            //this.client_filemap_image.OpenClient("img_java_to_c");
+            this.client_filemap_image.OpenClient("img_c_to_java");
         } catch (Exception e) {
             System.out.println("\nErreur lors de l'ouverture du client img_c_to_java");
             e.printStackTrace();

@@ -42,6 +42,8 @@ const int IMAGE_HEIGHT = 720;
 unsigned char backgroundImageData[IMAGE_WIDTH * IMAGE_HEIGHT * 3];
 
 cFileMappingPictureServeur* monServeurCppFMPictureScreenShot = NULL;
+cFileMappingPictureClient* monClientCppFMPictureScreenShot = NULL;
+
 cVirtualPicture* maVirtualPictureScreenShot = NULL;
 
 void updateGraphics(void);
@@ -98,6 +100,9 @@ int main(int argc, char* argv[]) {
     sphere->setLocalPos(0.0, 0.0, 0.0);
     world->addChild(sphere);
     
+    monClientCppFMPictureScreenShot = new cFileMappingPictureClient(false);
+    monClientCppFMPictureScreenShot->OpenClient("img_java_to_c");
+
     monServeurCppFMPictureScreenShot = new cFileMappingPictureServeur(false);
     monServeurCppFMPictureScreenShot->OpenServer("img_c_to_java");
     maVirtualPictureScreenShot = new cVirtualPicture();
@@ -131,7 +136,7 @@ void updateGraphics(void) {
 void updateBackgroundImage(void) {
     maVirtualPictureScreenShot->MutexBlocAccess = true;
     unsigned char* Buffer = (unsigned char*)malloc(500000 * sizeof(unsigned char));
-    int size = 0;
+    unsigned int size = 0;
     int ret = cSaveJPG(backgroundImage.get(), &Buffer, &size);
     maVirtualPictureScreenShot->MutexBlocAccess = false;
 
@@ -140,5 +145,5 @@ void updateBackgroundImage(void) {
     Sleep(1);
     free(Buffer);
 
-    backgroundWidget->loadFromImage(backgroundImage.get());
+    backgroundWidget->loadFromImage(backgroundImage);
 }
