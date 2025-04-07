@@ -153,11 +153,16 @@ public class traitement {
             ProcessBuilder pb = new ProcessBuilder(
                     "F:\\BEAL_JULIEN_SN2\\_projet_2025\\git\\@Chai3d-3.2.0_VisualStudio_2015_x64-VirtualDevice-Formes-08\\bin\\win-x64\\00-drone-ju.exe");
             this.process = pb.start();
+            
             Runtime.getRuntime().addShutdownHook(new Thread(() -> {
                 if (this.process.isAlive()) {
                     this.process.destroy();
                 }
             }));
+            
+
+            new tempo(1000); // Attendre 1 seconde pour que le programme Chai3D démarre
+
         } catch (IOException e) {
             System.out.println("\nErreur lors du lancement du programme Chai3D");
             e.printStackTrace();
@@ -166,7 +171,7 @@ public class traitement {
         // Ouverture du client de FileMapping pour l'image
         try {
             //this.client_filemap_image.OpenClient("img_java_to_c");
-            this.client_filemap_image.OpenClient("img_c_to_java");
+            //this.client_filemap_image.OpenClient("img_c_to_java");
         } catch (Exception e) {
             System.out.println("\nErreur lors de l'ouverture du client img_c_to_java");
             e.printStackTrace();
@@ -422,15 +427,25 @@ public class traitement {
                 }
                 // --------------------------------------------------------------//
                 // Mise à jour du FileMapping pour Chai3D
-                this.imageBytes = this.encodeImageToJPEG(this.imageEnvoyer, 100);
-                this.length = this.imageBytes.length;
-                for (int i = 0; i < this.length; i++) {
-                    this.serveur_filemap_image.setMapFileOneByOneUnsignedChar(i, this.imageBytes[i]);
+                //On test pour savoir si le client ne lit pas le FMP
+                if(!this.serveur_filemap_image.getVirtualPictureMutexBlocAccess())
+                {
+                    this.serveur_filemap_image.setVirtualPictureMutexBlocAccess(true);
+                    this.imageBytes = this.encodeImageToJPEG(this.imageEnvoyer, 100);
+                    this.length = this.imageBytes.length;
+                    for (int i = 0; i < this.length; i++) {
+                        this.serveur_filemap_image.setMapFileOneByOneUnsignedChar(i, this.imageBytes[i]);
+                    }
+                    this.serveur_filemap_image.setVirtualPictureDataSize(this.imageBytes.length);
+                    this.serveur_filemap_image.setVirtualPictureMutexBlocAccess(false);
                 }
-
+                // --------------------------------------------------------------//
+                // Mise à jour du FileMapping pour le traitement Java
+                /*
                 for (int i = 0; i < this.length; i++) {
                     this.imageBytes[i] = (byte) this.client_filemap_image.getMapFileOneByOneUnsignedChar(i);
                 }
+                    */
                 // --------------------------------------------------------------//
                 // Ajustement dynamique du taux de compression
                 this.quality = 55;
