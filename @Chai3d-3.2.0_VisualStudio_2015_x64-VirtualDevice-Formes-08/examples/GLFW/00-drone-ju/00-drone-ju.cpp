@@ -47,6 +47,13 @@ int swapInterval = 1;
 const int IMAGE_WIDTH  = 1080;
 const int IMAGE_HEIGHT = 720;
 unsigned char* BackgroundImageByteArray;
+unsigned char* ContextImageByteArray;
+
+cImagePtr ContextImage = cImage::create();
+
+cVirtualPicture* maVirtualPicture = NULL;
+cVirtualPicture* maVirtualPictureScreenShot = NULL;
+
 
 cFileMappingPictureServeur* monServeurCppFMPictureScreenShot = NULL;
 cFileMappingPictureClient* monClientCppFMPictureScreenShot = NULL;
@@ -66,6 +73,7 @@ void updateGraphics(void);
 void close(void);
 void errorCallback(int error, const char* a_description);
 void updateBackgroundImage(void);
+void ecrireEnMap(void);
 
 int main(int argc, char* argv[]) {
 
@@ -220,7 +228,7 @@ int main(int argc, char* argv[]) {
     monClientCppFMPictureScreenShot->OpenClient("img_java_to_c");
 
     monServeurCppFMPictureScreenShot = new cFileMappingPictureServeur(false);
-    //monServeurCppFMPictureScreenShot->OpenServer("img_c_to_java");
+    monServeurCppFMPictureScreenShot->OpenServer("img_c_to_java");
     maVirtualPictureScreenShot = new cVirtualPicture();
 
     // call window size callback at initialization
@@ -317,6 +325,8 @@ void updateGraphics(void)
     // check for any OpenGL errors
     GLenum err = glGetError();
     if (err != GL_NO_ERROR) cout << "Error: " << gluErrorString(err) << endl;
+
+	//ecrireEnMap();
 }
 
 //------------------------------------------------------------------------------
@@ -337,13 +347,15 @@ void updateBackgroundImage() {
     
     // Verrouiller le mutex
     monClientCppFMPictureScreenShot->setVirtualPictureMutexBlocAccess(true);
-
+    BackgroundImageByteArray = monClientCppFMPictureScreenShot->getMapFileBufferData();
     int TailleImage = monClientCppFMPictureScreenShot->getVirtualPictureDataSize();
+    /*
     BackgroundImageByteArray = new unsigned char[TailleImage];
     for (int i = 0; i < TailleImage; i++)
     {
         BackgroundImageByteArray[i] = monClientCppFMPictureScreenShot->getMapFileOneByOneUnsignedChar(i);
     }
+    */
 
     // Deverrouiller le mutex
     monClientCppFMPictureScreenShot->setVirtualPictureMutexBlocAccess(false);
@@ -352,7 +364,7 @@ void updateBackgroundImage() {
     
     if (cLoadJPG(backgroundImage->getImage(), BackgroundImageByteArray, TailleImage))
     {
-        cout << "Image recuperee avec succes" << endl;
+        //cout << "Image recuperee avec succes" << endl;
     }
 
     BitmapBackgroundMovie->loadFromImage(backgroundImage);
@@ -366,4 +378,35 @@ void updateBackgroundImage() {
     // Mettre à jour le widget de fond
 
     
+}
+
+void ecrireEnMap()
+{
+	// Attendre que le mutex soit libre
+	while (monServeurCppFMPictureScreenShot->getVirtualPictureMutexBlocAccess())
+	{
+		cSleepMs(1);
+	}
+
+	// Verrouiller le mutex
+	monServeurCppFMPictureScreenShot->setVirtualPictureMutexBlocAccess(true);
+
+	// Ecrire dans la map
+
+
+#if defined(__WIN32__) || defined(_WIN32) || defined(WIN32) || defined(__WINDOWS__) || defined(__TOS_WIN__) 
+    CopyMemory((unsigned char*)maVirtualPictureScreenShot->PictureData, (unsigned char*)*Buffer, size);
+
+    maVirtualPictureScreenShot->DataPictureSize = size;
+
+    monServeurCppFMPictureScreenShot->WriteVirtualPictureStructToMapFile(maVirtualPictureScreenShot);
+    Sleep(1); //need to be sur WriteVirtualPictureStructToMapFile complet
+    free(Buffer[0]);
+
+    free(Buffer);
+    Buffer = nullptr;
+
+
+	// Deverrouiller le mutex
+	monServeurCppFMPictureScreenShot->setVirtualPictureMutexBlocAccess(false);
 }
