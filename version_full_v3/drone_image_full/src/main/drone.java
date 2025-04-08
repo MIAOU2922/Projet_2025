@@ -54,7 +54,7 @@ public class drone {
     private int maxPacketSize = 65528; // Taille maximale d'un paquet UDP
     private long last_update_quality;
     private int intervale_update_quality = 2000;
-    private int initial_quality = 50;
+    private int initial_quality = 70;
     private int quality; // Qualité initiale de compression JPEG
     private VideoCapture capture;
     private Mat frame;
@@ -180,7 +180,26 @@ public class drone {
     // Envoi de l'image
     private void sendImage() {
         Imgproc.resize(this.frame, this.frame, new Size(this.imgSize[0], this.imgSize[1]));
-        encodedData = encodeImageToJPEG(this.frame, 50);
+
+        // Reset la qualité à la valeur initiale au début de chaque boucle
+        int currentQuality = this.initial_quality;
+
+        do {
+            encodedData = encodeImageToJPEG(this.frame, currentQuality);
+            if (encodedData.length > maxPacketSize) {
+                currentQuality -= 5;  // Réduire la qualité si trop grande
+                if (currentQuality < 5) {
+                    System.out.println("\rQualité trop basse, image ignorée");
+                    return;
+                }
+            }
+        } while (encodedData.length > maxPacketSize);
+
+        // Afficher si la qualité a dû être ajustée
+        if (currentQuality != this.initial_quality) {
+            System.out.println("\rQualité ajustée à: " + currentQuality);
+        }
+
         if (!this.listDynamicIp.getClientAddress().isEmpty()) {
             for (String addr : this.listDynamicIp.getClientAddress()) {
                 try {
