@@ -152,11 +152,10 @@ public class traitement {
         Thread chai3dThread = new Thread(() -> {
             try {
                 ProcessBuilder pb = new ProcessBuilder(
-                    "cmd.exe", "/c", "start", "\"Chai3D Console\"",
-                    "\"F:\\BEAL_JULIEN_SN2\\_projet_2025\\git\\@Chai3d-3.2.0_VisualStudio_2015_x64-VirtualDevice-Formes-08\\bin\\win-x64\\00-drone-ju.exe\""
-                );
+                        "cmd.exe", "/c", "start", "\"Chai3D Console\"",
+                        "\"F:\\BEAL_JULIEN_SN2\\_projet_2025\\git\\@Chai3d-3.2.0_VisualStudio_2015_x64-VirtualDevice-Formes-08\\bin\\win-x64\\00-drone-ju.exe\"");
                 this.process = pb.start();
-        
+
                 Runtime.getRuntime().addShutdownHook(new Thread(() -> {
                     if (this.process.isAlive()) {
                         this.process.destroy();
@@ -168,12 +167,12 @@ public class traitement {
             }
         });
         chai3dThread.start();
-        new tempo(1000); // attendre le démarrage        
+        new tempo(10000); // attendre le démarrage
         // --------------------------------------------------------------//
         // Ouverture du client de FileMapping pour l'image
         try {
-            this.client_filemap_image.OpenClient("img_java_to_c");
-            //this.client_filemap_image.OpenClient("img_c_to_java");
+            // this.client_filemap_image.OpenClient("img_java_to_c");
+            this.client_filemap_image.OpenClient("img_c_to_java");
         } catch (Exception e) {
             System.out.println("\nErreur lors de l'ouverture du client img_c_to_java");
             e.printStackTrace();
@@ -429,37 +428,45 @@ public class traitement {
                 }
                 // --------------------------------------------------------------//
                 // Mise à jour du FileMapping pour Chai3D
-                //On test pour savoir si le client ne lit pas le FMP
-                if(!this.serveur_filemap_image.getVirtualPictureMutexBlocAccess())
-                {
-                    this.serveur_filemap_image.setVirtualPictureMutexBlocAccess(true);
-                    this.imageBytes = this.encodeImageToJPEG(this.imageEnvoyer, 100);
-                    this.length = this.imageBytes.length;
-                    for (int i = 0; i < this.length; i++) {
-                        this.serveur_filemap_image.setMapFileOneByOneUnsignedChar(i, this.imageBytes[i]);
-                    }
-                    this.serveur_filemap_image.setVirtualPictureDataSize(this.imageBytes.length);
-                    this.serveur_filemap_image.setVirtualPictureMutexBlocAccess(false);
+                // On test pour savoir si le client ne lit pas le FMP
+                while (this.serveur_filemap_image.getVirtualPictureMutexBlocAccess()) {
+                    new tempo(1);
                 }
+                this.serveur_filemap_image.setVirtualPictureMutexBlocAccess(true);
+                this.imageBytes = this.encodeImageToJPEG(this.imageEnvoyer, 100);
+                this.length = this.imageBytes.length;
+                for (int i = 0; i < this.length; i++) {
+                    this.serveur_filemap_image.setMapFileOneByOneUnsignedChar(i, this.imageBytes[i]);
+                }
+                this.serveur_filemap_image.setVirtualPictureDataSize(this.imageBytes.length);
+                this.serveur_filemap_image.setVirtualPictureMutexBlocAccess(false);
+
                 // --------------------------------------------------------------//
                 // Mise à jour du FileMapping pour le traitement Java
-                
+
+                while (this.client_filemap_image.getVirtualPictureMutexBlocAccess()) {
+                    new tempo(1);
+                }
+                this.client_filemap_image.setVirtualPictureMutexBlocAccess(true);
+
                 for (int i = 0; i < this.length; i++) {
                     this.imageBytes[i] = (byte) this.client_filemap_image.getMapFileOneByOneUnsignedChar(i);
                 }
+                this.client_filemap_image.setVirtualPictureMutexBlocAccess(false);
                 // --------------------------------------------------------------//
                 // Ajustement dynamique du taux de compression
                 this.quality = 55;
-                if (this.imageBytes.length > this.maxPacketSize) {
-                    this.imageEnvoyer = jpegToMat(this.imageBytes);
-                    do {
-                        this.encodedData = this.encodeImageToJPEG(this.imageEnvoyer, this.quality);
-                        this.quality -= 5;
-                    } while (this.encodedData.length > this.maxPacketSize && this.quality > 10);
-                } else {
-                    this.encodedData = this.imageBytes;
+                if (!this.imageBytes.isEmpty() && this.imageBytes != null) {
+                    if (this.imageBytes.length > this.maxPacketSize) {
+                        this.imageEnvoyer = jpegToMat(this.imageBytes);
+                        do {
+                            this.encodedData = this.encodeImageToJPEG(this.imageEnvoyer, this.quality);
+                            this.quality -= 5;
+                        } while (this.encodedData.length > this.maxPacketSize && this.quality > 10);
+                    } else {
+                        this.encodedData = this.imageBytes;
+                    }
                 }
-
                 // --------------------------------------------------------------//
                 // Envoi de l'image UDP à chaque adresse de la liste
                 if (!this.list_dynamic_ip.getClientAddress().isEmpty()) {

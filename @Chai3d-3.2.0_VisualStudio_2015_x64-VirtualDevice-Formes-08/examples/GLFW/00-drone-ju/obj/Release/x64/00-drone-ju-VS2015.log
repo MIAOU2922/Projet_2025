@@ -5,19 +5,4 @@ F:\BEAL_JULIEN_SN2\_projet_2025\git\@Chai3d-3.2.0_VisualStudio_2015_x64-VirtualD
       F:\BEAL_JULIEN_SN2\_projet_2025\git\@Chai3d-3.2.0_VisualStudio_2015_x64-VirtualDevice-Formes-08\src\virtualform\CFileMappingStructureServeurBridge.h(65,10):
       voir la définition précédente de « STRUCT_SIZE »
   
-F:\BEAL_JULIEN_SN2\_projet_2025\git\@Chai3d-3.2.0_VisualStudio_2015_x64-VirtualDevice-Formes-08\examples\GLFW\00-drone-ju\00-drone-ju.cpp(61,18): error C2374: 'maVirtualPictureScreenShot' : redéfinition ; initialisation multiple
-      F:\BEAL_JULIEN_SN2\_projet_2025\git\@Chai3d-3.2.0_VisualStudio_2015_x64-VirtualDevice-Formes-08\examples\GLFW\00-drone-ju\00-drone-ju.cpp(55,18):
-      voir la déclaration de 'maVirtualPictureScreenShot'
-  
-F:\BEAL_JULIEN_SN2\_projet_2025\git\@Chai3d-3.2.0_VisualStudio_2015_x64-VirtualDevice-Formes-08\examples\GLFW\00-drone-ju\00-drone-ju.cpp(398,5): error C2065: 'Buffer' : identificateur non déclaré
-F:\BEAL_JULIEN_SN2\_projet_2025\git\@Chai3d-3.2.0_VisualStudio_2015_x64-VirtualDevice-Formes-08\examples\GLFW\00-drone-ju\00-drone-ju.cpp(400,51): error C2563: incompatibilité dans la liste de paramètres formels
-F:\BEAL_JULIEN_SN2\_projet_2025\git\@Chai3d-3.2.0_VisualStudio_2015_x64-VirtualDevice-Formes-08\examples\GLFW\00-drone-ju\00-drone-ju.cpp(400,51): error C2568: '=' : impossible de résoudre la surcharge de fonction
-      F:\BEAL_JULIEN_SN2\_projet_2025\git\@Chai3d-3.2.0_VisualStudio_2015_x64-VirtualDevice-Formes-08\examples\GLFW\00-drone-ju\00-drone-ju.cpp(400,51):
-      est peut-être 'size_t std::size(const _Ty (&)[_Size]) noexcept'
-      F:\BEAL_JULIEN_SN2\_projet_2025\git\@Chai3d-3.2.0_VisualStudio_2015_x64-VirtualDevice-Formes-08\examples\GLFW\00-drone-ju\00-drone-ju.cpp(400,51):
-      ou       'unknown-type std::size(const _Container &) noexcept(<expr>)'
-  
-F:\BEAL_JULIEN_SN2\_projet_2025\git\@Chai3d-3.2.0_VisualStudio_2015_x64-VirtualDevice-Formes-08\examples\GLFW\00-drone-ju\00-drone-ju.cpp(404,10): error C2065: 'Buffer' : identificateur non déclaré
-F:\BEAL_JULIEN_SN2\_projet_2025\git\@Chai3d-3.2.0_VisualStudio_2015_x64-VirtualDevice-Formes-08\examples\GLFW\00-drone-ju\00-drone-ju.cpp(406,10): error C2065: 'Buffer' : identificateur non déclaré
-F:\BEAL_JULIEN_SN2\_projet_2025\git\@Chai3d-3.2.0_VisualStudio_2015_x64-VirtualDevice-Formes-08\examples\GLFW\00-drone-ju\00-drone-ju.cpp(407,5): error C2065: 'Buffer' : identificateur non déclaré
-F:\BEAL_JULIEN_SN2\_projet_2025\git\@Chai3d-3.2.0_VisualStudio_2015_x64-VirtualDevice-Formes-08\examples\GLFW\00-drone-ju\00-drone-ju.cpp(413,1): error C1070: non concordance #if/#endif dans le fichier 'F:\BEAL_JULIEN_SN2\_projet_2025\git\@Chai3d-3.2.0_VisualStudio_2015_x64-VirtualDevice-Formes-08\examples\GLFW\00-drone-ju\00-drone-ju.cpp'
+  00-drone-ju-VS2015.vcxproj -> F:\BEAL_JULIEN_SN2\_projet_2025\git\@Chai3d-3.2.0_VisualStudio_2015_x64-VirtualDevice-Formes-08\bin\win-x64\00-drone-ju.exe

@@ -52,7 +52,6 @@ unsigned char* ContextImageByteArray;
 cImagePtr ContextImage = cImage::create();
 
 cVirtualPicture* maVirtualPicture = NULL;
-cVirtualPicture* maVirtualPictureScreenShot = NULL;
 
 
 cFileMappingPictureServeur* monServeurCppFMPictureScreenShot = NULL;
@@ -77,7 +76,6 @@ void ecrireEnMap(void);
 
 int main(int argc, char* argv[]) {
 
-    cout << "test" << endl;
 
     //--------------------------------------------------------------------------
     // OPEN GL - WINDOW DISPLAY
@@ -213,7 +211,12 @@ int main(int argc, char* argv[]) {
 
     //backgroundImage = cImage::create();
     backgroundImage->allocate(IMAGE_WIDTH, IMAGE_HEIGHT, GL_RGB, GL_UNSIGNED_INT);
-    
+    ContextImageByteArray = new unsigned char[width * height * 3];
+
+    glViewport(0, 0, width, height);
+
+
+
     light = new cDirectionalLight(world);
     world->addChild(light);
     light->setEnabled(true);
@@ -233,6 +236,10 @@ int main(int argc, char* argv[]) {
 
     // call window size callback at initialization
     windowSizeCallback(window, width, height);
+
+	// attendre 1 seconde avant de commencer
+    cSleepMs(1000);
+
 
     while (!glfwWindowShouldClose(window)) {
         glfwGetWindowSize(window, &width, &height);
@@ -326,7 +333,10 @@ void updateGraphics(void)
     GLenum err = glGetError();
     if (err != GL_NO_ERROR) cout << "Error: " << gluErrorString(err) << endl;
 
-	//ecrireEnMap();
+    ContextImage->setSize(width, height);
+    camera->copyImageBuffer(ContextImage);
+
+	ecrireEnMap();
 }
 
 //------------------------------------------------------------------------------
@@ -374,7 +384,7 @@ void updateBackgroundImage() {
 
 
     //cSaveFileJPG(backgroundImage->getImage(), "Image_Test.jpg");
-
+    
     // Mettre à jour le widget de fond
 
     
@@ -388,24 +398,25 @@ void ecrireEnMap()
 		cSleepMs(1);
 	}
 
-	// Verrouiller le mutex
-	monServeurCppFMPictureScreenShot->setVirtualPictureMutexBlocAccess(true);
+    unsigned int size = 0;
+    unsigned char** Buffer = (unsigned char**)malloc(900000 * sizeof(unsigned char));
+    bool ret = cSaveJPG(ContextImage->getImage(), Buffer, &size);
+	if (ret)
+	{
+		cout << "Image ecrite avec succes" << endl;
+        CopyMemory((unsigned char*)maVirtualPictureScreenShot->PictureData, (unsigned char*)*Buffer, size);
+        maVirtualPictureScreenShot->DataPictureSize = (int) size;
+        monServeurCppFMPictureScreenShot->WriteVirtualPictureStructToMapFile(maVirtualPictureScreenShot);
+        cSleepMs(5);
 
-	// Ecrire dans la map
-
-
-#if defined(__WIN32__) || defined(_WIN32) || defined(WIN32) || defined(__WINDOWS__) || defined(__TOS_WIN__) 
-    CopyMemory((unsigned char*)maVirtualPictureScreenShot->PictureData, (unsigned char*)*Buffer, size);
-
-    maVirtualPictureScreenShot->DataPictureSize = size;
-
-    monServeurCppFMPictureScreenShot->WriteVirtualPictureStructToMapFile(maVirtualPictureScreenShot);
-    Sleep(1); //need to be sur WriteVirtualPictureStructToMapFile complet
-    free(Buffer[0]);
-
-    free(Buffer);
-    Buffer = nullptr;
-
+        free(Buffer[0]);
+        free(Buffer);
+        Buffer = nullptr;
+	}
+	else
+	{
+		cout << "Erreur d ecriture de l image" << endl;
+	}
 
 	// Deverrouiller le mutex
 	monServeurCppFMPictureScreenShot->setVirtualPictureMutexBlocAccess(false);
