@@ -222,15 +222,17 @@ int main(int argc, char* argv[]) {
     light->setEnabled(true);
     light->setDir(-1.0, 0.0, 0.0);
     
-    sphere = new cShapeSphere(0.3);
+    sphere = new cShapeSphere(0.1);
     sphere->m_material->setRed();
     sphere->setLocalPos(0.0, 0.0, 0.0);
     world->addChild(sphere);
     
     monClientCppFMPictureScreenShot = new cFileMappingPictureClient(false);
+    monClientCppFMPictureScreenShot->setDebugMode(false);
     monClientCppFMPictureScreenShot->OpenClient("img_java_to_c");
 
     monServeurCppFMPictureScreenShot = new cFileMappingPictureServeur(false);
+    monServeurCppFMPictureScreenShot->setDebugMode(false);
     monServeurCppFMPictureScreenShot->OpenServer("img_c_to_java");
     maVirtualPictureScreenShot = new cVirtualPicture();
 
@@ -375,12 +377,15 @@ void updateBackgroundImage() {
     if (cLoadJPG(backgroundImage->getImage(), BackgroundImageByteArray, TailleImage))
     {
         //cout << "Image recuperee avec succes" << endl;
+
+        BitmapBackgroundMovie->loadFromImage(backgroundImage);
+        BitmapBackgroundMovie->setSize(width, height);
+
+        BackgroundImageByteArray = NULL;
+
     }
 
-    BitmapBackgroundMovie->loadFromImage(backgroundImage);
-    BitmapBackgroundMovie->setSize(width, height);
-
-    BackgroundImageByteArray = NULL;
+    
 
 
     //cSaveFileJPG(backgroundImage->getImage(), "Image_Test.jpg");
@@ -397,17 +402,20 @@ void ecrireEnMap()
 	{
 		cSleepMs(1);
 	}
+	monServeurCppFMPictureScreenShot->setVirtualPictureMutexBlocAccess(true);
 
     unsigned int size = 0;
     unsigned char** Buffer = (unsigned char**)malloc(900000 * sizeof(unsigned char));
     bool ret = cSaveJPG(ContextImage->getImage(), Buffer, &size);
 	if (ret)
 	{
-		cout << "Image ecrite avec succes" << endl;
+		//cout << "Image ecrite avec succes" << endl;
         CopyMemory((unsigned char*)maVirtualPictureScreenShot->PictureData, (unsigned char*)*Buffer, size);
         maVirtualPictureScreenShot->DataPictureSize = (int) size;
         monServeurCppFMPictureScreenShot->WriteVirtualPictureStructToMapFile(maVirtualPictureScreenShot);
-        cSleepMs(5);
+		//monServeurCppFMPictureScreenShot->setVirtualPictureDataSize(size);  
+
+        cSleepMs(1);
 
         free(Buffer[0]);
         free(Buffer);
@@ -420,4 +428,6 @@ void ecrireEnMap()
 
 	// Deverrouiller le mutex
 	monServeurCppFMPictureScreenShot->setVirtualPictureMutexBlocAccess(false);
+
+
 }

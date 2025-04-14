@@ -108,7 +108,6 @@ public class thread_traitement_telemtrie extends Thread {
         // --------------------------------------------------------------//
         // Boucle principale de traitement
         try {
-            error.printError();
             this.mainLoop();
         } catch (Exception e) {
             System.out.println("\nErreur lors de la boucle principale de traitement");

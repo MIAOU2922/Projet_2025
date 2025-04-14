@@ -1,3 +1,5 @@
+%pragma(java) jniclasspackage="FileMappingTelemetry"
+
 %include "cVirtualDroneCharTelemetry.h"
 %include "arrays_java.i"
 

@@ -19,6 +19,7 @@ import org.opencv.core.*;
 import org.opencv.imgcodecs.Imgcodecs;
 import org.opencv.imgproc.Imgproc;
 import org.opencv.videoio.VideoCapture;
+import org.opencv.videoio.Videoio;
 
 import thread.*;
 import util.*;
@@ -54,7 +55,7 @@ public class drone {
     private int maxPacketSize = 65528; // Taille maximale d'un paquet UDP
     private long last_update_quality;
     private int intervale_update_quality = 2000;
-    private int initial_quality = 70;
+    private int initial_quality = 60;
     private int quality; // Qualité initiale de compression JPEG
     private VideoCapture capture;
     private Mat frame;
@@ -105,7 +106,7 @@ public class drone {
         // --------------------------------------------------------------//
         // Initialisation de la caméra
         try {
-            this.capture = new VideoCapture(0);
+            this.capture = new VideoCapture(0, Videoio.CAP_V4L2);
             if (!this.capture.isOpened()) {
                 System.out.println("\nErreur : Impossible d'ouvrir la caméra.");
                 return;

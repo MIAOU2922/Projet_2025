@@ -535,9 +535,9 @@ unsigned char* cFileMappingPictureClient::getMapFileBufferData()
 	#else
 		memcpy((unsigned char*)Buffer, (unsigned char*)(((cVirtualPicture*)this->pFileDataStruct)->PictureData), (int)(((cVirtualPicture*)this->pFileDataStruct)->DataPictureSize) * sizeof(unsigned char));
 	#endif
-	printf("DLL: Buffer address: %x      PictureData address: %x \n", Buffer, (unsigned char*)(((cVirtualPicture*)this->pFileDataStruct)->PictureData));
+	//printf("DLL: Buffer address: %x      PictureData address: %x \n", Buffer, (unsigned char*)(((cVirtualPicture*)this->pFileDataStruct)->PictureData));
 	for (int i = 0; i < 20; i++)
-		printf("DLL: Buffer[%d]: %x\n", i, Buffer[i]);
+		//printf("DLL: Buffer[%d]: %x\n", i, Buffer[i]);
 	return (Buffer);
 }
 

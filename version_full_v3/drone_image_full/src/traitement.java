@@ -1,4 +1,3 @@
-
 /*
 *-------------------------------------------------------------------
 * Nom du fichier : traitement.java
@@ -68,7 +67,7 @@ public class traitement {
 
     // Déclarations des objets FileMapping
     private cFileMappingPictureClient client_filemap_image = new cFileMappingPictureClient(false);
-    private cFileMappingPictureServeur serveur_filemap_image = new cFileMappingPictureServeur(true);
+    private cFileMappingPictureServeur serveur_filemap_image = new cFileMappingPictureServeur(false);
 
     // Variables liées aux images et au traitement
     private byte[] imageBytes;
@@ -143,6 +142,7 @@ public class traitement {
         // Ouverture du serveur de FileMapping pour l'image
         try {
             this.serveur_filemap_image.OpenServer("img_java_to_c");
+            
         } catch (Exception e) {
             System.out.println("\nErreur lors de l'ouverture du serveur img_java_to_c");
             e.printStackTrace();
@@ -167,7 +167,7 @@ public class traitement {
             }
         });
         chai3dThread.start();
-        new tempo(10000); // attendre le démarrage
+        new tempo(2000); // attendre le démarrage
         // --------------------------------------------------------------//
         // Ouverture du client de FileMapping pour l'image
         try {
@@ -229,6 +229,23 @@ public class traitement {
             this.displayFrameHalfSize = new Size(0, 0);
         } catch (Exception e) {
             System.out.println("\nErreur lors de l'initialisation de l'image noire");
+            e.printStackTrace();
+        }
+        // --------------------------------------------------------------//
+        try {
+            while (this.serveur_filemap_image.getVirtualPictureMutexBlocAccess()) {
+                new tempo(1);
+            }
+            this.serveur_filemap_image.setVirtualPictureMutexBlocAccess(true);
+            this.imageBytes = this.encodeImageToJPEG(this.blackImage, 100);
+            this.length = this.imageBytes.length;
+            for (int i = 0; i < this.length; i++) {
+                this.serveur_filemap_image.setMapFileOneByOneUnsignedChar(i, this.imageBytes[i]);
+            }
+            this.serveur_filemap_image.setVirtualPictureDataSize(this.imageBytes.length);
+            this.serveur_filemap_image.setVirtualPictureMutexBlocAccess(false);
+        }catch (Exception e) {
+            System.out.println("\nErreur lors de l'initialisation de l'image noire dans le FileMapping");
             e.printStackTrace();
         }
         // --------------------------------------------------------------//
@@ -295,13 +312,18 @@ public class traitement {
             e.printStackTrace();
         }
         // --------------------------------------------------------------//
-        // Ajout du shutdown hook pour supprimer l'adresse de la liste
+        // Ajout du shutdown hook pour supprimer l'adresse de la liste et tuer Chai3D
         try {
             Runtime.getRuntime().addShutdownHook(new Thread(() -> {
                 try {
+                    // Remove address from list
                     this.text = "T#remove?address#" + this.address_local_str;
                     this.sendTextUDP(this.text, this.address_broadcast, this.port[2]);
+
+                    Runtime.getRuntime().exec("taskkill /F 00-drone-ju.exe");
+
                 } catch (IOException e) {
+                    System.err.println("Error in shutdown hook: " + e.getMessage());
                     e.printStackTrace();
                 }
             }));
@@ -326,6 +348,8 @@ public class traitement {
 
         while (true) {
             this.imageRecu = this.reception.getImageRecu();
+
+            // System.out.println(this.imageRecu);
             if (!this.imageRecu.empty()) {
                 if (!this.firstImageReceived) {
                     this.displayFrameHalfSize = new Size(this.imageRecu.width() / 2, this.imageRecu.height() / 2);
@@ -434,48 +458,69 @@ public class traitement {
                 }
                 this.serveur_filemap_image.setVirtualPictureMutexBlocAccess(true);
                 this.imageBytes = this.encodeImageToJPEG(this.imageEnvoyer, 100);
-                this.length = this.imageBytes.length;
-                for (int i = 0; i < this.length; i++) {
-                    this.serveur_filemap_image.setMapFileOneByOneUnsignedChar(i, this.imageBytes[i]);
+                if (this.imageBytes != null) {
+                    this.length = this.imageBytes.length;
+                    for (int i = 0; i < this.length; i++) {
+                        this.serveur_filemap_image.setMapFileOneByOneUnsignedChar(i, this.imageBytes[i]);
+                    }
+                    this.serveur_filemap_image.setVirtualPictureDataSize(this.imageBytes.length);
+                } else {
+                    // Use black image as fallback
+                    this.imageBytes = this.encodeImageToJPEG(this.blackImage, 100);
+                    if (this.imageBytes != null) {
+                        this.length = this.imageBytes.length;
+                        for (int i = 0; i < this.length; i++) {
+                            this.serveur_filemap_image.setMapFileOneByOneUnsignedChar(i, this.imageBytes[i]);
+                        }
+                        this.serveur_filemap_image.setVirtualPictureDataSize(this.imageBytes.length);
+                    }
                 }
-                this.serveur_filemap_image.setVirtualPictureDataSize(this.imageBytes.length);
                 this.serveur_filemap_image.setVirtualPictureMutexBlocAccess(false);
 
                 // --------------------------------------------------------------//
                 // Mise à jour du FileMapping pour le traitement Java
-
+                
                 while (this.client_filemap_image.getVirtualPictureMutexBlocAccess()) {
                     new tempo(1);
                 }
                 this.client_filemap_image.setVirtualPictureMutexBlocAccess(true);
-
+                this.length = this.client_filemap_image.getVirtualPictureDataSize();
+                this.imageBytes = null;
                 for (int i = 0; i < this.length; i++) {
                     this.imageBytes[i] = (byte) this.client_filemap_image.getMapFileOneByOneUnsignedChar(i);
                 }
                 this.client_filemap_image.setVirtualPictureMutexBlocAccess(false);
                 // --------------------------------------------------------------//
                 // Ajustement dynamique du taux de compression
-                this.quality = 55;
-                if (!this.imageBytes.isEmpty() && this.imageBytes != null) {
+                this.quality = 65;
+                if (this.imageBytes != null && this.imageBytes.length > 0) {
                     if (this.imageBytes.length > this.maxPacketSize) {
-                        this.imageEnvoyer = jpegToMat(this.imageBytes);
-                        do {
-                            this.encodedData = this.encodeImageToJPEG(this.imageEnvoyer, this.quality);
-                            this.quality -= 5;
-                        } while (this.encodedData.length > this.maxPacketSize && this.quality > 10);
+                        Mat tempMat = jpegToMat(this.imageBytes);
+                        if (tempMat != null && !tempMat.empty()) {
+                            this.imageEnvoyer = tempMat;
+                            do {
+                                this.encodedData = this.encodeImageToJPEG(this.imageEnvoyer, this.quality);
+                                this.quality -= 5;
+                            } while (this.encodedData != null && this.encodedData.length > this.maxPacketSize && this.quality > 10);
+                        } else {
+                            // Fallback to using existing image data
+                            this.encodedData = this.imageBytes;
+                        }
                     } else {
                         this.encodedData = this.imageBytes;
                     }
+                } else {
+                    // Use black image as fallback if imageBytes is null or empty
+                    this.encodedData = this.encodeImageToJPEG(this.blackImage, this.quality);
                 }
-                // --------------------------------------------------------------//
+
                 // Envoi de l'image UDP à chaque adresse de la liste
-                if (!this.list_dynamic_ip.getClientAddress().isEmpty()) {
+                if (!this.list_dynamic_ip.getClientAddress().isEmpty() && this.encodedData != null) {
                     for (String addr : this.list_dynamic_ip.getClientAddress()) {
                         try {
                             this.sendImageUDP(this.encodedData, addr, this.port[1]);
                         } catch (IOException e) {
-                            System.out.println("\nErreur lors de l'envoi de l'image à " + addr + " : " +
-                                    e.getMessage());
+                            System.err.println("Erreur lors de l'envoi de l'image à " + addr + ": " + e.getMessage());
                         }
                     }
                 }
@@ -497,22 +542,46 @@ public class traitement {
             // --------------------------------------------------------------//
             // Mise à jour des fenêtres d'affichage
             try {
-                this.bufferedImage_source = this
-                        .byteArrayToBufferedImage(this.encodeImageToJPEG(this.imageAfficher_source, 100));
-                this.droneFenetre.setImage(this.bufferedImage_source);
+                byte[] encodedImage = this.encodeImageToJPEG(this.imageAfficher_source, 100);
+                if (encodedImage != null) {
+                    this.bufferedImage_source = this.byteArrayToBufferedImage(encodedImage);
+                    if (this.bufferedImage_source != null) {
+                        this.droneFenetre.setImage(this.bufferedImage_source);
+                    }
+                }
             } catch (IOException e) {
+                System.err.println("Error updating source display: " + e.getMessage());
                 e.printStackTrace();
             }
+
             try {
-                if (this.imageBytes != null) {
-                    this.bufferedImage_envoyer = this
-                            .byteArrayToBufferedImage(resizeJPEGImage(this.imageBytes, this.displayFrameHalfSize));
+                if (this.imageBytes != null && this.imageBytes.length > 0) {
+                    // Convert imageBytes to Mat first
+                    Mat tempMat = jpegToMat(this.imageBytes);
+                    if (tempMat != null && !tempMat.empty()) {
+                        // Resize the Mat image
+                        Mat resizedMat = new Mat();
+                        Imgproc.resize(tempMat, resizedMat, this.displayFrameHalfSize);
+                        
+                        // Convert resized Mat back to JPEG bytes
+                        byte[] resizedImageBytes = this.encodeImageToJPEG(resizedMat, 100);
+                        if (resizedImageBytes != null) {
+                            this.bufferedImage_envoyer = this.byteArrayToBufferedImage(resizedImageBytes);
+                            if (this.bufferedImage_envoyer != null) {
+                                this.fenetreTraitement.setImage(this.bufferedImage_envoyer);
+                            }
+                        }
+                    }
                 } else {
-                    this.bufferedImage_envoyer = this
-                            .byteArrayToBufferedImage(this.encodeImageToJPEG(this.imageAfficher_envoyer, 100));
+                    // Fallback to black image if imageBytes is null or empty
+                    byte[] encodedImage = this.encodeImageToJPEG(this.blackImage, 100);
+                    if (encodedImage != null) {
+                        this.bufferedImage_envoyer = this.byteArrayToBufferedImage(encodedImage);
+                        this.fenetreTraitement.setImage(this.bufferedImage_envoyer);
+                    }
                 }
-                this.fenetreTraitement.setImage(this.bufferedImage_envoyer);
             } catch (IOException e) {
+                System.err.println("Error updating processed display: " + e.getMessage());
                 e.printStackTrace();
             }
             new tempo(1);
@@ -561,9 +630,19 @@ public class traitement {
     // --------------------------------------------------------------//
     // Méthode pour encoder une image en JPEG avec une qualité donnée
     private byte[] encodeImageToJPEG(Mat image, int quality) {
-        MatOfByte matOfByte = new MatOfByte();
-        Imgcodecs.imencode(".jpg", image, matOfByte, new MatOfInt(Imgcodecs.IMWRITE_JPEG_QUALITY, quality));
-        return matOfByte.toArray();
+        if (image == null || image.empty()) {
+            System.err.println("Warning: Attempt to encode empty or null image");
+            return null;
+        }
+
+        try {
+            MatOfByte matOfByte = new MatOfByte();
+            Imgcodecs.imencode(".jpg", image, matOfByte, new MatOfInt(Imgcodecs.IMWRITE_JPEG_QUALITY, quality));
+            return matOfByte.toArray();
+        } catch (CvException e) {
+            System.err.println("Error encoding image: " + e.getMessage());
+            return null;
+        }
     }
 
     // --------------------------------------------------------------//
@@ -590,7 +669,7 @@ public class traitement {
 
     // --------------------------------------------------------------//
     // Méthode pour redimensionner une image JPEG
-    public static byte[] resizeJPEGImage(byte[] jpegImageBytes, Size newSize) {
+    public byte[] resizeJPEGImage(byte[] jpegImageBytes, Size newSize) {
         MatOfByte mob = new MatOfByte(jpegImageBytes);
         Mat image = Imgcodecs.imdecode(mob, Imgcodecs.IMREAD_COLOR);
         if (image.empty()) {
@@ -606,7 +685,7 @@ public class traitement {
 
     // --------------------------------------------------------------//
     // Méthode pour convertir un tableau de bytes JPEG en Mat
-    public static Mat jpegToMat(byte[] jpegBytes) {
+    public Mat jpegToMat(byte[] jpegBytes) {
         MatOfByte mob = new MatOfByte(jpegBytes);
         Mat image = Imgcodecs.imdecode(mob, Imgcodecs.IMREAD_COLOR);
         return image;

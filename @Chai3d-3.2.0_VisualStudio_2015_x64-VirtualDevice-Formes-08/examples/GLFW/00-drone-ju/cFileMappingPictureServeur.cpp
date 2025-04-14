@@ -358,6 +358,7 @@ bool cFileMappingPictureServeur::WriteVirtualPictureStructToMapFile(cVirtualPict
 #if defined(__WIN32__) || defined(_WIN32) || defined(WIN32) || defined(__WINDOWS__) || defined(__TOS_WIN__)
 			//CopyMemory((PVOID)this->pFileDataStruct, Data, this->FileMapPictureSize);
 			CopyMemory((cVirtualPicture*)this->pFileDataStruct, (cVirtualPicture*)Data, this->FileMapPictureSize);
+			this->pFileDataStruct->DataPictureSize = Data->DataPictureSize;
 #else
 			memcpy((cVirtualPicture*)pFileDataStruct, (cVirtualPicture*)Data, PictureSize);
 #endif
@@ -538,9 +539,9 @@ unsigned char* cFileMappingPictureServeur::getMapFileBufferData()
 #else
 	memcpy((unsigned char*)Buffer, (unsigned char*)(((cVirtualPicture*)this->pFileDataStruct)->PictureData), (int)(((cVirtualPicture*)this->pFileDataStruct)->DataPictureSize) * sizeof(unsigned char));
 #endif
-	printf("DLL: Buffer address: %x      PictureData address: %x \n", Buffer, (unsigned char*)(((cVirtualPicture*)this->pFileDataStruct)->PictureData));
+	//printf("DLL: Buffer address: %x      PictureData address: %x \n", Buffer, (unsigned char*)(((cVirtualPicture*)this->pFileDataStruct)->PictureData));
 	for (int i = 0; i < 20; i++)
-		printf("DLL: Buffer[%d]: %x\n", i, Buffer[i]);
+		//printf("DLL: Buffer[%d]: %x\n", i, Buffer[i]);
 	return (Buffer);
 }
 
