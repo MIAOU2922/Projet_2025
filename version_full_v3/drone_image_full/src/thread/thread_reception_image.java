@@ -16,6 +16,7 @@ import java.net.DatagramSocket;
 
 import org.opencv.core.*;
 import org.opencv.imgcodecs.Imgcodecs;
+import org.opencv.imgproc.Imgproc;
 
 import util.tempo;
 
@@ -24,6 +25,7 @@ import util.tempo;
 public class thread_reception_image extends Thread {
     private DatagramSocket socket;
     private Mat imageRecu;
+    private Mat blackImage;
     private String name;
 
     public thread_reception_image(String _name , DatagramSocket _socket , Mat _imageRecu) {
@@ -37,6 +39,22 @@ public class thread_reception_image extends Thread {
         byte[] data = new byte[65536];
         DatagramPacket packet = new DatagramPacket(data, data.length);
         Thread.currentThread().setName(name);
+
+        // --------------------------------------------------------------//
+        // Initialisation de l'image noire
+        try {
+            // Création d'une image noire avec le texte "START"
+            this.blackImage = new Mat(720, 1080, CvType.CV_8UC3, new Scalar(0, 0, 0));
+            Size textSize = Imgproc.getTextSize("No Image", Imgproc.FONT_HERSHEY_SIMPLEX, 2.0, 3, null);
+            Point textOrg = new Point((this.blackImage.cols() - textSize.width) / 2,
+                    (this.blackImage.rows() + textSize.height) / 2);
+            Imgproc.putText(this.blackImage, "No Image", textOrg, Imgproc.FONT_HERSHEY_SIMPLEX, 2.0,
+                    new Scalar(255, 255, 255), 3);
+        } catch (Exception e) {
+            System.out.print("\nErreur lors de l'initialisation de l'image noire");
+            e.printStackTrace();
+        }
+        // --------------------------------------------------------------//
         while (true) {
             try {
                 // Réception de l'image via UDP
@@ -49,9 +67,9 @@ public class thread_reception_image extends Thread {
         }
     }
     public Mat getImageRecu() {
+        if (this.imageRecu == null || this.imageRecu.empty()) {
+            return this.blackImage;
+        }
         return this.imageRecu;
     }
 }
-
-
-

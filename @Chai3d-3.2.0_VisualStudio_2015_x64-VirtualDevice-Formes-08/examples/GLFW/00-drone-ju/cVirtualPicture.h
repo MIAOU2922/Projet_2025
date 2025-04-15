@@ -22,7 +22,7 @@
 #ifndef VIRTUALPICTURE_H
 	#define VIRTUALPICTURE_H
 	#define STRUCT_SIZE sizeof(cVirtualPicture)
-	#define STRUCT_DATAPICTURE_BUFFER_SIZE 500000
+	#define STRUCT_DATAPICTURE_BUFFER_SIZE 10000000
 
 	typedef struct cVirtualPicture cVirtualPicture;
 	struct cVirtualPicture

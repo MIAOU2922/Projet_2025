@@ -9,12 +9,13 @@
 * © 2025 BEAL JULIEN - Tous droits réservés
 */
 
+
+/*
+
 import java.awt.image.BufferedImage;
 import java.io.*;
 import java.lang.reflect.Method;
 import java.net.*;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.util.Enumeration;
 import javax.imageio.ImageIO;
@@ -32,37 +33,37 @@ public class traitement {
         try {
             System.loadLibrary("JNIFileMappingPictureClient");
         } catch (Exception e) {
-            System.err.print("\nErreur lors du chargement de la librairie JNIFileMappingPictureClient");
+            System.err.println("\nErreur lors du chargement de la librairie JNIFileMappingPictureClient");
             e.printStackTrace();
         }
         try {
             System.loadLibrary("JNIFileMappingPictureServeur");
         } catch (Exception e) {
-            System.err.print("\nErreur lors du chargement de la librairie JNIFileMappingPictureServeur");
+            System.err.println("\nErreur lors du chargement de la librairie JNIFileMappingPictureServeur");
             e.printStackTrace();
         }
         try {
             System.loadLibrary("JNIVirtualPicture");
         } catch (Exception e) {
-            System.err.print("\nErreur lors du chargement de la librairie JNIVirtualPicture");
+            System.err.println("\nErreur lors du chargement de la librairie JNIVirtualPicture");
             e.printStackTrace();
         }
         try {
             System.loadLibrary("JNIFileMappingDroneCharTelemetryServeur");
         } catch (Exception e) {
-            System.err.print("\nErreur lors du chargement de la librairie JNIFileMappingDroneCharTelemetryServeur");
+            System.err.println("\nErreur lors du chargement de la librairie JNIFileMappingDroneCharTelemetryServeur");
             e.printStackTrace();
         }
         try {
             System.loadLibrary("JNIVirtualDroneCharTelemetry");
         } catch (Exception e) {
-            System.err.print("\nErreur lors du chargement de la librairie JNIVirtualDroneCharTelemetry");
+            System.err.println("\nErreur lors du chargement de la librairie JNIVirtualDroneCharTelemetry");
             e.printStackTrace();
         }
         try {
             System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
         } catch (Exception e) {
-            System.err.print("\nErreur lors du chargement de la librairie OpenCV");
+            System.err.println("\nErreur lors du chargement de la librairie OpenCV");
             e.printStackTrace();
         }
     }
@@ -97,11 +98,11 @@ public class traitement {
 
     // Variables pour la gestion des images OpenCV
     private Mat dermiereImageValide = new Mat();
-    private Mat imageRecu_resizedImage = new Mat();
+    private Mat dermiereImageValide_resizedImage = new Mat();
     private Mat imageEnvoyer_resizedImage = new Mat();
     private Mat blackImage;
     private boolean firstImageReceived = false;
-    private Size displayFrameHalfSize = new Size(640, 360); // par exemple
+    private Size displayFrameHalfSize = new Size(0, 0);
 
     // Mesure du temps pour le calcul des FPS
     private long previousTime = System.nanoTime();
@@ -144,9 +145,9 @@ public class traitement {
         // Ouverture du serveur de FileMapping pour l'image
         try {
             this.serveur_filemap_image.OpenServer("img_java_to_c");
-
+            
         } catch (Exception e) {
-            System.out.print("\nErreur lors de l'ouverture du serveur img_java_to_c");
+            System.out.println("\nErreur lors de l'ouverture du serveur img_java_to_c");
             e.printStackTrace();
         }
         // --------------------------------------------------------------//
@@ -164,7 +165,7 @@ public class traitement {
                     }
                 }));
             } catch (IOException e) {
-                System.out.print("\nErreur lors du lancement du programme Chai3D");
+                System.out.println("\nErreur lors du lancement du programme Chai3D");
                 e.printStackTrace();
             }
         });
@@ -176,7 +177,7 @@ public class traitement {
             // this.client_filemap_image.OpenClient("img_java_to_c");
             this.client_filemap_image.OpenClient("img_c_to_java");
         } catch (Exception e) {
-            System.out.print("\nErreur lors de l'ouverture du client img_c_to_java");
+            System.out.println("\nErreur lors de l'ouverture du client img_c_to_java");
             e.printStackTrace();
         }
         // --------------------------------------------------------------//
@@ -213,14 +214,14 @@ public class traitement {
             this.socketTelemetrie = new DatagramSocket(this.port[3]);
             this.packet = new DatagramPacket(this.data, this.data.length);
         } catch (Exception e) {
-            System.out.print("\nErreur lors de l'initialisation des adresses IP et des sockets UDP");
+            System.out.println("\nErreur lors de l'initialisation des adresses IP et des sockets UDP");
             e.printStackTrace();
         }
         // --------------------------------------------------------------//
         // Initialisation de l'image noire
         try {
             // Création d'une image noire avec le texte "START"
-            this.blackImage = new Mat(720, 1080, CvType.CV_8UC3, new Scalar(0, 0, 0));
+            this.blackImage = new Mat(360, 640, CvType.CV_8UC3, new Scalar(0, 0, 0));
             Size textSize = Imgproc.getTextSize("No Image", Imgproc.FONT_HERSHEY_SIMPLEX, 2.0, 3, null);
             Point textOrg = new Point((this.blackImage.cols() - textSize.width) / 2,
                     (this.blackImage.rows() + textSize.height) / 2);
@@ -230,7 +231,7 @@ public class traitement {
             // reçue)
             this.displayFrameHalfSize = new Size(0, 0);
         } catch (Exception e) {
-            System.out.print("\nErreur lors de l'initialisation de l'image noire");
+            System.out.println("\nErreur lors de l'initialisation de l'image noire");
             e.printStackTrace();
         }
         // --------------------------------------------------------------//
@@ -246,8 +247,8 @@ public class traitement {
             }
             this.serveur_filemap_image.setVirtualPictureDataSize(this.imageBytes.length);
             this.serveur_filemap_image.setVirtualPictureMutexBlocAccess(false);
-        } catch (Exception e) {
-            System.out.print("\nErreur lors de l'initialisation de l'image noire dans le FileMapping");
+        }catch (Exception e) {
+            System.out.println("\nErreur lors de l'initialisation de l'image noire dans le FileMapping");
             e.printStackTrace();
         }
         // --------------------------------------------------------------//
@@ -256,42 +257,42 @@ public class traitement {
             this.reception = new thread_reception_image("traitement_UDP_image", this.socket_image, this.imageRecu);
             this.reception.start();
         } catch (Exception e) {
-            System.out.print("\nErreur lors du lancement du thread de réception d'image");
+            System.out.println("\nErreur lors du lancement du thread de réception d'image");
             e.printStackTrace();
         }
         try {
             this.commande = new thread_reception_string("reception_cmd_traitement", this.socket_cmd);
             this.commande.start();
         } catch (Exception e) {
-            System.out.print("\nErreur lors du lancement du thread de réception de commande");
+            System.out.println("\nErreur lors du lancement du thread de réception de commande");
             e.printStackTrace();
         }
         try {
             this.telemetrie_traitement = new thread_traitement_telemtrie("reception_Telemetrie", this.socketTelemetrie);
             this.telemetrie_traitement.start();
         } catch (Exception e) {
-            System.out.print("\nErreur lors du lancement du thread de réception télémétrie");
+            System.out.println("\nErreur lors du lancement du thread de réception télémétrie");
             e.printStackTrace();
         }
         try {
             this.detection_contours = new thread_detection_contours(this.imageRecu, false);
             this.detection_contours.start();
         } catch (Exception e) {
-            System.out.print("\nErreur lors du lancement du thread de détection des contours");
+            System.out.println("\nErreur lors du lancement du thread de détection des contours");
             e.printStackTrace();
         }
         try {
             this.detection_formes = new thread_detection_formes(this.imageRecu, false);
             this.detection_formes.start();
         } catch (Exception e) {
-            System.out.print("\nErreur lors du lancement du thread de détection des formes");
+            System.out.println("\nErreur lors du lancement du thread de détection des formes");
             e.printStackTrace();
         }
         try {
             this.envoie_cmd = new thread_envoie_cmd("T", this.address_local_str, this.address_broadcast, this.port[2]);
             this.envoie_cmd.start();
         } catch (Exception e) {
-            System.out.print("\nErreur lors du lancement du thread d'envoi de commande");
+            System.out.println("\nErreur lors du lancement du thread d'envoi de commande");
             e.printStackTrace();
         }
         try {
@@ -299,7 +300,7 @@ public class traitement {
                     "traitement - boucle de vérification de la liste d'adresses");
             this.list_dynamic_ip.start();
         } catch (Exception e) {
-            System.out.print("\nErreur lors du lancement du thread de gestion des IP dynamiques");
+            System.out.println("\nErreur lors du lancement du thread de gestion des IP dynamiques");
             e.printStackTrace();
         }
         // --------------------------------------------------------------//
@@ -310,7 +311,7 @@ public class traitement {
             // Renommé pour éviter le conflit avec le nom de la classe
             this.fenetreTraitement = new FenetreTraitement("traitement", icon, 640, 0);
         } catch (Exception e) {
-            System.out.print("\nErreur lors de l'initialisation de l'interface graphique");
+            System.out.println("\nErreur lors de l'initialisation de l'interface graphique");
             e.printStackTrace();
         }
         // --------------------------------------------------------------//
@@ -325,225 +326,267 @@ public class traitement {
                     Runtime.getRuntime().exec("taskkill /F 00-drone-ju.exe");
 
                 } catch (IOException e) {
-                    System.err.print("Error in shutdown hook: " + e.getMessage());
+                    System.err.println("Error in shutdown hook: " + e.getMessage());
                     e.printStackTrace();
                 }
             }));
         } catch (Exception e) {
-            System.out.print("\nErreur lors de l'ajout du shutdown hook");
+            System.out.println("\nErreur lors de l'ajout du shutdown hook");
             e.printStackTrace();
         }
         // --------------------------------------------------------------//
         // Boucle principale de traitement
         try {
             error.printError();
-            new tempo(2000);
             this.mainLoop();
         } catch (Exception e) {
-            System.out.print("\nErreur lors de la boucle principale de traitement");
+            System.out.println("\nErreur lors de la boucle principale de traitement");
             e.printStackTrace();
         }
     }
 
+    // --------------------------------------------------------------//
+    // Boucle principale de traitement
     private void mainLoop() {
 
         while (true) {
-            // --------------------------------------------------------------//
-            // Traitement du message UDP reçu
-            this.parts = null;
-            this.commandeRecu = this.commande.getMessageRecu();
-            if (!this.commandeRecu.isEmpty()) {
-                if (this.commandeRecu.startsWith("C#")) {
-                    this.parts = this.commandeRecu.split("\\?");
-                    this.action = this.parts[0].split("#")[1];
-                    if (this.action.equals("add")) {
-                        this.list_dynamic_ip.addClient(this.parts[1].split("#")[1], this.parts[2].split("#")[1]);
-                    } else if (this.action.equals("remove")) {
-                        this.list_dynamic_ip.removeClient(this.parts[1].split("#")[1]);
-                    } else if (this.action.equals("cmd")) {
-                        this.list_dynamic_ip.updateClient(this.parts[1].split("#")[1]);
-                        this.Client_Time = LocalDateTime.parse(this.parts[2].split("#")[1]);
-                        this.Client_traitement = Integer.parseInt(this.parts[3].split("#")[1]);
-                    }
-                }
-            }
-            // Réinitialisation
-            this.commandeRecu = "";
-            this.parts = null;
-            // --------------------------------------------------------------//
-            // Comparaison des temps de modification pour déterminer le type de traitement
-            this.droneTime = this.droneFenetre.getLastModifiedTime();
-            this.traitementTime = this.fenetreTraitement.getLastModifiedTime();
-            if (this.Client_Time.isAfter(this.droneTime) && this.Client_Time.isAfter(this.traitementTime)) {
-                this.traitements = this.Client_traitement;
-            } else if (this.droneTime.isAfter(this.traitementTime)) {
-                this.traitements = this.droneFenetre.getTraitement();
-            } else {
-                this.traitements = this.fenetreTraitement.getTraitement();
-            }
-            // --------------------------------------------------------------//
-            // Réception de l'image
             this.imageRecu = this.reception.getImageRecu();
-            if (this.imageRecu != null && !this.imageRecu.empty() &&
-                    this.imageRecu.width() > 0 && this.imageRecu.height() > 0) {
+
+            // System.out.println(this.imageRecu);
+            if (!this.imageRecu.empty()) {
                 if (!this.firstImageReceived) {
+                    this.displayFrameHalfSize = new Size(this.imageRecu.width() / 2, this.imageRecu.height() / 2);
                     this.firstImageReceived = true;
                 }
-                this.displayFrameHalfSize = new Size(640, 360);
+                // Stocker la dernière image valide
                 this.dermiereImageValide = this.imageRecu.clone();
-            } else {
-                if (this.firstImageReceived && this.dermiereImageValide != null && !this.dermiereImageValide.empty()) {
-                    this.imageRecu = this.dermiereImageValide.clone();
-                    this.imageEnvoyer = this.dermiereImageValide.clone();
+
+                // --------------------------------------------------------------//
+                // Traitement du message UDP reçu
+                this.parts = null;
+                this.commandeRecu = this.commande.getMessageRecu();
+                if (!this.commandeRecu.isEmpty()) {
+                    if (this.commandeRecu.startsWith("C#")) {
+                        this.parts = this.commandeRecu.split("\\?");
+                        this.action = this.parts[0].split("#")[1];
+                        if (this.action.equals("add")) {
+                            this.list_dynamic_ip.addClient(this.parts[1].split("#")[1], this.parts[2].split("#")[1]);
+                        } else if (this.action.equals("remove")) {
+                            this.list_dynamic_ip.removeClient(this.parts[1].split("#")[1]);
+                        } else if (this.action.equals("cmd")) {
+                            this.list_dynamic_ip.updateClient(this.parts[1].split("#")[1]);
+                            this.Client_Time = LocalDateTime.parse(this.parts[2].split("#")[1]);
+                            this.Client_traitement = Integer.parseInt(this.parts[3].split("#")[1]);
+                        }
+                    }
+                }
+                // Réinitialisation
+                this.commandeRecu = "";
+                this.parts = null;
+
+                // --------------------------------------------------------------//
+                // Comparaison des temps de modification pour déterminer le type de traitement
+                this.droneTime = this.droneFenetre.getLastModifiedTime();
+                this.traitementTime = this.fenetreTraitement.getLastModifiedTime();
+                if (this.Client_Time.isAfter(this.droneTime) && this.Client_Time.isAfter(this.traitementTime)) {
+                    this.traitements = this.Client_traitement;
+                } else if (this.droneTime.isAfter(this.traitementTime)) {
+                    this.traitements = this.droneFenetre.getTraitement();
                 } else {
-                    this.imageRecu = this.blackImage.clone();
-                    this.imageEnvoyer = this.blackImage.clone();
+                    this.traitements = this.fenetreTraitement.getTraitement();
                 }
-            }
-            // --------------------------------------------------------------//
-            // Application du traitement selon la valeur déterminée
-            switch (this.traitements) {
-                case 0:
-                    this.imageEnvoyer = this.imageRecu;
-                    break;
-                case 1:
-                    this.detection_contours.setFrame(this.imageRecu);
-                    while (this.detection_contours.isFrame_process()) {
-                        new tempo(1);
-                    }
-                    this.imageEnvoyer = this.detection_contours.getFrame();
-                    break;
-                case 2:
-                    this.detection_formes.setFrame(this.imageRecu);
-                    while (this.detection_formes.isFrame_process()) {
-                        new tempo(1);
-                    }
-                    this.imageEnvoyer = this.detection_formes.getFrame();
-                    break;
-                case 3:
-                    this.detection_contours.setFrame(this.imageRecu);
-                    this.detection_formes.setFrame(this.imageRecu);
-                    while (this.detection_formes.isFrame_process() || this.detection_contours.isFrame_process()) {
-                        new tempo(1);
-                    }
-                    this.imageEnvoyer = this.additionDesDifferences(
-                            this.detection_contours.getFrame(),
-                            this.detection_formes.getFrame(),
-                            this.imageRecu);
-                    break;
-                default:
-                    this.imageEnvoyer = this.imageRecu;
-                    break;
-            }
 
-            // --------------------------------------------------------------//
-            // Calcul des FPS
-            currentTime = System.nanoTime();
-            intervalInSeconds = (currentTime - this.previousTime) / 1_000_000_000.0;
-            this.fps = 1.0 / intervalInSeconds;
-            Imgproc.putText(this.imageEnvoyer, String.format("FPS: %.0f", this.fps),
-                    new Point(10, 30), Imgproc.FONT_HERSHEY_SIMPLEX, 1,
-                    new Scalar(0, 255, 0), 2);
-            System.out.print("\033[K"); // Efface la ligne
-            System.out.print(String.format("\rfps: %.0f   ", fps));
-            this.previousTime = currentTime;
+                // --------------------------------------------------------------//
+                // Application du traitement selon la valeur déterminée
+                switch (this.traitements) {
+                    case 0:
+                        this.imageEnvoyer = this.imageRecu;
+                        break;
+                    case 1:
+                        this.detection_contours.setFrame(this.imageRecu);
+                        while (this.detection_contours.isFrame_process()) {
+                            new tempo(1);
+                        }
+                        this.imageEnvoyer = this.detection_contours.getFrame();
+                        break;
+                    case 2:
+                        this.detection_formes.setFrame(this.imageRecu);
+                        while (this.detection_formes.isFrame_process()) {
+                            new tempo(1);
+                        }
+                        this.imageEnvoyer = this.detection_formes.getFrame();
+                        break;
+                    case 3:
+                        this.detection_contours.setFrame(this.imageRecu);
+                        this.detection_formes.setFrame(this.imageRecu);
+                        while (this.detection_formes.isFrame_process() || this.detection_contours.isFrame_process()) {
+                            new tempo(1);
+                        }
+                        this.imageEnvoyer = this.additionDesDifferences(
+                                this.detection_contours.getFrame(),
+                                this.detection_formes.getFrame(),
+                                this.imageRecu);
+                        break;
+                }
 
-            // --------------------------------------------------------------//
-            // Mise à jour du FileMapping pour Chai3D
-            this.imageBytes = this.encodeImageToJPEG(this.imageEnvoyer, 100);
-            while (this.serveur_filemap_image.getVirtualPictureMutexBlocAccess()) {
-                new tempo(1);
-            }
-            if (this.imageBytes != null) {
-                this.length = this.imageBytes.length;
+                // --------------------------------------------------------------//
+                // Calcul des FPS
+                currentTime = System.nanoTime();
+                intervalInSeconds = (currentTime - this.previousTime) / 1_000_000_000.0;
+                this.fps = 1.0 / intervalInSeconds;
+                Imgproc.putText(this.imageEnvoyer, String.format("FPS: %.0f", this.fps),
+                        new Point(10, 30), Imgproc.FONT_HERSHEY_SIMPLEX, 1,
+                        new Scalar(0, 255, 0), 2);
+                System.out.print("\033[K"); // Efface la ligne
+                System.out.print(String.format("\rfps: %.0f   ", fps));
+                this.previousTime = currentTime;
+
+                // --------------------------------------------------------------//
+                // Redimensionner les images pour l'affichage
+                Imgproc.resize(this.dermiereImageValide, this.dermiereImageValide_resizedImage,
+                        this.displayFrameHalfSize);
+                Imgproc.resize(this.imageEnvoyer, this.imageEnvoyer_resizedImage, this.displayFrameHalfSize);
+                if (this.firstImageReceived) {
+                    this.imageAfficher_source = this.dermiereImageValide_resizedImage;
+                    this.imageAfficher_envoyer = this.imageEnvoyer_resizedImage;
+                } else {
+                    this.imageAfficher_source = this.blackImage;
+                    this.imageAfficher_envoyer = this.blackImage;
+                }
+                // --------------------------------------------------------------//
+                // Mise à jour du FileMapping pour Chai3D
+                // On test pour savoir si le client ne lit pas le FMP
+                while (this.serveur_filemap_image.getVirtualPictureMutexBlocAccess()) {
+                    new tempo(1);
+                }
+                this.serveur_filemap_image.setVirtualPictureMutexBlocAccess(true);
+                this.imageBytes = this.encodeImageToJPEG(this.imageEnvoyer, 100);
+                if (this.imageBytes != null) {
+                    this.length = this.imageBytes.length;
+                    for (int i = 0; i < this.length; i++) {
+                        this.serveur_filemap_image.setMapFileOneByOneUnsignedChar(i, this.imageBytes[i]);
+                    }
+                    this.serveur_filemap_image.setVirtualPictureDataSize(this.imageBytes.length);
+                } else {
+                    // Use black image as fallback
+                    this.imageBytes = this.encodeImageToJPEG(this.blackImage, 100);
+                    if (this.imageBytes != null) {
+                        this.length = this.imageBytes.length;
+                        for (int i = 0; i < this.length; i++) {
+                            this.serveur_filemap_image.setMapFileOneByOneUnsignedChar(i, this.imageBytes[i]);
+                        }
+                        this.serveur_filemap_image.setVirtualPictureDataSize(this.imageBytes.length);
+                    }
+                }
+                this.serveur_filemap_image.setVirtualPictureMutexBlocAccess(false);
+
+                // --------------------------------------------------------------//
+                // Mise à jour du FileMapping pour le traitement Java
+                
+                while (this.client_filemap_image.getVirtualPictureMutexBlocAccess()) {
+                    new tempo(1);
+                }
+                this.client_filemap_image.setVirtualPictureMutexBlocAccess(true);
+                this.length = this.client_filemap_image.getVirtualPictureDataSize();
+                this.imageBytes = null;
                 for (int i = 0; i < this.length; i++) {
-                    this.serveur_filemap_image.setMapFileOneByOneUnsignedChar(i, this.imageBytes[i]);
+                    this.imageBytes[i] = (byte) this.client_filemap_image.getMapFileOneByOneUnsignedChar(i);
                 }
-                this.serveur_filemap_image.setVirtualPictureDataSize(this.imageBytes.length);
-            }
-            new tempo(1);
-            this.serveur_filemap_image.setVirtualPictureMutexBlocAccess(false);
-
-            // --------------------------------------------------------------//
-            // Mise à jour du FileMapping pour le traitement Java
-
-            while (this.client_filemap_image.getVirtualPictureMutexBlocAccess()) {
-                new tempo(1);
-            }
-            this.client_filemap_image.setVirtualPictureMutexBlocAccess(true);
-            this.length = this.client_filemap_image.getVirtualPictureDataSize();
-
-            // System.out.print(" Taille de l'image : " +
-            // this.client_filemap_image.getVirtualPictureDataSize());
-            this.imageBytes = null;
-            this.imageBytes = new byte[this.length];
-            for (int i = 0; i < this.length; i++) {
-                this.imageBytes[i] = (byte) this.client_filemap_image.getMapFileOneByOneUnsignedChar(i);
-            }
-            new tempo(1);
-            this.client_filemap_image.setVirtualPictureMutexBlocAccess(false);
-
-            // this.imageBytes = this.resizeJPEGImage(this.imageBytes,
-            // this.displayFrameHalfSize);
-
-            try {
-                // System.out.print(" donné de l'image : " + this.imageBytes);
-                // System.out.print(" Taille de l'image : " + this.imageBytes.length);
-
+                this.client_filemap_image.setVirtualPictureMutexBlocAccess(false);
+                // --------------------------------------------------------------//
+                // Ajustement dynamique du taux de compression
+                this.quality = 70;
                 if (this.imageBytes != null && this.imageBytes.length > 0) {
-                    Mat decoded = decodeJpeg(this.imageBytes);
-                    if (decoded != null && !decoded.empty()) {
-                        this.imageEnvoyer = decoded;
+                    if (this.imageBytes.length > this.maxPacketSize) {
+                        Mat tempMat = jpegToMat(this.imageBytes);
+                        if (tempMat != null && !tempMat.empty()) {
+                            this.imageEnvoyer = tempMat;
+                            do {
+                                this.encodedData = this.encodeImageToJPEG(this.imageEnvoyer, this.quality);
+                                this.quality -= 5;
+                            } while (this.encodedData != null && this.encodedData.length > this.maxPacketSize && this.quality > 10);
+                        } else {
+                            // Fallback to using existing image data
+                            this.encodedData = this.imageBytes;
+                        }
                     } else {
-                        System.err.println("Décodage JPEG échoué : image vide ou nulle.");
+                        this.encodedData = this.imageBytes;
+                    }
+                } else {
+                    // Use black image as fallback if imageBytes is null or empty
+                    this.encodedData = this.encodeImageToJPEG(this.blackImage, this.quality);
+                }
+
+                // Envoi de l'image UDP à chaque adresse de la liste
+                if (!this.list_dynamic_ip.getClientAddress().isEmpty() && this.encodedData != null) {
+                    for (String addr : this.list_dynamic_ip.getClientAddress()) {
+                        try {
+                            this.sendImageUDP(this.encodedData, addr, this.port[1]);
+                        } catch (IOException e) {
+                            System.err.println("Erreur lors de l'envoi de l'image à " + addr + ": " + e.getMessage());
+                        }
                     }
                 }
-            } catch (Exception e) {
-                System.err.println("Erreur lors du décodage de l'image JPEG : " + e.getMessage());
-                e.printStackTrace();
+            } else {
+                // Aucun image reçue : afficher l'image noire ou la dernière image valide
+                if (this.dermiereImageValide != null) {
+                    if (!this.firstImageReceived) {
+                        this.imageAfficher_source = this.blackImage;
+                        this.imageAfficher_envoyer = this.blackImage;
+                    } else {
+                        this.imageAfficher_source = this.dermiereImageValide_resizedImage;
+                        this.imageAfficher_envoyer = this.imageEnvoyer_resizedImage;
+                    }
+                } else {
+                    this.imageAfficher_source = this.blackImage;
+                    this.imageAfficher_envoyer = this.blackImage;
+                }
             }
-
             // --------------------------------------------------------------//
-            // encode l'image en JPEG pour l'envoie
-            this.quality = 70;
-            do {
-                this.encodedData = this.encodeImageToJPEG(this.imageEnvoyer, this.quality);
-                this.quality -= 5;
-            } while (this.encodedData != null && this.encodedData.length > this.maxPacketSize && this.quality > 10);
-
-            // ---------------------------------------------------------------//
-            // Envoi de l'image UDP à chaque adresse de la liste
-            if (!this.list_dynamic_ip.getClientAddress().isEmpty() && this.encodedData != null) {
-                for (String addr : this.list_dynamic_ip.getClientAddress()) {
-                    try {
-                        this.sendImageUDP(this.encodedData, addr, this.port[1]);
-                    } catch (IOException e) {
-                        System.err.print("Erreur lors de l'envoi de l'image à " + addr + ": " + e.getMessage());
+            // Mise à jour des fenêtres d'affichage
+            try {
+                byte[] encodedImage = this.encodeImageToJPEG(this.imageAfficher_source, 100);
+                if (encodedImage != null) {
+                    this.bufferedImage_source = this.byteArrayToBufferedImage(encodedImage);
+                    if (this.bufferedImage_source != null) {
+                        this.droneFenetre.setImage(this.bufferedImage_source);
                     }
                 }
-            }
-            // ---------------------------------------------------------------//
-            // update IHM
-            try {
-                if (this.imageRecu != null && !this.imageRecu.empty()) {
-                    this.bufferedImage_source = this
-                            .byteArrayToBufferedImage(this.encodeImageToJPEG(this.imageRecu, 100));
-                    this.droneFenetre.setImage(this.bufferedImage_source);
-                }
-
-                if (this.imageEnvoyer != null && !this.imageEnvoyer.empty()) {
-                    this.bufferedImage_envoyer = this
-                            .byteArrayToBufferedImage(this.encodeImageToJPEG(this.imageEnvoyer, 100));
-                    this.fenetreTraitement.setImage(this.bufferedImage_envoyer);
-
-                    System.out.print("      update traitement "); // Efface la ligne
-
-                }
-            } catch (Exception e) {
-                System.err.print("Error updating processed display: " + e.getMessage());
+            } catch (IOException e) {
+                System.err.println("Error updating source display: " + e.getMessage());
                 e.printStackTrace();
             }
 
+            try {
+                if (this.imageBytes != null && this.imageBytes.length > 0) {
+                    // Convert imageBytes to Mat first
+                    Mat tempMat = jpegToMat(this.imageBytes);
+                    if (tempMat != null && !tempMat.empty()) {
+                        // Resize the Mat image
+                        Mat resizedMat = new Mat();
+                        Imgproc.resize(tempMat, resizedMat, this.displayFrameHalfSize);
+                        
+                        // Convert resized Mat back to JPEG bytes
+                        byte[] resizedImageBytes = this.encodeImageToJPEG(resizedMat, 100);
+                        if (resizedImageBytes != null) {
+                            this.bufferedImage_envoyer = this.byteArrayToBufferedImage(resizedImageBytes);
+                            if (this.bufferedImage_envoyer != null) {
+                                this.fenetreTraitement.setImage(this.bufferedImage_envoyer);
+                            }
+                        }
+                    }
+                } else {
+                    // Fallback to black image if imageBytes is null or empty
+                    byte[] encodedImage = this.encodeImageToJPEG(this.blackImage, 100);
+                    if (encodedImage != null) {
+                        this.bufferedImage_envoyer = this.byteArrayToBufferedImage(encodedImage);
+                        this.fenetreTraitement.setImage(this.bufferedImage_envoyer);
+                    }
+                }
+            } catch (IOException e) {
+                System.err.println("Error updating processed display: " + e.getMessage());
+                e.printStackTrace();
+            }
             new tempo(1);
         }
     }
@@ -558,7 +601,7 @@ public class traitement {
             DatagramPacket packet = new DatagramPacket(imageData, imageData.length, ipAddress, port);
             socket.send(packet);
         } catch (Exception e) {
-            System.out.print("\nErreur lors de l'envoi de l'image à " + address + " : " + e.getMessage());
+            System.out.println("\nErreur lors de l'envoi de l'image à " + address + " : " + e.getMessage());
         } finally {
             if (socket != null && !socket.isClosed()) {
                 socket.close();
@@ -576,10 +619,10 @@ public class traitement {
             byte[] buffer = data.getBytes();
             DatagramPacket packet = new DatagramPacket(buffer, buffer.length, ipAddress, port);
             socket.send(packet);
-            // System.out.print("\nDonnées envoyées à " + address + ":" + port);
-            // System.out.print("\nDonnées envoyées : " + data);
+            // System.out.println("\nDonnées envoyées à " + address + ":" + port);
+            // System.out.println("\nDonnées envoyées : " + data);
         } catch (Exception e) {
-            System.out.print("\nErreur lors de l'envoi de l'image à " + address + " : " + e.getMessage());
+            System.out.println("\nErreur lors de l'envoi de l'image à " + address + " : " + e.getMessage());
         } finally {
             if (socket != null && !socket.isClosed()) {
                 socket.close();
@@ -591,7 +634,7 @@ public class traitement {
     // Méthode pour encoder une image en JPEG avec une qualité donnée
     private byte[] encodeImageToJPEG(Mat image, int quality) {
         if (image == null || image.empty()) {
-            System.err.print("Warning: Attempt to encode empty or null image");
+            System.err.println("Warning: Attempt to encode empty or null image");
             return null;
         }
 
@@ -600,7 +643,7 @@ public class traitement {
             Imgcodecs.imencode(".jpg", image, matOfByte, new MatOfInt(Imgcodecs.IMWRITE_JPEG_QUALITY, quality));
             return matOfByte.toArray();
         } catch (CvException e) {
-            System.err.print("Error encoding image: " + e.getMessage());
+            System.err.println("Error encoding image: " + e.getMessage());
             return null;
         }
     }
@@ -630,11 +673,10 @@ public class traitement {
     // --------------------------------------------------------------//
     // Méthode pour redimensionner une image JPEG
     public byte[] resizeJPEGImage(byte[] jpegImageBytes, Size newSize) {
-
         MatOfByte mob = new MatOfByte(jpegImageBytes);
         Mat image = Imgcodecs.imdecode(mob, Imgcodecs.IMREAD_COLOR);
         if (image.empty()) {
-            System.err.print("\nErreur lors du décodage de l'image JPEG.");
+            System.err.println("\nErreur lors du décodage de l'image JPEG.");
             return null;
         }
         Mat resizedImage = new Mat();
@@ -646,14 +688,10 @@ public class traitement {
 
     // --------------------------------------------------------------//
     // Méthode pour convertir un tableau de bytes JPEG en Mat
-    public static Mat decodeJpeg(byte[] imageBytes) {
-        Mat rawData = new Mat(1, imageBytes.length, CvType.CV_8UC1);
-        rawData.put(0, 0, imageBytes);
-
-        // Utilise IMREAD_UNCHANGED ou IMREAD_COLOR selon ton besoin
-        Mat decoded = Imgcodecs.imdecode(rawData, Imgcodecs.IMREAD_COLOR);
-
-        return decoded;
+    public Mat jpegToMat(byte[] jpegBytes) {
+        MatOfByte mob = new MatOfByte(jpegBytes);
+        Mat image = Imgcodecs.imdecode(mob, Imgcodecs.IMREAD_COLOR);
+        return image;
     }
-
 }
+*/

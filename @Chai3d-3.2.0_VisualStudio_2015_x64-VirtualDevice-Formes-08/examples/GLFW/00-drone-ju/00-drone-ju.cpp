@@ -359,15 +359,15 @@ void updateBackgroundImage() {
     
     // Verrouiller le mutex
     monClientCppFMPictureScreenShot->setVirtualPictureMutexBlocAccess(true);
-    BackgroundImageByteArray = monClientCppFMPictureScreenShot->getMapFileBufferData();
+    //BackgroundImageByteArray = monClientCppFMPictureScreenShot->getMapFileBufferData();
     int TailleImage = monClientCppFMPictureScreenShot->getVirtualPictureDataSize();
-    /*
+    
     BackgroundImageByteArray = new unsigned char[TailleImage];
     for (int i = 0; i < TailleImage; i++)
     {
         BackgroundImageByteArray[i] = monClientCppFMPictureScreenShot->getMapFileOneByOneUnsignedChar(i);
     }
-    */
+    
 
     // Deverrouiller le mutex
     monClientCppFMPictureScreenShot->setVirtualPictureMutexBlocAccess(false);
@@ -413,8 +413,8 @@ void ecrireEnMap()
         CopyMemory((unsigned char*)maVirtualPictureScreenShot->PictureData, (unsigned char*)*Buffer, size);
         maVirtualPictureScreenShot->DataPictureSize = (int) size;
         monServeurCppFMPictureScreenShot->WriteVirtualPictureStructToMapFile(maVirtualPictureScreenShot);
-		//monServeurCppFMPictureScreenShot->setVirtualPictureDataSize(size);  
-
+		monServeurCppFMPictureScreenShot->setVirtualPictureDataSize((int)size);  
+		//cout << "size : " << size << endl;
         cSleepMs(1);
 
         free(Buffer[0]);
