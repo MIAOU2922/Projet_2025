@@ -5,4 +5,9 @@ F:\BEAL_JULIEN_SN2\_projet_2025\git\@Chai3d-3.2.0_VisualStudio_2015_x64-VirtualD
       F:\BEAL_JULIEN_SN2\_projet_2025\git\@Chai3d-3.2.0_VisualStudio_2015_x64-VirtualDevice-Formes-08\src\virtualform\CFileMappingStructureServeurBridge.h(65,10):
       voir la définition précédente de « STRUCT_SIZE »
   
+F:\BEAL_JULIEN_SN2\_projet_2025\git\@Chai3d-3.2.0_VisualStudio_2015_x64-VirtualDevice-Formes-08\examples\GLFW\00-drone-ju\cVirtualDroneCharTelemetry.h(24,10): warning C4005: 'STRUCT_SIZE' : redéfinition de macro
+  (compiler le fichier source '00-drone-ju.cpp')
+      F:\BEAL_JULIEN_SN2\_projet_2025\git\@Chai3d-3.2.0_VisualStudio_2015_x64-VirtualDevice-Formes-08\examples\GLFW\00-drone-ju\cVirtualPicture.h(24,10):
+      voir la définition précédente de « STRUCT_SIZE »
+  
   00-drone-ju-VS2015.vcxproj -> F:\BEAL_JULIEN_SN2\_projet_2025\git\@Chai3d-3.2.0_VisualStudio_2015_x64-VirtualDevice-Formes-08\bin\win-x64\00-drone-ju.exe

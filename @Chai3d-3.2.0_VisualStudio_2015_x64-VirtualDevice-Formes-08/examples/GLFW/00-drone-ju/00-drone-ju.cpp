@@ -16,6 +16,7 @@
 #include <GL/gl.h>
 #include "cFileMappingPictureServeur.h"
 #include "cFileMappingPictureClient.h"
+#include "cFileMappingDroneCharTelemetryClient.h"
 #include <iomanip>
 
 
@@ -34,10 +35,14 @@ cCamera* camera;
 cDirectionalLight* light;
 cImagePtr backgroundImage = cImage::create();
 cShapeSphere* sphere;
+
+cScope* scope;
 cLevel* levelVelocity;
+
 cDial* dialPosX;
 cDial* dialPosY;
 cDial* dialPosZ;
+
 cFrequencyCounter freqCounterGraphics;
 GLFWwindow* window = NULL;
 cBitmap *BitmapBackgroundMovie = new cBitmap();
@@ -60,7 +65,11 @@ cVirtualPicture* maVirtualPicture = NULL;
 cFileMappingPictureServeur* monServeurCppFMPictureScreenShot = NULL;
 cFileMappingPictureClient* monClientCppFMPictureScreenShot = NULL;
 
+cFileMappingDroneCharTelemetryClient* monClientCppFMDCTelemetry = NULL;
+
 cVirtualPicture* maVirtualPictureScreenShot = NULL;
+
+
 
 // callback when the window display is resized
 void windowSizeCallback(GLFWwindow* a_window, int a_width, int a_height);
@@ -213,7 +222,73 @@ int main(int argc, char* argv[]) {
     monServeurCppFMPictureScreenShot = new cFileMappingPictureServeur(false);
     monServeurCppFMPictureScreenShot->setDebugMode(false);
     monServeurCppFMPictureScreenShot->OpenServer("img_c_to_java");
+
+    monClientCppFMDCTelemetry = new cFileMappingDroneCharTelemetryClient(false);
+    monClientCppFMDCTelemetry->setDebugMode(false);
+    monClientCppFMDCTelemetry->OpenClient("telemetrie_java_to_c");
+    
     maVirtualPictureScreenShot = new cVirtualPicture();
+
+ // three dials to display position data
+    dialPosX = new cDial();
+    camera->m_frontLayer->addChild(dialPosX);
+    dialPosX->setLocalPos(750, 200);
+    dialPosX->setRange(-0.1, 0.1);
+    dialPosX->setSize(40);
+    dialPosX->setSingleIncrementDisplay(true);
+
+    dialPosY = new cDial();
+    camera->m_frontLayer->addChild(dialPosY);
+    dialPosY->setLocalPos(750, 140);
+    dialPosY->setRange(-0.1, 0.1);
+    dialPosY->setSize(40);
+    dialPosY->setSingleIncrementDisplay(true);
+
+    dialPosZ = new cDial();
+    camera->m_frontLayer->addChild(dialPosZ);
+    dialPosZ->setLocalPos(750, 80);
+    dialPosZ->setRange(-0.1, 0.1);
+    dialPosZ->setSize(40);
+    dialPosZ->setSingleIncrementDisplay(true);
+
+// create a scope to plot haptic device position data
+    scope = new cScope();
+    camera->m_frontLayer->addChild(scope);
+    scope->setLocalPos(100,60);
+    scope->setRange(-0.1, 0.1);
+    scope->setSignalEnabled(true, true, true, false);
+    scope->setTransparencyLevel(0.7);
+
+    // create a level to display velocity data
+    levelVelocity = new cLevel();
+    camera->m_frontLayer->addChild(levelVelocity);
+    levelVelocity->setLocalPos(20, 60);
+    levelVelocity->setRange(0.0, 1.0);
+    levelVelocity->setWidth(40);
+    levelVelocity->setNumIncrements(46);
+    levelVelocity->setSingleIncrementDisplay(false);
+    levelVelocity->setTransparencyLevel(0.5);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     // call window size callback at initialization
     windowSizeCallback(window, width, height);
