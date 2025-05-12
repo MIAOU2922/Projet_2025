@@ -484,9 +484,6 @@ public class traitement {
             new tempo(1);
             this.client_filemap_image.setVirtualPictureMutexBlocAccess(false);
 
-            // this.imageBytes = this.resizeJPEGImage(this.imageBytes,
-            // this.displayFrameHalfSize);
-
             try {
                 // System.out.print(" donné de l'image : " + this.imageBytes);
                 // System.out.print(" Taille de l'image : " + this.imageBytes.length);
@@ -525,21 +522,18 @@ public class traitement {
                 }
             }
             // ---------------------------------------------------------------//
+
             // update IHM
             try {
                 if (this.imageRecu != null && !this.imageRecu.empty()) {
-                    this.bufferedImage_source = this
-                            .byteArrayToBufferedImage(this.encodeImageToJPEG(this.imageRecu, 100));
+                    this.bufferedImage_source = this.byteArrayToBufferedImage(this.resizeJPEGImage(this.encodeImageToJPEG(this.imageRecu, 100),this.displayFrameHalfSize));
                     this.droneFenetre.setImage(this.bufferedImage_source);
                 }
 
                 if (this.imageEnvoyer != null && !this.imageEnvoyer.empty()) {
-                    this.bufferedImage_envoyer = this
-                            .byteArrayToBufferedImage(this.encodeImageToJPEG(this.imageEnvoyer, 100));
+                    this.bufferedImage_envoyer = this.byteArrayToBufferedImage(this.resizeJPEGImage(this.encodeImageToJPEG(this.imageEnvoyer, 100),this.displayFrameHalfSize));
                     this.fenetreTraitement.setImage(this.bufferedImage_envoyer);
-
                     System.out.print("      update traitement "); // Efface la ligne
-
                 }
             } catch (Exception e) {
                 System.err.print("Error updating processed display: " + e.getMessage());

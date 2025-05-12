@@ -79,76 +79,49 @@ void ecrireEnMap(void);
 double getRandom01_2Decimals();
 
 int main(int argc, char* argv[]) {
-
-
     //--------------------------------------------------------------------------
     // OPEN GL - WINDOW DISPLAY
     //--------------------------------------------------------------------------
 
-    // initialize GLFW library
-    if (!glfwInit())
-    {
+    if (!glfwInit()) {
         cout << "failed initialization" << endl;
         cSleepMs(1000);
         return 1;
     }
-
-    // set error callback
     glfwSetErrorCallback(errorCallback);
 
-    // compute desired size of window
-    const GLFWvidmode* mode = glfwGetVideoMode(glfwGetPrimaryMonitor());
-    int w = 0.8 * mode->height;
-    int h = 0.5 * mode->height;
-    int x = 0.5 * (mode->width - w);
-    int y = 0.5 * (mode->height - h);
-
-    // set OpenGL version
+    // blocage du redimensionnement
+    glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
+    // version OpenGL
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 2);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
 
-    // set active stereo mode
-    if (stereoMode == C_STEREO_ACTIVE)
-    {
-        glfwWindowHint(GLFW_STEREO, GL_TRUE);
-    }
-    else
-    {
-        glfwWindowHint(GLFW_STEREO, GL_FALSE);
-    }
+    // mode stéréo
+    glfwWindowHint(GLFW_STEREO, (stereoMode == C_STEREO_ACTIVE) ? GL_TRUE : GL_FALSE);
 
-    // create display context
-    window = glfwCreateWindow(w, h, "drone", NULL, NULL);
-    if (!window)
-    {
+    // création de la fenêtre en dimensions fixes
+    window = glfwCreateWindow(IMAGE_WIDTH, IMAGE_HEIGHT, "drone", NULL, NULL);
+    if (!window) {
         cout << "failed to create window" << endl;
         cSleepMs(1000);
         glfwTerminate();
         return 1;
     }
 
-    // get width and height of window
-    glfwGetWindowSize(window, &width, &height);
+    // centrage de la fenêtre
+    const GLFWvidmode* mode = glfwGetVideoMode(glfwGetPrimaryMonitor());
+    int posX = (mode->width - IMAGE_WIDTH) / 2;
+    int posY = (mode->height - IMAGE_HEIGHT) / 2;
+    glfwSetWindowPos(window, posX, posY);
 
-    // set position of window
-    glfwSetWindowPos(window, x, y);
-
-    // set key callback
+    // callbacks
     glfwSetKeyCallback(window, keyCallback);
-
-    // set resize callback
     glfwSetWindowSizeCallback(window, windowSizeCallback);
-
-    // set current display context
     glfwMakeContextCurrent(window);
-
-    // sets the swap interval for the current display context
     glfwSwapInterval(swapInterval);
 
 #ifdef GLEW_VERSION
-    // initialize GLEW library
-    if (glewInit() != GLEW_OK)
-    {
+    if (glewInit() != GLEW_OK) {
         cout << "failed to initialize GLEW library" << endl;
         glfwTerminate();
         return 1;
@@ -215,7 +188,7 @@ int main(int argc, char* argv[]) {
 
 
     //backgroundImage = cImage::create();
-    backgroundImage->allocate(IMAGE_WIDTH, IMAGE_HEIGHT, GL_RGB, GL_UNSIGNED_INT);
+    backgroundImage->allocate(IMAGE_WIDTH*2, IMAGE_HEIGHT*2, GL_RGB, GL_UNSIGNED_INT);
     ContextImage->allocate(width*5, height*5, GL_RGB, GL_UNSIGNED_INT);
     ContextImageByteArray = new unsigned char[width * height * 3];
 
@@ -250,13 +223,11 @@ int main(int argc, char* argv[]) {
 
 
     while (!glfwWindowShouldClose(window)) {
-        glfwGetWindowSize(window, &width, &height);
         updateGraphics();
         glfwSwapBuffers(window);
         glfwPollEvents();
         freqCounterGraphics.signal(1);
     }
-    
     close();
     return 0;
 }
@@ -334,9 +305,11 @@ void updateGraphics(void)
 
     world->updateShadowMaps(false, false);
 
-    sphere->setLocalPos(getRandom01_2Decimals(), getRandom01_2Decimals(), getRandom01_2Decimals());
 
 
+
+
+    //--------------------------------------
 
     camera->renderView(width, height);
 
@@ -421,7 +394,7 @@ void ecrireEnMap()
 	{
 		
         CopyMemory((unsigned char*)maVirtualPictureScreenShot->PictureData,Buffer, size);
-        cout << "Image ecrite avec succes: " << maVirtualPictureScreenShot << endl;
+        //cout << "Image ecrite avec succes: " << maVirtualPictureScreenShot << endl;
         maVirtualPictureScreenShot->DataPictureSize = (int) size;
 		monServeurCppFMPictureScreenShot->setVirtualPictureDataSize((int)size);  
         monServeurCppFMPictureScreenShot->WriteVirtualPictureStructToMapFile(maVirtualPictureScreenShot);
@@ -443,8 +416,4 @@ void ecrireEnMap()
 	monServeurCppFMPictureScreenShot->setVirtualPictureMutexBlocAccess(false);
 
 
-}
-double getRandom01_2Decimals() {
-    int r = std::rand() % 101; // Valeur entière entre 0 et 100
-    return r / 100.0;
 }
