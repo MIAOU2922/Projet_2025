@@ -454,6 +454,7 @@ public class traitement {
             while (this.serveur_filemap_image.getVirtualPictureMutexBlocAccess()) {
                 new tempo(1);
             }
+            this.serveur_filemap_image.setVirtualPictureMutexBlocAccess(true);
             if (this.imageBytes != null) {
                 this.length = this.imageBytes.length;
                 for (int i = 0; i < this.length; i++) {
@@ -496,6 +497,7 @@ public class traitement {
                         this.imageEnvoyer = decoded;
                     } else {
                         System.err.println("Décodage JPEG échoué : image vide ou nulle.");
+                        this.imageEnvoyer = decoded;
                     }
                 }
             } catch (Exception e) {

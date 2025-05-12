@@ -4,10 +4,10 @@
 *
 *
 * @author: Wilfrid Grassi
-* @version: 2.5
+* @version: 2.6
 * @copyright: (c) 2021 Wilfrid Grassi
 * @license: BSD License
-* @Date : 13/11/2021 modifications : 20/12/2021
+* @Date : 13/11/2021 modifications : 08/01/2025
 *   Cette version est prete pour la prise en charge Windows 64bits ou  Raspberry 32bits
 *************************************************************************************************************************************************/
 #pragma once
@@ -87,8 +87,8 @@ using namespace std;
 		// PRIVATE MEMBERS:
 		//--------------------------------------------------------------------------
 		private:
-			const string Version = "2.5";
-			const string VersionDate = "20/12/2021";
+			const string Version = "2.6   (taille image max 10Mo)";
+			const string VersionDate = "08/01/2025";
 			
 			//! Shared memory connection to virtual Picture.
 			#if defined(__WIN32__) || defined(_WIN32) || defined(WIN32) || defined(__WINDOWS__) || defined(__TOS_WIN__) 

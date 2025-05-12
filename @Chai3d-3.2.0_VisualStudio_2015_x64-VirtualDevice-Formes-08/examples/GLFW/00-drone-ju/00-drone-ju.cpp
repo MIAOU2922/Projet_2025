@@ -16,6 +16,8 @@
 #include <GL/gl.h>
 #include "cFileMappingPictureServeur.h"
 #include "cFileMappingPictureClient.h"
+#include <iomanip>
+
 
 using namespace chai3d;
 using namespace std;
@@ -46,6 +48,7 @@ int swapInterval = 1;
 
 const int IMAGE_WIDTH  = 1080;
 const int IMAGE_HEIGHT = 720;
+unsigned char* Buffer = nullptr;
 unsigned char* BackgroundImageByteArray;
 unsigned char* ContextImageByteArray;
 
@@ -73,6 +76,7 @@ void close(void);
 void errorCallback(int error, const char* a_description);
 void updateBackgroundImage(void);
 void ecrireEnMap(void);
+double getRandom01_2Decimals();
 
 int main(int argc, char* argv[]) {
 
@@ -204,6 +208,7 @@ int main(int argc, char* argv[]) {
     
 
     camera->m_backLayer->addChild(BitmapBackgroundMovie);
+    camera->m_backLayer->setShowEnabled(true);
     BitmapBackgroundMovie->setShowEnabled(true);
 
 
@@ -211,6 +216,7 @@ int main(int argc, char* argv[]) {
 
     //backgroundImage = cImage::create();
     backgroundImage->allocate(IMAGE_WIDTH, IMAGE_HEIGHT, GL_RGB, GL_UNSIGNED_INT);
+    ContextImage->allocate(width*5, height*5, GL_RGB, GL_UNSIGNED_INT);
     ContextImageByteArray = new unsigned char[width * height * 3];
 
     glViewport(0, 0, width, height);
@@ -328,6 +334,10 @@ void updateGraphics(void)
 
     world->updateShadowMaps(false, false);
 
+    sphere->setLocalPos(getRandom01_2Decimals(), getRandom01_2Decimals(), getRandom01_2Decimals());
+
+
+
     camera->renderView(width, height);
 
     glFinish();
@@ -368,7 +378,6 @@ void updateBackgroundImage() {
         BackgroundImageByteArray[i] = monClientCppFMPictureScreenShot->getMapFileOneByOneUnsignedChar(i);
     }
     
-
     // Deverrouiller le mutex
     monClientCppFMPictureScreenShot->setVirtualPictureMutexBlocAccess(false);
 
@@ -405,29 +414,37 @@ void ecrireEnMap()
 	monServeurCppFMPictureScreenShot->setVirtualPictureMutexBlocAccess(true);
 
     unsigned int size = 0;
-    unsigned char** Buffer = (unsigned char**)malloc(900000 * sizeof(unsigned char));
-    bool ret = cSaveJPG(ContextImage->getImage(), Buffer, &size);
+    //unsigned char** Buffer = (unsigned char**)malloc(900000 * sizeof(unsigned char));
+    
+    bool ret = cSaveJPG(ContextImage->getImage(), &Buffer, &size);
 	if (ret)
 	{
-		//cout << "Image ecrite avec succes" << endl;
-        CopyMemory((unsigned char*)maVirtualPictureScreenShot->PictureData, (unsigned char*)*Buffer, size);
+		
+        CopyMemory((unsigned char*)maVirtualPictureScreenShot->PictureData,Buffer, size);
+        cout << "Image ecrite avec succes: " << maVirtualPictureScreenShot << endl;
         maVirtualPictureScreenShot->DataPictureSize = (int) size;
-        monServeurCppFMPictureScreenShot->WriteVirtualPictureStructToMapFile(maVirtualPictureScreenShot);
 		monServeurCppFMPictureScreenShot->setVirtualPictureDataSize((int)size);  
+        monServeurCppFMPictureScreenShot->WriteVirtualPictureStructToMapFile(maVirtualPictureScreenShot);
 		//cout << "size : " << size << endl;
         cSleepMs(1);
-
-        free(Buffer[0]);
-        free(Buffer);
-        Buffer = nullptr;
 	}
 	else
 	{
 		cout << "Erreur d ecriture de l image" << endl;
 	}
 
+    if (Buffer)
+    {
+        free(Buffer);
+        Buffer = nullptr;
+    }
+
 	// Deverrouiller le mutex
 	monServeurCppFMPictureScreenShot->setVirtualPictureMutexBlocAccess(false);
 
 
+}
+double getRandom01_2Decimals() {
+    int r = std::rand() % 101; // Valeur entière entre 0 et 100
+    return r / 100.0;
 }

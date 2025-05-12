@@ -4,10 +4,10 @@
 *
 *
 * @author: Wilfrid Grassi
-* @version: 3.1
+* @version: 3.2
 * @copyright: (c) 2021 Wilfrid Grassi
 * @license: BSD License
-* @Date : 13/11/2021 modifications : 12/12/2021
+* @Date : 13/11/2021 modifications : 08/01/2025
 *   Cette version est prete pour la prise en charge Windows 64bits ou  Raspberry 32bits
 *************************************************************************************************************************************************/
 #pragma once
@@ -22,7 +22,7 @@
 #ifndef VIRTUALPICTURE_H
 	#define VIRTUALPICTURE_H
 	#define STRUCT_SIZE sizeof(cVirtualPicture)
-	#define STRUCT_DATAPICTURE_BUFFER_SIZE 10000000
+	#define STRUCT_DATAPICTURE_BUFFER_SIZE 10000000 // 10Mo
 
 	typedef struct cVirtualPicture cVirtualPicture;
 	struct cVirtualPicture
