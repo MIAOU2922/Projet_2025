@@ -150,36 +150,6 @@ public class traitement {
             e.printStackTrace();
         }
         // --------------------------------------------------------------//
-        // Create a new thread for Chai3D process
-        Thread chai3dThread = new Thread(() -> {
-            try {
-                ProcessBuilder pb = new ProcessBuilder(
-                        "cmd.exe", "/c", "start", "\"Chai3D Console\"",
-                        "\"F:\\BEAL_JULIEN_SN2\\_projet_2025\\git\\@Chai3d-3.2.0_VisualStudio_2015_x64-VirtualDevice-Formes-08\\bin\\win-x64\\00-drone-ju.exe\"");
-                this.process = pb.start();
-
-                Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-                    if (this.process.isAlive()) {
-                        this.process.destroy();
-                    }
-                }));
-            } catch (IOException e) {
-                System.out.print("\nErreur lors du lancement du programme Chai3D");
-                e.printStackTrace();
-            }
-        });
-        chai3dThread.start();
-        new tempo(2000); // attendre le démarrage
-        // --------------------------------------------------------------//
-        // Ouverture du client de FileMapping pour l'image
-        try {
-            // this.client_filemap_image.OpenClient("img_java_to_c");
-            this.client_filemap_image.OpenClient("img_c_to_java");
-        } catch (Exception e) {
-            System.out.print("\nErreur lors de l'ouverture du client img_c_to_java");
-            e.printStackTrace();
-        }
-        // --------------------------------------------------------------//
         // Initialisation des adresses IP et des sockets UDP
         try {
             Enumeration<NetworkInterface> interfaces = NetworkInterface.getNetworkInterfaces();
@@ -311,6 +281,36 @@ public class traitement {
             this.fenetreTraitement = new FenetreTraitement("traitement", icon, 640, 0);
         } catch (Exception e) {
             System.out.print("\nErreur lors de l'initialisation de l'interface graphique");
+            e.printStackTrace();
+        }
+        // --------------------------------------------------------------//
+        // Create a new thread for Chai3D process
+        Thread chai3dThread = new Thread(() -> {
+            try {
+                ProcessBuilder pb = new ProcessBuilder(
+                        "cmd.exe", "/c", "start", "\"Chai3D Console\"",
+                        "\"F:\\BEAL_JULIEN_SN2\\_projet_2025\\git\\@Chai3d-3.2.0_VisualStudio_2015_x64-VirtualDevice-Formes-08\\bin\\win-x64\\00-drone-ju.exe\"");
+                this.process = pb.start();
+
+                Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+                    if (this.process.isAlive()) {
+                        this.process.destroy();
+                    }
+                }));
+            } catch (IOException e) {
+                System.out.print("\nErreur lors du lancement du programme Chai3D");
+                e.printStackTrace();
+            }
+        });
+        chai3dThread.start();
+        new tempo(2000); // attendre le démarrage
+        // --------------------------------------------------------------//
+        // Ouverture du client de FileMapping pour l'image
+        try {
+            // this.client_filemap_image.OpenClient("img_java_to_c");
+            this.client_filemap_image.OpenClient("img_c_to_java");
+        } catch (Exception e) {
+            System.out.print("\nErreur lors de l'ouverture du client img_c_to_java");
             e.printStackTrace();
         }
         // --------------------------------------------------------------//

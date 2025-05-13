@@ -118,55 +118,81 @@ public class thread_traitement_telemtrie extends Thread {
     // --------------------------------------------------------------//
     // Boucle principale de traitement
     private void mainLoop() {
-
         while (true) {
             // Traitement du message UDP reçu
             this.parts = null;
             this.telemetryRecu = this.telemetrie.getMessageRecu();
-            if (!this.telemetryRecu.isEmpty()){
+            if (!this.telemetryRecu.isEmpty()) {
                 this.parts = this.telemetryRecu.split(";");
                 for (String part : this.parts) {
                     String[] keyValue = part.split(":");
-                    if (keyValue.length == 2) { // Vérification pour éviter les erreurs d'index
-                        String key = keyValue[0].trim(); // Nom de la clé
-                        String value = keyValue[1].trim(); // Valeur associée
-                        if (key.equals("dist")) {
-                            this.serveur_filemap_telemetrie.set_val_0(Double.parseDouble(value));
-                        }
-                        if (key.equals("temp")) {
-                            this.serveur_filemap_telemetrie.set_val_1(Double.parseDouble(value));
-                        }
-                        if (key.equals("alt")) {
-                            this.serveur_filemap_telemetrie.set_val_2(Double.parseDouble(value));
-                        }
-                        if (key.equals("baro")) {
-                            this.serveur_filemap_telemetrie.set_val_3(Double.parseDouble(value));
-                        }
-                        if (key.equals("agx")) {
-                            this.serveur_filemap_telemetrie.set_val_4(Double.parseDouble(value));
-                        }
-                        if (key.equals("agy")) {
-                            this.serveur_filemap_telemetrie.set_val_5(Double.parseDouble(value));
-                        }
-                        if (key.equals("agz")) {
-                            this.serveur_filemap_telemetrie.set_val_6(Double.parseDouble(value));
-                        }
-                        if (key.equals("none")) {
-                            this.serveur_filemap_telemetrie.set_val_7(Double.parseDouble(value));
-                        }
-                        if (key.equals("none")) {
-                            this.serveur_filemap_telemetrie.set_val_8(Double.parseDouble(value));
-                        }
-                        if (key.equals("none")) {
-                            this.serveur_filemap_telemetrie.set_val_9(Double.parseDouble(value));
+                    if (keyValue.length == 2) {
+                        String key = keyValue[0].trim();
+                        String value = keyValue[1].trim();
+                        //System.out.println(key + " : " + value);
+                        try {
+                            double valueToSet = value.equals("NA") ? 0.0 : Double.parseDouble(value);
+                            
+                            switch(key) {
+                                case "dist":
+                                    this.serveur_filemap_telemetrie.set_val_0(valueToSet);
+                                    break;
+                                case "temp":
+                                    this.serveur_filemap_telemetrie.set_val_1(valueToSet);
+                                    break;
+                                case "alt":
+                                    this.serveur_filemap_telemetrie.set_val_2(valueToSet);
+                                    break;
+                                case "baro":
+                                    this.serveur_filemap_telemetrie.set_val_3(valueToSet);
+                                    break;
+                                case "agx":
+                                    this.serveur_filemap_telemetrie.set_val_4(valueToSet);
+                                    break;
+                                case "agy":
+                                    this.serveur_filemap_telemetrie.set_val_5(valueToSet);
+                                    break;
+                                case "agz":
+                                    this.serveur_filemap_telemetrie.set_val_6(valueToSet);
+                                    break;
+                                case "gyrox":
+                                    this.serveur_filemap_telemetrie.set_val_7(valueToSet);
+                                    break;
+                                case "gyroy":
+                                    this.serveur_filemap_telemetrie.set_val_8(valueToSet);
+                                    break;
+                                case "gyroz":
+                                    this.serveur_filemap_telemetrie.set_val_9(valueToSet);
+                                    break;
+                                case "lat":
+                                    this.serveur_filemap_telemetrie.set_val_10(valueToSet);
+                                    break;
+                                case "lon":
+                                    this.serveur_filemap_telemetrie.set_val_11(valueToSet);
+                                    break;
+                                case "gnss_alt":
+                                    this.serveur_filemap_telemetrie.set_val_12(valueToSet);
+                                    break;
+                                case "speed":
+                                    this.serveur_filemap_telemetrie.set_val_13(valueToSet);
+                                    break;
+                                case "satel":
+                                    this.serveur_filemap_telemetrie.set_val_14(valueToSet);
+                                    break;
+                                case "time":
+                                    this.serveur_filemap_telemetrie.set_val_15(valueToSet);
+                                    break;
+                            }
+                        } catch (NumberFormatException e) {
+                            System.err.println("Erreur de conversion pour la clé " + key + " : " + value);
                         }
                     }
                 }
             }
-        // Réinitialisation
-        this.telemetryRecu = "";
-        this.parts = null;
-        new tempo(1);
+            // Réinitialisation
+            this.telemetryRecu = "";
+            this.parts = null;
+            new tempo(1);
         }
     }
 }

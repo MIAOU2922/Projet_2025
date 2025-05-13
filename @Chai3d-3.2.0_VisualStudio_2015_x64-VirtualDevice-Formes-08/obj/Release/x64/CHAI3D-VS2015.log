@@ -19,6 +19,13 @@ F:\BEAL_JULIEN_SN2\_projet_2025\git\@Chai3d-3.2.0_VisualStudio_2015_x64-VirtualD
   TheoraVideoManager.cpp
   TheoraWorkerThread.cpp
   TheoraVideoClip_Theora.cpp
+  CAudioBuffer.cpp
+  CAudioDevice.cpp
+  CAudioSource.cpp
+  CCollisionAABB.cpp
+  CCollisionAABBTree.cpp
+  CCollisionBrute.cpp
+  CGenericCollision.cpp
 F:\BEAL_JULIEN_SN2\_projet_2025\git\@Chai3d-3.2.0_VisualStudio_2015_x64-VirtualDevice-Formes-08\src\virtualform\CFileMappingStructureClientBridge.cpp(118,12): warning C4477: 'printf' : la chaîne de format '%8x' nécessite un argument de type 'unsigned int', mais l'argument variadique 1 est de type 'LPVOID'
 F:\BEAL_JULIEN_SN2\_projet_2025\git\@Chai3d-3.2.0_VisualStudio_2015_x64-VirtualDevice-Formes-08\src\virtualform\CFileMappingStructureClientBridge.cpp(118,12): warning C4313: 'printf' : '%x' dans la chaîne de format est en conflit avec l'argument 1 de type 'LPVOID'.
 F:\BEAL_JULIEN_SN2\_projet_2025\git\@Chai3d-3.2.0_VisualStudio_2015_x64-VirtualDevice-Formes-08\src\virtualform\CFileMappingStructureClientBridge.cpp(241,11): warning C4477: 'printf' : la chaîne de format '%8x' nécessite un argument de type 'unsigned int', mais l'argument variadique 1 est de type 'LPVOID'
@@ -31,13 +38,6 @@ F:\BEAL_JULIEN_SN2\_projet_2025\git\@Chai3d-3.2.0_VisualStudio_2015_x64-VirtualD
       F:\BEAL_JULIEN_SN2\_projet_2025\git\@Chai3d-3.2.0_VisualStudio_2015_x64-VirtualDevice-Formes-08\src\virtualform\CFileMappingStructureClientBridge.cpp(455,11):
       utilisez '%zd' dans la chaîne de format
   
-  CAudioBuffer.cpp
-  CAudioDevice.cpp
-  CAudioSource.cpp
-  CCollisionAABB.cpp
-  CCollisionAABBTree.cpp
-  CCollisionBrute.cpp
-  CGenericCollision.cpp
   CDeltaDevices.cpp
   CGenericDevice.cpp
   CGenericHapticDevice.cpp
