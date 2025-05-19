@@ -1,0 +1,57 @@
+@startuml bloc_diagram
+
+package "Système Global" {
+    [Drone] --> [Serveur Traitement]
+    [Client] --> [Serveur Traitement]
+    [Serveur Traitement] --> [Environnement Virtuel Augmenté]
+}
+
+package "Drone" {
+    [Caméra (VideoCapture)] --> [Drone]
+    [Capteurs (Télémétrie)] --> [Drone]
+    [Module UDP] --> [Drone]
+}
+
+package "Serveur Traitement" {
+    [FileMapping] --> [Serveur Traitement]
+    [Détection Formes/Contours (OpenCV)] --> [Serveur Traitement]
+    [Threads UDP] --> [Serveur Traitement]
+    [Interface Graphique (FenetreTraitement)] --> [Serveur Traitement]
+}
+
+package "Client" {
+    [Interface Graphique (FenetreTraitement)] --> [Client]
+    [Threads UDP] --> [Client]
+}
+
+package "Environnement Virtuel Augmenté" {
+    [Chai3D] --> [Environnement Virtuel Augmenté]
+    [Flux Vidéo Augmenté] --> [Environnement Virtuel Augmenté]
+    [Télémétrie] --> [Environnement Virtuel Augmenté]
+    [Support VR] --> [Environnement Virtuel Augmenté]
+}
+
+note left of [Drone]
+  Le drone capture des images
+  et envoie des données de télémétrie
+  via UDP.
+end note
+
+note right of [Serveur Traitement]
+  Le serveur traite les images,
+  détecte les formes/contours,
+  et partage les données via FileMapping.
+end note
+
+note bottom of [Client]
+  Le client reçoit les flux vidéo
+  et affiche les données via une interface graphique.
+end note
+
+note bottom of [Environnement Virtuel Augmenté]
+  Intègre les flux vidéo et télémétrie
+  pour une visualisation augmentée
+  avec support VR.
+end note
+
+@enduml
