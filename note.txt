@@ -1,0 +1,138 @@
+
+
+
+
+
+
+
+
+Sur la base de toutes les informations recueillies, je vais maintenant vous présenter une synthèse complète du projet de Prospection Terrestre pour l'implantation d'éoliennes sur site à accessibilité réduite.
+
+# Projet de Prospection Terrestre pour l'implantation d'éoliennes
+
+## Présentation générale du projet
+
+Le projet "Prospection Terrestre pour l'implantation d'éoliennes sur site à accessibilité réduite" est un projet développé dans le cadre du BTS CIEL (Cybersécurité, Informatique et Réseaux, ÉLectronique) Option A Informatique et Réseaux à destination de la session 2025, au LPO Algoud-Laffemas de Valence.
+
+Ce projet est réalisé en partenariat avec deux entreprises :
+- **EEF SAS (Energie Eolienne France)** : entreprise spécialisée dans le développement de projets éoliens et photovoltaïques en France et en Belgique
+- **Force Dimension** : entreprise suisse spécialisée dans les interfaces haptiques de haute précision
+
+## Objectifs du projet
+
+EEF SAS souhaite améliorer ses performances dans la recherche de sites d'implantation d'éoliennes, particulièrement en milieux difficiles d'accès. Les objectifs visés sont :
+
+1. Minimiser l'impact sur les milieux naturels lors des prospections
+2. Créer des visuels 3D à 360° des zones prospectées
+3. Modéliser les écoulements d'air potentiels pour optimiser l'implantation des éoliennes
+4. Réaliser des études de sols superficielles
+
+## Concept technique
+
+Le projet consiste à développer un démonstrateur basé sur un système de prospection terrestre utilisant un véhicule à chenilles guidé à distance. Ce véhicule, équipé de différents capteurs, peut être piloté avec un retour haptique permettant de déterminer en partie le type de sol.
+
+## Architecture du système
+
+Le système comprend plusieurs composants principaux :
+
+1. **Un véhicule à chenilles (char)** équipé de :
+   - Capteurs de télémétrie (température, pression, altitude, distances, niveau de batterie, vitesse, GPS...)
+   - Caméra pour flux vidéo
+   - Moteurs commandés par GPIO sur Raspberry Pi
+   - Accéléromètres pour le retour haptique
+
+2. **Un système de supervision sur PC** avec :
+   - Application Java pour le pilotage et la visualisation
+   - Interface haptique (robot Novint Falcon)
+   - Environnement virtuel augmenté Chai3D
+   - Support pour casque de réalité virtuelle
+
+3. **Une application Android** permettant :
+   - Le pilotage manuel du char
+   - La visualisation du flux vidéo
+   - L'affichage des données de télémétrie
+
+## Fonctionnalités principales
+
+### Pilotage du véhicule
+- Pilotage manuel par pavé de commandes (souris)
+- Pilotage manuel par interface haptique avec retour de force
+- Pilotage automatique par exécution de commandes préenregistrées
+- Pilotage depuis application Android (tactile ou accéléromètres)
+
+### Télémétrie
+- Récupération et affichage des données des capteurs
+- Mise à disposition via fichier mémoire partagée
+
+### Traitement vidéo
+- Détection de formes et de contours
+- Reconnaissance du char sur flux vidéo
+- Composition d'images augmentées
+
+### Environnement virtuel augmenté
+- Intégration du flux vidéo dans environnement Chai3D
+- Affichage des informations de télémétrie
+- Ajout d'un avatar de position du robot haptique
+- Support casque de réalité virtuelle
+
+### Diffusion des flux
+- Serveur de diffusion vers clients distants (PC et Android)
+- Support de casque VR compatible avec smartphone
+
+## Répartition des tâches
+
+Le projet est divisé entre trois étudiants :
+
+### Étudiant n°1
+- Développement de l'application Java de supervision
+- Création du serveur UDP de commandes
+- Développement de l'application Android de pilotage manuel
+- Gestion du retour haptique
+
+### Étudiant n°2
+- Gestion de la télémétrie (client et serveur)
+- Affichage des informations dans l'application de supervision
+- Développement du client Android de télémétrie
+- Création d'un modèle de suivi de forme sur flux vidéo
+
+### Étudiant n°3
+- Traitement du flux vidéo (détection de contours et formes)
+- Intégration dans environnement virtuel Chai3D
+- Développement du serveur de diffusion
+- Création des clients de visualisation (PC et Android)
+
+## Architecture technique
+
+La communication entre les différents éléments du système se fait principalement via :
+- Protocoles UDP pour la transmission des commandes, données de télémétrie et flux vidéo
+- Fichiers de mémoire partagée (Filemapping) pour l'échange de données entre applications
+
+## Équipements utilisés
+
+- **Robot haptique Novint Falcon** :
+  - Système 3D à 3 moteurs à courant continu
+  - Retour de forces > 8,9 Newtons
+  - Résolution de position > 400 dpi
+  - Interface USB 2.0
+
+- **Raspberry Pi 4** :
+  - OS Raspbian PiOS
+  - Connectivité WiFi/Ethernet
+
+- **PC** :
+  - OS Windows
+  - Connectivité WiFi/Ethernet
+
+## Outils logiciels
+
+- Scripts batch Linux
+- Android Studio
+- Eclipse
+- Wrapper Java et Filemapping
+- Framework Chai3D
+- SDK Force Dimension
+- OpenCV
+
+Ce projet représente une approche innovante pour la prospection de sites d'implantation d'éoliennes, combinant robotique, télémétrie, réalité virtuelle et retour haptique pour une exploration efficace et respectueuse de l'environnement des sites à accessibilité réduite.
+
+Avez-vous des questions spécifiques sur certains aspects du projet ou souhaitez-vous des informations complémentaires sur des éléments particuliers ?
