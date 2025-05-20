@@ -13,8 +13,7 @@ import java.awt.image.BufferedImage;
 import java.io.*;
 import java.lang.reflect.Method;
 import java.net.*;
-import java.nio.file.Files;
-import java.nio.file.Paths;
+import java.nio.file.*;
 import java.time.LocalDateTime;
 import java.util.Enumeration;
 import javax.imageio.ImageIO;
@@ -287,18 +286,46 @@ public class traitement {
         // Create a new thread for Chai3D process
         Thread chai3dThread = new Thread(() -> {
             try {
-                ProcessBuilder pb = new ProcessBuilder(
-                        "cmd.exe", "/c", "start", "\"Chai3D Console\"",
-                        "\"F:\\BEAL_JULIEN_SN2\\_projet_2025\\git\\@Chai3d-3.2.0_VisualStudio_2015_x64-VirtualDevice-Formes-08\\bin\\win-x64\\00-drone-ju.exe\"");
+                // 1) Affiche le répertoire courant pour debug
+                Path cwd = Paths.get("").toAbsolutePath();
+                System.out.println("Répertoire courant : " + cwd);
+
+                // 2) Construire le chemin relatif vers l'exe :
+                //    depuis src/ --> ../..../../@Chai3d.../bin/win-x64/00-drone-ju.exe
+                Path exeRelative = Paths.get(
+                        "..",         // remonte vers version_full_v3/
+                        "..",         // remonte vers git/
+                        "@Chai3d-3.2.0_VisualStudio_2015_x64-VirtualDevice-Formes-08",
+                        "bin",
+                        "win-x64",
+                        "00-drone-ju.exe"
+                );
+
+                // 3) Normaliser et rendre absolu
+                Path exePath = exeRelative.toAbsolutePath().normalize();
+                System.out.println("Chemin vers l'exe : " + exePath);
+
+                // 4) Vérifier que le fichier existe
+                if (!Files.exists(exePath)) {
+                    throw new IOException("Fichier non trouvé : " + exePath);
+                }
+
+                // 5) Créer et démarrer le ProcessBuilder
+                ProcessBuilder pb = new ProcessBuilder(exePath.toString());
+                // Optionnel : hériter de l'I/O pour voir la sortie dans ta console Java
+                pb.inheritIO();
+
                 this.process = pb.start();
 
+                // 6) Hook pour fermer l'exe quand Java s'arrête
                 Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-                    if (this.process.isAlive()) {
+                    if (this.process != null && this.process.isAlive()) {
                         this.process.destroy();
                     }
                 }));
+
             } catch (IOException e) {
-                System.out.print("\nErreur lors du lancement du programme Chai3D");
+                System.err.println("Erreur lors du lancement du programme Chai3D :");
                 e.printStackTrace();
             }
         });

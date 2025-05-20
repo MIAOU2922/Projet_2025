@@ -39,8 +39,9 @@ cShapeSphere* sphere;
 //-----------------------------
 
 
-cDial    *dialVal0, *dialVal1, *dialVal2, *dialVal3, *dialVal4, *dialVal5, *dialVal6, *dialVal7, *dialVal8, *dialVal9, *dialVal10, *dialVal11, *dialVal12, *dialVal13, *dialVal14, *dialVal15, *dialVal16, *dialVal17, *dialVal18, *dialVal19;
-cLabel   *labelVal0, *labelVal1, *labelVal2, *labelVal3, *labelVal4, *labelVal5, *labelVal6, *labelVal7, *labelVal8, *labelVal9, *labelVal10, *labelVal11, *labelVal12, *labelVal13, *labelVal14, *labelVal15, *labelVal16, *labelVal17, *labelVal18, *labelVal19, *labelValX;
+cDial    *dialVal7, *dialVal8, *dialVal9;
+cLabel   *labelVal0, *labelVal1, *labelVal2, *labelVal3, *labelVal4, *labelVal5, *labelVal6, *labelVal7, *labelVal8, *labelVal9, *labelVal10, *labelVal11, *labelVal12, *labelVal13, *labelVal14, *labelVal15;
+cLevel   *levelVal0, *levelVal1, *levelVal2, *levelVal3, *levelVal4, *levelVal5, *levelVal6, *levelVal10, *levelVal11, *levelVal12, *levelVal13 ;
 
 cFontPtr font;
 
@@ -212,7 +213,7 @@ int main(int argc, char* argv[]) {
     light->setEnabled(true);
     light->setDir(-1.0, 0.0, 0.0);
     
-    sphere = new cShapeSphere(0.1);
+    sphere = new cShapeSphere(0.05);
     sphere->m_material->setRed();
     sphere->setLocalPos(0.0, 0.0, 0.0);
     world->addChild(sphere);
@@ -236,222 +237,222 @@ int main(int argc, char* argv[]) {
 
     //-------------------------------
     font = NEW_CFONTCALIBRI20();
-    // dial
 
-    dialVal0 = new cDial(); 
-    camera->m_frontLayer->addChild(dialVal0);
-    dialVal0->setLocalPos(50, 650);
-    dialVal0->setRange(-0.1, 0.1);
-    dialVal0->setSize(40);
-    dialVal0->setSingleIncrementDisplay(true);
+        //------------------------------
+    // dist
+    levelVal0 = new cLevel();
+    camera->m_frontLayer->addChild(levelVal0);
+    levelVal0->setLocalPos(750, 45);
+    levelVal0->setRange(-5.0, 10000.0);
+    levelVal0->setWidth(40);
+    levelVal0->setNumIncrements(46);
+    levelVal0->setSingleIncrementDisplay(false);
+    levelVal0->setTransparencyLevel(0.5);
 
     labelVal0 = new cLabel(font);
-    dialVal0->addChild(labelVal0); 
-    labelVal0->setLocalPos(0, 50);
+    camera->m_frontLayer->addChild(labelVal0); 
+    labelVal0->setLocalPos(750, 10);
     labelVal0->setText("val0: 0.00");
 
     //-------------------------------
-    dialVal1 = new cDial();
-    camera->m_frontLayer->addChild(dialVal1);
-    dialVal1->setLocalPos(  150, 650 );      // ajustez X,Y
-    dialVal1->setRange(   -0.1, 0.1 );      // ajustez plage si besoin
-    dialVal1->setSize(       40 );
-    dialVal1->setSingleIncrementDisplay(true);
+    // temp
+    levelVal1 = new cLevel();
+    camera->m_frontLayer->addChild(levelVal1);
+    levelVal1->setLocalPos(250, 45);
+    levelVal1->setRange(-25.0, 120.0);
+    levelVal1->setWidth(40);
+    levelVal1->setNumIncrements(46);
+    levelVal1->setSingleIncrementDisplay(false);
+    levelVal1->setTransparencyLevel(0.5);
 
     labelVal1 = new cLabel(font);
-    dialVal1->addChild(labelVal1);
-    labelVal1->setLocalPos(  0,  50 );           // position du label au-dessus du cadran
+    camera->m_frontLayer->addChild(labelVal1);
+    labelVal1->setLocalPos(  250,  10 );
     labelVal1->setText("val1: 0.00");
 
     //-------------------------------
-    dialVal2 = new cDial();
-    camera->m_frontLayer->addChild(dialVal2);
-    dialVal2->setLocalPos(  250, 650 );      // ajustez X,Y
-    dialVal2->setRange(   -0.1, 0.1 );      // ajustez plage si besoin
-    dialVal2->setSize(       40 );
-    dialVal2->setSingleIncrementDisplay(true);
+    // alt
+    levelVal2 = new cLevel();
+    camera->m_frontLayer->addChild(levelVal2);
+    levelVal2->setLocalPos(400, 45);
+    levelVal2->setRange(-10.0, 500.0);
+    levelVal2->setWidth(40);
+    levelVal2->setNumIncrements(46);
+    levelVal2->setSingleIncrementDisplay(false);
+    levelVal2->setTransparencyLevel(0.5);
 
     labelVal2 = new cLabel(font);
-    dialVal2->addChild(labelVal2);
-    labelVal2->setLocalPos(  0,  50 );           // position du label au-dessus du cadran
+    camera->m_frontLayer->addChild(labelVal2);
+    labelVal2->setLocalPos(400, 10);
     labelVal2->setText("val2: 0.00");
 
     //-------------------------------
-    dialVal3 = new cDial();
-    camera->m_frontLayer->addChild(dialVal3);
-    dialVal3->setLocalPos(  350, 650 );      // ajustez X,Y
-    dialVal3->setRange(   -0.1, 0.1 );      // ajustez plage si besoin
-    dialVal3->setSize(       40 );
-    dialVal3->setSingleIncrementDisplay(true);
+    // baro
+    levelVal3 = new cLevel();
+    camera->m_frontLayer->addChild(levelVal3);
+    levelVal3->setLocalPos(300, 45);
+    levelVal3->setRange(-100.0, 1500.0);
+    levelVal3->setWidth(40);
+    levelVal3->setNumIncrements(46);
+    levelVal3->setSingleIncrementDisplay(false);
+    levelVal3->setTransparencyLevel(0.5);
 
     labelVal3 = new cLabel(font);
-    dialVal3->addChild(labelVal3);
-    labelVal3->setLocalPos(  0,  50 );           // position du label au-dessus du cadran
+    camera->m_frontLayer->addChild(labelVal3);
+    labelVal3->setLocalPos(  300,  10 );
     labelVal3->setText("val3: 0.00");
 
     //-------------------------------
-    dialVal4 = new cDial();
-    camera->m_frontLayer->addChild(dialVal4);
-    dialVal4->setLocalPos(  50, 550 );      // ajustez X,Y
-    dialVal4->setRange(   -0.1, 0.1 );      // ajustez plage si besoin
-    dialVal4->setSize(       40 );
-    dialVal4->setSingleIncrementDisplay(true);
+    //aceleration x
+    levelVal4 = new cLevel();
+    camera->m_frontLayer->addChild(levelVal4);
+    levelVal4->setLocalPos(900, 45);
+    levelVal4->setRange(-5.0, 10.0);
+    levelVal4->setWidth(40);
+    levelVal4->setNumIncrements(46);
+    levelVal4->setSingleIncrementDisplay(false);
+    levelVal4->setTransparencyLevel(0.5);
+
 
     labelVal4 = new cLabel(font);
-    dialVal4->addChild(labelVal4);
-    labelVal4->setLocalPos(  0,  50 );           // position du label au-dessus du cadran
+    camera->m_frontLayer->addChild(labelVal4);
+    labelVal4->setLocalPos(  900,  10 );
     labelVal4->setText("val4: 0.00");
 
     //-------------------------------
-    dialVal5 = new cDial();
-    camera->m_frontLayer->addChild(dialVal5);
-    dialVal5->setLocalPos(  150, 550 );      // ajustez X,Y
-    dialVal5->setRange(   -0.1, 0.1 );      // ajustez plage si besoin
-    dialVal5->setSize(       40 );
-    dialVal5->setSingleIncrementDisplay(true);
+    //aceleration y
+    levelVal5 = new cLevel();
+    camera->m_frontLayer->addChild(levelVal5);
+    levelVal5->setLocalPos(950, 45);
+    levelVal5->setRange(-5.0, 10.0);
+    levelVal5->setWidth(40);
+    levelVal5->setNumIncrements(46);
+    levelVal5->setSingleIncrementDisplay(false);
+    levelVal5->setTransparencyLevel(0.5);
 
     labelVal5 = new cLabel(font);
-    dialVal5->addChild(labelVal5);
-    labelVal5->setLocalPos(  0,  50 );           // position du label au-dessus du cadran
+    camera->m_frontLayer->addChild(labelVal5);
+    labelVal5->setLocalPos(  950,  10);
     labelVal5->setText("val5: 0.00");
 
     //-------------------------------
-    dialVal6 = new cDial();
-    camera->m_frontLayer->addChild(dialVal6);
-    dialVal6->setLocalPos(  250, 550 );      // ajustez X,Y
-    dialVal6->setRange(   -0.1, 0.1 );      // ajustez plage si besoin
-    dialVal6->setSize(       40 );
-    dialVal6->setSingleIncrementDisplay(true);
+    //aceleration z
+    levelVal6 = new cLevel();
+    camera->m_frontLayer->addChild(levelVal6);
+    levelVal6->setLocalPos(1000, 45);
+    levelVal6->setRange(-5.0, 10.0);
+    levelVal6->setWidth(40);
+    levelVal6->setNumIncrements(46);
+    levelVal6->setSingleIncrementDisplay(false);
+    levelVal6->setTransparencyLevel(0.5);
+
 
     labelVal6 = new cLabel(font);
-    dialVal6->addChild(labelVal6);
-    labelVal6->setLocalPos(  0,  50 );           // position du label au-dessus du cadran
+    camera->m_frontLayer->addChild(labelVal6);
+    labelVal6->setLocalPos(  1000,  10 );
     labelVal6->setText("val6: 0.00");
     
     //-------------------------------
+    // gyro x
     dialVal7 = new cDial();
     camera->m_frontLayer->addChild(dialVal7);
-    dialVal7->setLocalPos(  350, 550 );      // ajustez X,Y
-    dialVal7->setRange(   -0.1, 0.1 );      // ajustez plage si besoin
+    dialVal7->setLocalPos(  900+20, 260 );
+    dialVal7->setRange(-180.0, 180.0);
     dialVal7->setSize(       40 );
     dialVal7->setSingleIncrementDisplay(true);
 
     labelVal7 = new cLabel(font);
-    dialVal7->addChild(labelVal7);
-    labelVal7->setLocalPos(  0,  50 );           // position du label au-dessus du cadran
+    camera->m_frontLayer->addChild(labelVal7);
+    labelVal7->setLocalPos(  900,  280 );
     labelVal7->setText("val7: 0.00");
 
     //-------------------------------
+    // gyro y
     dialVal8 = new cDial();
     camera->m_frontLayer->addChild(dialVal8);
-    dialVal8->setLocalPos(  50, 450 );      // ajustez X,Y
-    dialVal8->setRange(   -0.1, 0.1 );      // ajustez plage si besoin
+    dialVal8->setLocalPos(  950+20, 260 );
+    dialVal8->setRange(-180.0, 180.0);
     dialVal8->setSize(       40 );
     dialVal8->setSingleIncrementDisplay(true);
 
     labelVal8 = new cLabel(font);
-    dialVal8->addChild(labelVal8);
-    labelVal8->setLocalPos(  0,  50 );           // position du label au-dessus du cadran
+    camera->m_frontLayer->addChild(labelVal8);
+    labelVal8->setLocalPos(  950,  280 );
     labelVal8->setText("val8: 0.00");
     
     //-------------------------------
+    // gyro z
     dialVal9 = new cDial();
     camera->m_frontLayer->addChild(dialVal9);
-    dialVal9->setLocalPos(  150, 450 );      // ajustez X,Y
-    dialVal9->setRange(   -0.1, 0.1 );      // ajustez plage si besoin
+    dialVal9->setLocalPos(  1000+20, 260 );
+    dialVal9->setRange(-180.0, 180.0);
     dialVal9->setSize(       40 );
     dialVal9->setSingleIncrementDisplay(true);
     
     labelVal9 = new cLabel(font);
-    dialVal9->addChild(labelVal9);
-    labelVal9->setLocalPos(  0,  50 );           // position du label au-dessus du cadran
+    camera->m_frontLayer->addChild(labelVal9);
+    labelVal9->setLocalPos(  1000,  280 );
     labelVal9->setText("val9: 0.00");
     
     //-------------------------------
-    dialVal10 = new cDial();
-    camera->m_frontLayer->addChild(dialVal10);
-    dialVal10->setLocalPos(  250, 450 );      // ajustez X,Y
-    dialVal10->setRange(   -0.1, 0.1 );      // ajustez plage si besoin
-    dialVal10->setSize(       40 );
-    dialVal10->setSingleIncrementDisplay(true);
-    
+    // lat
     labelVal10 = new cLabel(font);
-    dialVal10->addChild(labelVal10);
-    labelVal10->setLocalPos(  0,  50 );           // position du label au-dessus du cadran
+    camera->m_frontLayer->addChild(labelVal10);
+    labelVal10->setLocalPos(  600,  700 );
     labelVal10->setText("val10: 0.00");
     
     //-------------------------------
-    dialVal11 = new cDial();
-    camera->m_frontLayer->addChild(dialVal11);
-    dialVal11->setLocalPos(  350, 450 );      // ajustez X,Y
-    dialVal11->setRange(   -0.1, 0.1 );      // ajustez plage si besoin
-    dialVal11->setSize(       40 );
-    dialVal11->setSingleIncrementDisplay(true);
-    
+    // lon
     labelVal11 = new cLabel(font);
-    dialVal11->addChild(labelVal11);
-    labelVal11->setLocalPos(  0,  50 );           // position du label au-dessus du cadran
+    camera->m_frontLayer->addChild(labelVal11);
+    labelVal11->setLocalPos(  500,  700 );
     labelVal11->setText("val11: 0.00");
     
     //-------------------------------
-    dialVal12 = new cDial();
-    camera->m_frontLayer->addChild(dialVal12);
-    dialVal12->setLocalPos(  50, 350 );      // ajustez X,Y
-    dialVal12->setRange(   -0.1, 0.1 );      // ajustez plage si besoin
-    dialVal12->setSize(       40 );
-    dialVal12->setSingleIncrementDisplay(true);
-    
+    // gnss_alt
+    levelVal12 = new cLevel();
+    camera->m_frontLayer->addChild(levelVal12);
+    levelVal12->setLocalPos(450, 45);
+    levelVal12->setRange(-10.0, 500.0);
+    levelVal12->setWidth(40);
+    levelVal12->setNumIncrements(46);
+    levelVal12->setSingleIncrementDisplay(false);
+    levelVal12->setTransparencyLevel(0.5);
+
     labelVal12 = new cLabel(font);
-    dialVal12->addChild(labelVal12);
-    labelVal12->setLocalPos(  0,  50 );           // position du label au-dessus du cadran
+    camera->m_frontLayer->addChild(labelVal12);
+    labelVal12->setLocalPos(  450,  10 );
     labelVal12->setText("val12: 0.00");
     
     //-------------------------------
-    dialVal13 = new cDial();
-    camera->m_frontLayer->addChild(dialVal13);
-    dialVal13->setLocalPos(  150, 350 );      // ajustez X,Y
-    dialVal13->setRange(   -0.1, 0.1 );      // ajustez plage si besoin
-    dialVal13->setSize(       40 );
-    dialVal13->setSingleIncrementDisplay(true);
-    
+    // speed
+    levelVal13 = new cLevel();
+    camera->m_frontLayer->addChild(levelVal13);
+    levelVal13->setLocalPos(700, 45);
+    levelVal13->setRange(-25.0, 100.0);
+    levelVal13->setWidth(40);
+    levelVal13->setNumIncrements(46);
+    levelVal13->setSingleIncrementDisplay(false);
+    levelVal13->setTransparencyLevel(0.5);
+
     labelVal13 = new cLabel(font);
-    dialVal13->addChild(labelVal13);
-    labelVal13->setLocalPos(  0,  50 );           // position du label au-dessus du cadran
+    camera->m_frontLayer->addChild(labelVal13);
+    labelVal13->setLocalPos(  700,  10 );
     labelVal13->setText("val13: 0.00");
     
     //-------------------------------
-    dialVal14 = new cDial();
-    camera->m_frontLayer->addChild(dialVal14);
-    dialVal14->setLocalPos(  250, 350 );      // ajustez X,Y
-    dialVal14->setRange(   -0.1, 0.1 );      // ajustez plage si besoin
-    dialVal14->setSize(       40 );
-    dialVal14->setSingleIncrementDisplay(true);
-    
+    // satel
     labelVal14 = new cLabel(font);
-    dialVal14->addChild(labelVal14);
-    labelVal14->setLocalPos(  0,  50 );           // position du label au-dessus du cadran
+    camera->m_frontLayer->addChild(labelVal14);
+    labelVal14->setLocalPos(  500,  680 );
     labelVal14->setText("val14: 0.00");
     
     //-------------------------------
-    dialVal15 = new cDial();
-    camera->m_frontLayer->addChild(dialVal15);
-    dialVal15->setLocalPos(  350, 350 );      // ajustez X,Y
-    dialVal15->setRange(   -0.1, 0.1 );      // ajustez plage si besoin
-    dialVal15->setSize(       40 );
-    dialVal15->setSingleIncrementDisplay(true);
-    
+    // time
     labelVal15 = new cLabel(font);
-    dialVal15->addChild(labelVal15);
-    labelVal15->setLocalPos(  0,  50 );           // position du label au-dessus du cadran
+    camera->m_frontLayer->addChild(labelVal15);
+    labelVal15->setLocalPos(  1000,  700 );
     labelVal15->setText("val15: 0.00");
-
-
-
-
-
-
-
-
 
 
 
@@ -665,56 +666,56 @@ void updateTelemetry()
     // Valeur 0
     {
         double v = monClientCppFMDCTelemetry->get_val_0();
-        dialVal0->setValue(v);
-        std::ostringstream oss; oss << "val0: " << std::fixed << std::setprecision(2) << v;
+        levelVal0->setValue(v);
+        std::ostringstream oss; oss << "dist: \n" << std::fixed << std::setprecision(2) << v;
         labelVal0->setText(oss.str());
     }
 
     // Valeur 1
     {
         double v = monClientCppFMDCTelemetry->get_val_1();
-        dialVal1->setValue(v);
-        std::ostringstream oss; oss << "val1: " << std::fixed << std::setprecision(2) << v;
+        levelVal1->setValue(v);
+        std::ostringstream oss; oss << "temp: \n" << std::fixed << std::setprecision(2) << v;
         labelVal1->setText(oss.str());
     }
 
     // Valeur 2
     {
         double v = monClientCppFMDCTelemetry->get_val_2();
-        dialVal2->setValue(v);
-        std::ostringstream oss; oss << "val2: " << std::fixed << std::setprecision(2) << v;
+        levelVal2->setValue(v);
+        std::ostringstream oss; oss << "alt: \n" << std::fixed << std::setprecision(2) << v;
         labelVal2->setText(oss.str());
     }
 
     // Valeur 3
     {
         double v = monClientCppFMDCTelemetry->get_val_3();
-        dialVal3->setValue(v);
-        std::ostringstream oss; oss << "val3: " << std::fixed << std::setprecision(2) << v;
+        levelVal3->setValue(v);
+        std::ostringstream oss; oss << "baro: \n" << std::fixed << std::setprecision(2) << v;
         labelVal3->setText(oss.str());
     }
 
     // Valeur 4
     {
         double v = monClientCppFMDCTelemetry->get_val_4();
-        dialVal4->setValue(v);
-        std::ostringstream oss; oss << "val4: " << std::fixed << std::setprecision(2) << v;
+        levelVal4->setValue(v);
+        std::ostringstream oss; oss << "agx: \n" << std::fixed << std::setprecision(2) << v;
         labelVal4->setText(oss.str());
     }
 
     // Valeur 5
     {
         double v = monClientCppFMDCTelemetry->get_val_5();
-        dialVal5->setValue(v);
-        std::ostringstream oss; oss << "val5: " << std::fixed << std::setprecision(2) << v;
+        levelVal5->setValue(v);
+        std::ostringstream oss; oss << "agy: \n" << std::fixed << std::setprecision(2) << v;
         labelVal5->setText(oss.str());
     }
 
     // Valeur 6
     {
         double v = monClientCppFMDCTelemetry->get_val_6();
-        dialVal6->setValue(v);
-        std::ostringstream oss; oss << "val6: " << std::fixed << std::setprecision(2) << v;
+        levelVal6->setValue(v);
+        std::ostringstream oss; oss << "agz: \n" << std::fixed << std::setprecision(2) << v;
         labelVal6->setText(oss.str());
     }
 
@@ -722,7 +723,7 @@ void updateTelemetry()
     {
         double v = monClientCppFMDCTelemetry->get_val_7();
         dialVal7->setValue(v);
-        std::ostringstream oss; oss << "val7: " << std::fixed << std::setprecision(2) << v;
+        std::ostringstream oss; oss << "gyrox: \n" << std::fixed << std::setprecision(2) << v;
         labelVal7->setText(oss.str());
     }
 
@@ -730,7 +731,7 @@ void updateTelemetry()
     {
         double v = monClientCppFMDCTelemetry->get_val_8();
         dialVal8->setValue(v);
-        std::ostringstream oss; oss << "val8: " << std::fixed << std::setprecision(2) << v;
+        std::ostringstream oss; oss << "gyroy: \n" << std::fixed << std::setprecision(2) << v;
         labelVal8->setText(oss.str());
     }
 
@@ -738,55 +739,53 @@ void updateTelemetry()
     {
         double v = monClientCppFMDCTelemetry->get_val_9();
         dialVal9->setValue(v);
-        std::ostringstream oss; oss << "val9: " << std::fixed << std::setprecision(2) << v;
+        std::ostringstream oss; oss << "gyroz: \n" << std::fixed << std::setprecision(2) << v;
         labelVal9->setText(oss.str());
     }
 
     // Valeur 10
     {
         double v = monClientCppFMDCTelemetry->get_val_10();
-        dialVal10->setValue(v);
-        std::ostringstream oss; oss << "val10: " << std::fixed << std::setprecision(2) << v;
+        std::ostringstream oss; oss << "lat: " << std::fixed << std::setprecision(2) << v;
         labelVal10->setText(oss.str());
     }
 
     // Valeur 11
     {
         double v = monClientCppFMDCTelemetry->get_val_11();
-        dialVal11->setValue(v);
-        std::ostringstream oss; oss << "val11: " << std::fixed << std::setprecision(2) << v;
+        std::ostringstream oss; oss << "lon: " << std::fixed << std::setprecision(2) << v;
         labelVal11->setText(oss.str());
     }
 
     // Valeur 12
     {
         double v = monClientCppFMDCTelemetry->get_val_12();
-        dialVal12->setValue(v);
-        std::ostringstream oss; oss << "val12: " << std::fixed << std::setprecision(2) << v;
+        levelVal12->setValue(v);
+        std::ostringstream oss; oss << "gnss_alt: \n" << std::fixed << std::setprecision(2) << v;
         labelVal12->setText(oss.str());
     }
 
     // Valeur 13
     {
         double v = monClientCppFMDCTelemetry->get_val_13();
-        dialVal13->setValue(v);
-        std::ostringstream oss; oss << "val13: " << std::fixed << std::setprecision(2) << v;
+        levelVal13->setValue(v);
+        std::ostringstream oss; oss << "speed: \n" << std::fixed << std::setprecision(2) << v;
         labelVal13->setText(oss.str());
     }
 
     // Valeur 14
     {
         double v = monClientCppFMDCTelemetry->get_val_14();
-        dialVal14->setValue(v);
-        std::ostringstream oss; oss << "val14: " << std::fixed << std::setprecision(2) << v;
+        std::ostringstream oss; oss << "satel: " << std::fixed << std::setprecision(2) << v;
         labelVal14->setText(oss.str());
     }
 
     // Valeur 15
     {
         double v = monClientCppFMDCTelemetry->get_val_15();
-        dialVal15->setValue(v);
-        std::ostringstream oss; oss << "val15: " << std::fixed << std::setprecision(2) << v;
+        std::ostringstream oss; oss << "time: " << std::fixed << std::setprecision(2) << v;
         labelVal15->setText(oss.str());
     }
+
+    sphere->setLocalPos(monClientCppFMDCTelemetry->get_val_4(), monClientCppFMDCTelemetry->get_val_5(), monClientCppFMDCTelemetry->get_val_6());
 }

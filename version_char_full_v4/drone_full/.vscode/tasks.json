@@ -1,0 +1,90 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "build",
+            "type": "shell",
+            "command": "javac",
+            "args": [
+                "-cp",
+                "${workspaceFolder}/lib/opencv_java4100.jar;${workspaceFolder}/lib/JNIFileMappingPictureClient.jar;${workspaceFolder}/lib/JNIFileMappingPictureServeur.jar;${workspaceFolder}/lib/JNIVirtualPicture.jar",
+                "-d",
+                "${workspaceFolder}/bin",
+                "${workspaceFolder}/src/**/*.java"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "problemMatcher": ["$javac"]
+        },
+        {
+            "label": "start_all",
+            "type": "shell",
+            "command": "java",
+            "args": [
+                "-Djava.library.path=${workspaceFolder}/lib",
+                "-cp",
+                "${workspaceFolder}/lib/opencv_java4100.jar;${workspaceFolder}/lib/JNIFileMappingPictureClient.jar;${workspaceFolder}/lib/JNIFileMappingPictureServeur.jar;${workspaceFolder}/lib/JNIVirtualPicture.jar;${workspaceFolder}/bin",
+                "_start._start_all"
+            ],
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared"
+            }
+        },
+        {
+            "label": "start_drone",
+            "type": "shell",
+            "command": "java",
+            "args": [
+                "-Djava.library.path=${workspaceFolder}/lib",
+                "-cp",
+                "${workspaceFolder}/lib/opencv_java4100.jar;${workspaceFolder}/lib/JNIFileMappingPictureClient.jar;${workspaceFolder}/lib/JNIFileMappingPictureServeur.jar;${workspaceFolder}/lib/JNIVirtualPicture.jar;${workspaceFolder}/bin",
+                "_start._start_drone"
+            ],
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared"
+            }
+        },
+        {
+            "label": "start_client",
+            "type": "shell",
+            "command": "java",
+            "args": [
+                "-Djava.library.path=${workspaceFolder}/lib",
+                "-cp",
+                "${workspaceFolder}/lib/opencv_java4100.jar;${workspaceFolder}/lib/JNIFileMappingPictureClient.jar;${workspaceFolder}/lib/JNIFileMappingPictureServeur.jar;${workspaceFolder}/lib/JNIVirtualPicture.jar;${workspaceFolder}/bin",
+                "_start._start_client"
+            ],
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared"
+            }
+        },
+        {
+            "label": "start_traitement",
+            "type": "shell",
+            "command": "java",
+            "args": [
+                "-Djava.library.path=${workspaceFolder}/lib",
+                "-cp",
+                "${workspaceFolder}/lib/opencv_java4100.jar;${workspaceFolder}/lib/JNIFileMappingPictureClient.jar;${workspaceFolder}/lib/JNIFileMappingPictureServeur.jar;${workspaceFolder}/lib/JNIVirtualPicture.jar;${workspaceFolder}/bin",
+                "_start_traitement"
+            ],
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared"
+            }
+        }
+    ]
+}
