@@ -11,10 +11,10 @@
 
 package _start;
 
-import main.drone;
+import main.drone_video;
 
 public class _start_drone {
     public static void main(String[] args) {
-        new drone();
+        new drone_video();
     }
 }
