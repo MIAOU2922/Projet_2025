@@ -1,0 +1,446 @@
+
+admin@raspberrypi:~/Projet/_drone_full $ ./drone.sh
+0
+1
+:::::::....::---::::::....::::::::::-----:...:.....:::::----------::::.:.:::::::
+:::::::::::::::::::::.:::::------------------:::::::...::---------:::::..:..::::
+...::::::::::::::::::::-----::------==++++***++=-:---::::---+**==++-==+++--:::::
+.............:::::::::::::---:---=+*####**##**+=--------+***++=++=+=*++=:....:::
+..............::::::::....::---:---=+*#########***=::::::-=-==----:=-:=-:-.....:
+............::::::::::....:::-:::--=+++++++++++*##+:::::--------::.-+=*+=+=. ..:
+........:::::.:::::.:::::::----:-+*=====-=-----=*#+:::------------:=+:-:::: ...:
+.:::::::::::..:::::..:::::::::---++-=++====-----+*+------::-----------::........
+.:::::::::....::::::::::......::--==+++++-=+==--+*-:-----::-----::-----::::.....
+:::...::::.   .::::::..........:-:-==++++--=+===+-..:.:---------::::-------:....
+::.......:.  ...:::..    ......:=:-====+=-------=-..:.:::-------::::----::--:::.
+:........::...::::::.    .......--:===++===----==-:.::::::------:.:---:::::-----
+::.....::...::::::::.    .......:.:==+++==-=----:::::::::-------::---:::::::----
+::::..::... .:::::::.  .........:.:===++======:::.::::::::--------::---::::::---
+:..::::.. .  .::::::::.........::--==++==-===-::::::::::::-------::::--::::---::
+.....::.... .:::::..:::......:-----++++++====-=-:::::::----------:::.::---::--::
+......::... .:::::...::::::::------+++======--**=:::::----:------:::..:::..::---
+:.....::.....:::::.:::::::----:::===+++=====:-####*++=---:::-----:::.:-:...:::--
+::....::.....:::::::::...:-===-::=====+++=-::+###%%%###***++=----:::.:-:....:---
+:::....::....-:--::::::-=+*##+-:-=+++=+=-:::=####%%%%%%%%%%%###*=::::--:...:----
+::::..:::::::------==+*##%%#%*---=+++--::::+#####%%%%%%%%%%%%%###=:::--.:.:---:-
+::-::::::::-------+####%%%%%%#+*=++++===--+####%%%%%%%%%%%%%%%##%+:----:::---:::
+------:.....::----*#%##%%%%%%%%%+++++=++++*%%%%%%%%%%%%%%%%%%%%%##=::--------::.
+------:.....::::--*%%%#%%%%%%%%#++++++++++##%%%%%%%%%%%%%%#%%%%%%%#-:::--------:
+------:.....:-:---*%%%%%%%%%%%%#*+==+++++#%%%%%%%%%%%%%%%%#%%%%%%%#-:::---------
+--:----:.:..:-----*%%%%%%%%%%%%#*+--++++*#%%%%%%%%%%%%%%%%%%%%%%%%%*-::------:::
+--::----:...:----=#%%%%%%%%%%%%#*+--++++#%%%%%%%%%%%%%%%%%%%%%%%%%%%+:::-----:..
+-::::---:...::---=#%%%%%%%%%%%%#*+=-++++#%%%%%#%%%%%%%%%%%%%%%%%%%%%#*+=-:::-:..
+:::.:--:::..::---=##%%%%%%%%%%%%*+++****%%%%%#++=+++**#%%%%%%%%%%%%%%%%#*-:.:-:.
+::::--::-:..:----=#%%%%%%%%%%%%%#*++***#%%%%%%+++======#%%%%%%%%%%%%%%%%%%*+-:::
+::----:.:-:.:-----#%%%%%%%%%%%%%#*++***%%%%%%%#*++======*%%%%%%%%%%%%%%%%%%%#---
+:------:::-:------#%%%%%%%%%%%%%#******%%%%%%%%#+++++====#%%%%%%%%%%%%%%%%%%#---
+---::.:::::::-----#%%%%%%%%%%%%%#*++**#%%%%%%%%%#*+++====*################%%#---
+--:.....::::::---=###%%%%%%%%%%##*++**#%%%%%%%%%%%%%%#+==+#%#################+--
+:::::...:::------+#*#####*******#*****#%%%%%%%%%%%%%@@%%%%%%%#**############%*--
+---::::::::------=*#%#+====+++*%%*****%%%%%%%%%%%@%@@@@@@@%%%%###%%%%%%%%%%%*===
+--::::::::--------*%#**++******#%#***#%%%%%%%%%%%%@@@@@@@@@@@%##%%%%%%%###*=--==
+=--::::-----------+#*#%#+******%%#**##%%%%%@%%%%%%%%%@@@@@@@@%+-=======---:---==
+==--::---------====+###%#*****#%%#**#%@@@@@@@@@%%%%@@@@@@@@@*-----===-----======
+===---==-----====--==+*%%####%%%%##*#%@@@@@@@@@@@@@@@@@@%%%%%%#=========---=====
+=======----======---===+*###%%%%@%##%%@@@@@@@@@@@%%%%%%%%%%%%%%=================
+--===----:-======-----=====*%%%%%###%@@@@@@@@@@@%%%%%%%%%%%%%%%+================
+-====------======-----=+==+#%%%#****#%@@@@@@@@@@%%%%%%%%%%%%%%%#================
+=======---=======---===+=+*%%%%#****#%%%@@@@@@@@@%%%%%%%%%%%%%%%+===============
+
+
+[Thread-Drone-Telemetrie] INFO com.pi4j.Pi4J - New auto context
+[Thread-2] INFO com.pi4j.Pi4J - New auto context
+[Thread-2] INFO com.pi4j.Pi4J - New context builder
+[Thread-Drone-Telemetrie] INFO com.pi4j.Pi4J - New context builder
+Liste des adresses : [] (0) [] (0)
+[Thread-Drone-Telemetrie] INFO com.pi4j.runtime.impl.DefaultRuntime - Initializing Pi4J context/runtime...
+[Thread-2] INFO com.pi4j.runtime.impl.DefaultRuntime - Initializing Pi4J context/runtime...
+[Thread-2] WARN com.pi4j.runtime.impl.DefaultRuntime - Ignoring provider DIGITAL_OUTPUT PiGpio Digital Output (GPIO) Provider with priority 100 as lower priority than GpioD Digital Output (GPIO) Provider which has priority 150
+[Thread-Drone-Telemetrie] WARN com.pi4j.runtime.impl.DefaultRuntime - Ignoring provider DIGITAL_INPUT PiGpio Digital Input (GPIO) Provider with priority 100 as lower priority than GpioD Digital Input (GPIO) Provider which has priority 150
+[Thread-2] WARN com.pi4j.runtime.impl.DefaultRuntime - Ignoring provider DIGITAL_INPUT PiGpio Digital Input (GPIO) Provider with priority 100 as lower priority than GpioD Digital Input (GPIO) Provider which has priority 150
+[Thread-Drone-Telemetrie] WARN com.pi4j.runtime.impl.DefaultRuntime - Ignoring provider DIGITAL_OUTPUT PiGpio Digital Output (GPIO) Provider with priority 100 as lower priority than GpioD Digital Output (GPIO) Provider which has priority 150
+[Thread-2] WARN com.pi4j.runtime.impl.DefaultRuntime - Ignoring provider SPI RaspberryPi SPI Provider with priority 0 as lower priority than PiGpio SPI Provider which has priority 100
+[Thread-Drone-Telemetrie] WARN com.pi4j.runtime.impl.DefaultRuntime - Ignoring provider SPI RaspberryPi SPI Provider with priority 0 as lower priority than PiGpio SPI Provider which has priority 100
+[Thread-2] WARN com.pi4j.runtime.impl.DefaultRuntime - Ignoring provider I2C RaspberryPi I2C Provider with priority 0 as lower priority than PiGpio I2C Provider which has priority 100
+[Thread-Drone-Telemetrie] WARN com.pi4j.runtime.impl.DefaultRuntime - Ignoring provider DIGITAL_INPUT RaspberryPi Digital Input (GPIO) Provider with priority 0 as lower priority than GpioD Digital Input (GPIO) Provider which has priority 150
+[Thread-2] WARN com.pi4j.runtime.impl.DefaultRuntime - Ignoring provider DIGITAL_OUTPUT RaspberryPi Digital Output (GPIO) Provider with priority 0 as lower priority than GpioD Digital Output (GPIO) Provider which has priority 150
+[Thread-Drone-Telemetrie] WARN com.pi4j.runtime.impl.DefaultRuntime - Ignoring provider PWM RaspberryPi PWM Provider with priority 0 as lower priority than PiGpio PWM Provider which has priority 100
+[Thread-2] WARN com.pi4j.runtime.impl.DefaultRuntime - Ignoring provider PWM RaspberryPi PWM Provider with priority 0 as lower priority than PiGpio PWM Provider which has priority 100
+[Thread-Drone-Telemetrie] WARN com.pi4j.runtime.impl.DefaultRuntime - Ignoring provider I2C RaspberryPi I2C Provider with priority 0 as lower priority than PiGpio I2C Provider which has priority 100
+[Thread-2] WARN com.pi4j.runtime.impl.DefaultRuntime - Ignoring provider DIGITAL_INPUT RaspberryPi Digital Input (GPIO) Provider with priority 0 as lower priority than GpioD Digital Input (GPIO) Provider which has priority 150
+[Thread-Drone-Telemetrie] WARN com.pi4j.runtime.impl.DefaultRuntime - Ignoring provider DIGITAL_OUTPUT RaspberryPi Digital Output (GPIO) Provider with priority 0 as lower priority than GpioD Digital Output (GPIO) Provider which has priority 150
+[Thread-2] WARN com.pi4j.runtime.impl.DefaultRuntime - Ignoring provider SERIAL RaspberryPi Serial Provider with priority 0 as lower priority than PiGpio Serial Provider which has priority 100
+[Thread-Drone-Telemetrie] WARN com.pi4j.runtime.impl.DefaultRuntime - Ignoring provider SERIAL RaspberryPi Serial Provider with priority 0 as lower priority than PiGpio Serial Provider which has priority 100
+[Thread-Drone-Telemetrie] WARN com.pi4j.runtime.impl.DefaultRuntime - Ignoring provider DIGITAL_INPUT LinuxFS Digital Input (GPIO) Provider with priority 50 as lower priority than GpioD Digital Input (GPIO) Provider which has priority 150
+[Thread-2] WARN com.pi4j.runtime.impl.DefaultRuntime - Ignoring provider DIGITAL_INPUT LinuxFS Digital Input (GPIO) Provider with priority 50 as lower priority than GpioD Digital Input (GPIO) Provider which has priority 150
+[Thread-Drone-Telemetrie] WARN com.pi4j.runtime.impl.DefaultRuntime - Ignoring provider DIGITAL_OUTPUT LinuxFS Digital Output (GPIO) Provider with priority 50 as lower priority than GpioD Digital Output (GPIO) Provider which has priority 150
+[Thread-Drone-Telemetrie] WARN com.pi4j.runtime.impl.DefaultRuntime - Ignoring provider PWM LinuxFS PWM Provider with priority 50 as lower priority than PiGpio PWM Provider which has priority 100
+[Thread-2] WARN com.pi4j.runtime.impl.DefaultRuntime - Ignoring provider PWM LinuxFS PWM Provider with priority 50 as lower priority than PiGpio PWM Provider which has priority 100
+[Thread-Drone-Telemetrie] WARN com.pi4j.runtime.impl.DefaultRuntime - Replacing provider I2C PiGpio I2C Provider with priority 100 with provider LinuxFS I2C Provider with higher priority 150
+[Thread-2] WARN com.pi4j.runtime.impl.DefaultRuntime - Ignoring provider DIGITAL_OUTPUT LinuxFS Digital Output (GPIO) Provider with priority 50 as lower priority than GpioD Digital Output (GPIO) Provider which has priority 150
+[Thread-2] WARN com.pi4j.runtime.impl.DefaultRuntime - Replacing provider I2C PiGpio I2C Provider with priority 100 with provider LinuxFS I2C Provider with higher priority 150
+[Thread-2] INFO com.pi4j.library.gpiod.internal.GpioDContext - Using chip gpiochip0 pinctrl-bcm2711
+[Thread-2] INFO com.pi4j.platform.impl.DefaultRuntimePlatforms - adding platform to managed platform map [id=raspberrypi; name=RaspberryPi Platform; priority=5; class=com.pi4j.plugin.raspberrypi.platform.RaspberryPiPlatform]
+[Thread-Drone-Telemetrie] INFO com.pi4j.platform.impl.DefaultRuntimePlatforms - adding platform to managed platform map [id=raspberrypi; name=RaspberryPi Platform; priority=5; class=com.pi4j.plugin.raspberrypi.platform.RaspberryPiPlatform]
+[Thread-2] INFO com.pi4j.runtime.impl.DefaultRuntime - Pi4J context/runtime successfully initialized.
+[Thread-Drone-Telemetrie] INFO com.pi4j.runtime.impl.DefaultRuntime - Pi4J context/runtime successfully initialized.
+
+
+BMP280 Device correctement initialise !
+ID du BMP280 : 58
+dirMG1 initialise : true
+dirMG2 initialise : true
+dirMD1 initialise : true
+dirMD2 initialise : true
+[Thread-2] WARN com.pi4j.library.pigpio.impl.PiGpioNativeImpl - PIGPIO ERROR: PI_INIT_FAILED; pigpio initialisation failed
+com.pi4j.library.pigpio.PiGpioException: PIGPIO ERROR: PI_INIT_FAILED; pigpio initialisation failed
+        at com.pi4j.library.pigpio.impl.PiGpioBase.validateResult(PiGpioBase.java:265)
+        at com.pi4j.library.pigpio.impl.PiGpioBase.validateResult(PiGpioBase.java:251)
+        at com.pi4j.library.pigpio.impl.PiGpioNativeImpl.gpioInitialise(PiGpioNativeImpl.java:106)
+        at com.pi4j.library.pigpio.PiGpio.initialize(PiGpio.java:159)
+        at com.pi4j.plugin.pigpio.provider.pwm.PiGpioPwmProviderImpl.create(PiGpioPwmProviderImpl.java:72)
+        at com.pi4j.plugin.pigpio.provider.pwm.PiGpioPwmProviderImpl.create(PiGpioPwmProviderImpl.java:43)
+        at gpio.Serveur_Char_GPIO.run(Serveur_Char_GPIO.java:129)
+probleme a l'initialisation
+--------------------------------------------------------------------------------------------------
+#                                      Serveur TEST Char                                         #
+#                                                                                                #
+# Auteur : Noe GRUBER                                                                            #
+# Date : 13/01/2025                                                                              #
+# Version : 1.0                                                                                  #
+--------------------------------------------------------------------------------------------------
+
+Accuses de reception active.
+.........................................................
+[Thread-Drone-Telemetrie] INFO com.pi4j.Pi4J - New auto context
+[Thread-Drone-Telemetrie] INFO com.pi4j.Pi4J - New context builder
+[Thread-Drone-Telemetrie] INFO com.pi4j.runtime.impl.DefaultRuntime - Initializing Pi4J context/runtime...
+[Thread-Drone-Telemetrie] WARN com.pi4j.runtime.impl.DefaultRuntime - Ignoring provider DIGITAL_INPUT PiGpio Digital Input (GPIO) Provider with priority 100 as lower priority than GpioD Digital Input (GPIO) Provider which has priority 150
+[Thread-Drone-Telemetrie] WARN com.pi4j.runtime.impl.DefaultRuntime - Ignoring provider DIGITAL_OUTPUT PiGpio Digital Output (GPIO) Provider with priority 100 as lower priority than GpioD Digital Output (GPIO) Provider which has priority 150
+[Thread-Drone-Telemetrie] WARN com.pi4j.runtime.impl.DefaultRuntime - Ignoring provider DIGITAL_INPUT RaspberryPi Digital Input (GPIO) Provider with priority 0 as lower priority than GpioD Digital Input (GPIO) Provider which has priority 150
+[Thread-Drone-Telemetrie] WARN com.pi4j.runtime.impl.DefaultRuntime - Ignoring provider PWM RaspberryPi PWM Provider with priority 0 as lower priority than PiGpio PWM Provider which has priority 100
+[Thread-Drone-Telemetrie] WARN com.pi4j.runtime.impl.DefaultRuntime - Ignoring provider SERIAL RaspberryPi Serial Provider with priority 0 as lower priority than PiGpio Serial Provider which has priority 100
+[Thread-Drone-Telemetrie] WARN com.pi4j.runtime.impl.DefaultRuntime - Ignoring provider DIGITAL_OUTPUT RaspberryPi Digital Output (GPIO) Provider with priority 0 as lower priority than GpioD Digital Output (GPIO) Provider which has priority 150
+[Thread-Drone-Telemetrie] WARN com.pi4j.runtime.impl.DefaultRuntime - Ignoring provider I2C RaspberryPi I2C Provider with priority 0 as lower priority than PiGpio I2C Provider which has priority 100
+[Thread-Drone-Telemetrie] WARN com.pi4j.runtime.impl.DefaultRuntime - Ignoring provider SPI RaspberryPi SPI Provider with priority 0 as lower priority than PiGpio SPI Provider which has priority 100
+[Thread-Drone-Telemetrie] WARN com.pi4j.runtime.impl.DefaultRuntime - Ignoring provider DIGITAL_OUTPUT LinuxFS Digital Output (GPIO) Provider with priority 50 as lower priority than GpioD Digital Output (GPIO) Provider which has priority 150
+[Thread-Drone-Telemetrie] WARN com.pi4j.runtime.impl.DefaultRuntime - Replacing provider I2C PiGpio I2C Provider with priority 100 with provider LinuxFS I2C Provider with higher priority 150
+[Thread-Drone-Telemetrie] WARN com.pi4j.runtime.impl.DefaultRuntime - Ignoring provider PWM LinuxFS PWM Provider with priority 50 as lower priority than PiGpio PWM Provider which has priority 100
+[Thread-Drone-Telemetrie] WARN com.pi4j.runtime.impl.DefaultRuntime - Ignoring provider DIGITAL_INPUT LinuxFS Digital Input (GPIO) Provider with priority 50 as lower priority than GpioD Digital Input (GPIO) Provider which has priority 150
+[Thread-Drone-Telemetrie] INFO com.pi4j.platform.impl.DefaultRuntimePlatforms - adding platform to managed platform map [id=raspberrypi; name=RaspberryPi Platform; priority=5; class=com.pi4j.plugin.raspberrypi.platform.RaspberryPiPlatform]
+[Thread-Drone-Telemetrie] INFO com.pi4j.runtime.impl.DefaultRuntime - Pi4J context/runtime successfully initialized.
+MPU6050 initialise avec succes !
+Registre WHO_AM_I : 68
+[Thread-Drone-Telemetrie] INFO com.pi4j.Pi4J - New auto context
+[Thread-Drone-Telemetrie] INFO com.pi4j.Pi4J - New context builder
+[Thread-Drone-Telemetrie] INFO com.pi4j.runtime.impl.DefaultRuntime - Initializing Pi4J context/runtime...
+
+#    Interface(s) reseau et adresse(s) disponible(s) sur ce serveur :                            #
+[Thread-Drone-Telemetrie] WARN com.pi4j.runtime.impl.DefaultRuntime - Ignoring provider DIGITAL_OUTPUT PiGpio Digital Output (GPIO) Provider with priority 100 as lower priority than GpioD Digital Output (GPIO) Provider which has priority 150
+[Thread-Drone-Telemetrie] WARN com.pi4j.runtime.impl.DefaultRuntime - Ignoring provider DIGITAL_INPUT PiGpio Digital Input (GPIO) Provider with priority 100 as lower priority than GpioD Digital Input (GPIO) Provider which has priority 150
+#       [ Carte reseau : wlan0 : 172.29.1.26  ]                                                  #
+[Thread-Drone-Telemetrie] WARN com.pi4j.runtime.impl.DefaultRuntime - Ignoring provider SPI RaspberryPi SPI Provider with priority 0 as lower priority than PiGpio SPI Provider which has priority 100
+[Thread-Drone-Telemetrie] WARN com.pi4j.runtime.impl.DefaultRuntime - Ignoring provider SERIAL RaspberryPi Serial Provider with priority 0 as lower priority than PiGpio Serial Provider which has priority 100
+[Thread-Drone-Telemetrie] WARN com.pi4j.runtime.impl.DefaultRuntime - Ignoring provider DIGITAL_OUTPUT RaspberryPi Digital Output (GPIO) Provider with priority 0 as lower priority than GpioD Digital Output (GPIO) Provider which has priority 150
+#       Port d ecoute : [ 1234 ]                                                                 #
+
+Serveur en attente de connexion Client...
+[Thread-Drone-Telemetrie] WARN com.pi4j.runtime.impl.DefaultRuntime - Ignoring provider PWM RaspberryPi PWM Provider with priority 0 as lower priority than PiGpio PWM Provider which has priority 100
+[Thread-Drone-Telemetrie] WARN com.pi4j.runtime.impl.DefaultRuntime - Ignoring provider DIGITAL_INPUT RaspberryPi Digital Input (GPIO) Provider with priority 0 as lower priority than GpioD Digital Input (GPIO) Provider which has priority 150
+java.lang.NullPointerException: Cannot invoke "com.pi4j.io.pwm.Pwm.dutyCycle(java.lang.Number)" because "<parameter3>" is null
+        at gpio.Serveur_Char_GPIO.setDirectionAndSpeed(Serveur_Char_GPIO.java:678)
+        at gpio.Serveur_Char_GPIO.controleMoteur(Serveur_Char_GPIO.java:595)
+        at gpio.Serveur_Char_GPIO.run(Serveur_Char_GPIO.java:192)
+[Thread-Drone-Telemetrie] WARN com.pi4j.runtime.impl.DefaultRuntime - Ignoring provider I2C RaspberryPi I2C Provider with priority 0 as lower priority than PiGpio I2C Provider which has priority 100
+[Thread-Drone-Telemetrie] WARN com.pi4j.runtime.impl.DefaultRuntime - Ignoring provider DIGITAL_OUTPUT LinuxFS Digital Output (GPIO) Provider with priority 50 as lower priority than GpioD Digital Output (GPIO) Provider which has priority 150
+[Thread-Drone-Telemetrie] WARN com.pi4j.runtime.impl.DefaultRuntime - Ignoring provider DIGITAL_INPUT LinuxFS Digital Input (GPIO) Provider with priority 50 as lower priority than GpioD Digital Input (GPIO) Provider which has priority 150
+[Thread-Drone-Telemetrie] WARN com.pi4j.runtime.impl.DefaultRuntime - Ignoring provider PWM LinuxFS PWM Provider with priority 50 as lower priority than PiGpio PWM Provider which has priority 100
+[Thread-Drone-Telemetrie] WARN com.pi4j.runtime.impl.DefaultRuntime - Replacing provider I2C PiGpio I2C Provider with priority 100 with provider LinuxFS I2C Provider with higher priority 150
+[Thread-Drone-Telemetrie] INFO com.pi4j.platform.impl.DefaultRuntimePlatforms - adding platform to managed platform map [id=raspberrypi; name=RaspberryPi Platform; priority=5; class=com.pi4j.plugin.raspberrypi.platform.RaspberryPiPlatform]
+[Thread-Drone-Telemetrie] INFO com.pi4j.runtime.impl.DefaultRuntime - Pi4J context/runtime successfully initialized.
+[Thread-Drone-Telemetrie] INFO com.pi4j.Pi4J - New auto context
+[Thread-Drone-Telemetrie] INFO com.pi4j.Pi4J - New context builder
+[Thread-Drone-Telemetrie] INFO com.pi4j.runtime.impl.DefaultRuntime - Initializing Pi4J context/runtime...
+[Thread-Drone-Telemetrie] WARN com.pi4j.runtime.impl.DefaultRuntime - Ignoring provider DIGITAL_INPUT PiGpio Digital Input (GPIO) Provider with priority 100 as lower priority than GpioD Digital Input (GPIO) Provider which has priority 150
+[Thread-Drone-Telemetrie] WARN com.pi4j.runtime.impl.DefaultRuntime - Ignoring provider DIGITAL_OUTPUT PiGpio Digital Output (GPIO) Provider with priority 100 as lower priority than GpioD Digital Output (GPIO) Provider which has priority 150
+[Thread-Drone-Telemetrie] WARN com.pi4j.runtime.impl.DefaultRuntime - Ignoring provider DIGITAL_INPUT RaspberryPi Digital Input (GPIO) Provider with priority 0 as lower priority than GpioD Digital Input (GPIO) Provider which has priority 150
+[Thread-Drone-Telemetrie] WARN com.pi4j.runtime.impl.DefaultRuntime - Ignoring provider PWM RaspberryPi PWM Provider with priority 0 as lower priority than PiGpio PWM Provider which has priority 100
+[Thread-Drone-Telemetrie] WARN com.pi4j.runtime.impl.DefaultRuntime - Ignoring provider SERIAL RaspberryPi Serial Provider with priority 0 as lower priority than PiGpio Serial Provider which has priority 100
+[Thread-Drone-Telemetrie] WARN com.pi4j.runtime.impl.DefaultRuntime - Ignoring provider DIGITAL_OUTPUT RaspberryPi Digital Output (GPIO) Provider with priority 0 as lower priority than GpioD Digital Output (GPIO) Provider which has priority 150
+[Thread-Drone-Telemetrie] WARN com.pi4j.runtime.impl.DefaultRuntime - Ignoring provider SPI RaspberryPi SPI Provider with priority 0 as lower priority than PiGpio SPI Provider which has priority 100
+[Thread-Drone-Telemetrie] WARN com.pi4j.runtime.impl.DefaultRuntime - Ignoring provider I2C RaspberryPi I2C Provider with priority 0 as lower priority than PiGpio I2C Provider which has priority 100
+[Thread-Drone-Telemetrie] WARN com.pi4j.runtime.impl.DefaultRuntime - Replacing provider I2C PiGpio I2C Provider with priority 100 with provider LinuxFS I2C Provider with higher priority 150
+[Thread-Drone-Telemetrie] WARN com.pi4j.runtime.impl.DefaultRuntime - Ignoring provider DIGITAL_OUTPUT LinuxFS Digital Output (GPIO) Provider with priority 50 as lower priority than GpioD Digital Output (GPIO) Provider which has priority 150
+[Thread-Drone-Telemetrie] WARN com.pi4j.runtime.impl.DefaultRuntime - Ignoring provider PWM LinuxFS PWM Provider with priority 50 as lower priority than PiGpio PWM Provider which has priority 100
+[Thread-Drone-Telemetrie] WARN com.pi4j.runtime.impl.DefaultRuntime - Ignoring provider DIGITAL_INPUT LinuxFS Digital Input (GPIO) Provider with priority 50 as lower priority than GpioD Digital Input (GPIO) Provider which has priority 150
+[Thread-Drone-Telemetrie] INFO com.pi4j.platform.impl.DefaultRuntimePlatforms - adding platform to managed platform map [id=raspberrypi; name=RaspberryPi Platform; priority=5; class=com.pi4j.plugin.raspberrypi.platform.RaspberryPiPlatform]
+[Thread-Drone-Telemetrie] INFO com.pi4j.runtime.impl.DefaultRuntime - Pi4J context/runtime successfully initialized.
+[Thread-Drone-Telemetrie] INFO com.pi4j.Pi4J - New auto context
+[Thread-Drone-Telemetrie] INFO com.pi4j.Pi4J - New context builder
+[Thread-Drone-Telemetrie] INFO com.pi4j.runtime.impl.DefaultRuntime - Initializing Pi4J context/runtime...
+[Thread-Drone-Telemetrie] WARN com.pi4j.runtime.impl.DefaultRuntime - Ignoring provider DIGITAL_INPUT PiGpio Digital Input (GPIO) Provider with priority 100 as lower priority than GpioD Digital Input (GPIO) Provider which has priority 150
+[Thread-Drone-Telemetrie] WARN com.pi4j.runtime.impl.DefaultRuntime - Ignoring provider DIGITAL_OUTPUT PiGpio Digital Output (GPIO) Provider with priority 100 as lower priority than GpioD Digital Output (GPIO) Provider which has priority 150
+[Thread-Drone-Telemetrie] WARN com.pi4j.runtime.impl.DefaultRuntime - Ignoring provider SERIAL RaspberryPi Serial Provider with priority 0 as lower priority than PiGpio Serial Provider which has priority 100
+[Thread-Drone-Telemetrie] WARN com.pi4j.runtime.impl.DefaultRuntime - Ignoring provider SPI RaspberryPi SPI Provider with priority 0 as lower priority than PiGpio SPI Provider which has priority 100
+[Thread-Drone-Telemetrie] WARN com.pi4j.runtime.impl.DefaultRuntime - Ignoring provider DIGITAL_INPUT RaspberryPi Digital Input (GPIO) Provider with priority 0 as lower priority than GpioD Digital Input (GPIO) Provider which has priority 150
+[Thread-Drone-Telemetrie] WARN com.pi4j.runtime.impl.DefaultRuntime - Ignoring provider PWM RaspberryPi PWM Provider with priority 0 as lower priority than PiGpio PWM Provider which has priority 100
+[Thread-Drone-Telemetrie] WARN com.pi4j.runtime.impl.DefaultRuntime - Ignoring provider DIGITAL_OUTPUT RaspberryPi Digital Output (GPIO) Provider with priority 0 as lower priority than GpioD Digital Output (GPIO) Provider which has priority 150
+[Thread-Drone-Telemetrie] WARN com.pi4j.runtime.impl.DefaultRuntime - Ignoring provider I2C RaspberryPi I2C Provider with priority 0 as lower priority than PiGpio I2C Provider which has priority 100
+[Thread-Drone-Telemetrie] WARN com.pi4j.runtime.impl.DefaultRuntime - Ignoring provider PWM LinuxFS PWM Provider with priority 50 as lower priority than PiGpio PWM Provider which has priority 100
+[Thread-Drone-Telemetrie] WARN com.pi4j.runtime.impl.DefaultRuntime - Ignoring provider DIGITAL_OUTPUT LinuxFS Digital Output (GPIO) Provider with priority 50 as lower priority than GpioD Digital Output (GPIO) Provider which has priority 150
+[Thread-Drone-Telemetrie] WARN com.pi4j.runtime.impl.DefaultRuntime - Replacing provider I2C PiGpio I2C Provider with priority 100 with provider LinuxFS I2C Provider with higher priority 150
+[Thread-Drone-Telemetrie] WARN com.pi4j.runtime.impl.DefaultRuntime - Ignoring provider DIGITAL_INPUT LinuxFS Digital Input (GPIO) Provider with priority 50 as lower priority than GpioD Digital Input (GPIO) Provider which has priority 150
+[Thread-Drone-Telemetrie] INFO com.pi4j.platform.impl.DefaultRuntimePlatforms - adding platform to managed platform map [id=raspberrypi; name=RaspberryPi Platform; priority=5; class=com.pi4j.plugin.raspberrypi.platform.RaspberryPiPlatform]
+[Thread-Drone-Telemetrie] INFO com.pi4j.runtime.impl.DefaultRuntime - Pi4J context/runtime successfully initialized.
+[INFO] VL53L0X initialise !
+[INFO] Tous les capteurs ont ete initialises avec succes.
+:::::::....::---::::::....::::::::::-----:...:.....:::::----------::::.:.:::::::
+:::::::::::::::::::::.:::::------------------:::::::...::---------:::::..:..::::
+...::::::::::::::::::::-----::------==++++***++=-:---::::---+**==++-==+++--:::::
+.............:::::::::::::---:---=+*####**##**+=--------+***++=++=+=*++=:....:::
+..............::::::::....::---:---=+*#########***=::::::-=-==----:=-:=-:-.....:
+............::::::::::....:::-:::--=+++++++++++*##+:::::--------::.-+=*+=+=. ..:
+........:::::.:::::.:::::::----:-+*=====-=-----=*#+:::------------:=+:-:::: ...:
+.:::::::::::..:::::..:::::::::---++-=++====-----+*+------::-----------::........
+.:::::::::....::::::::::......::--==+++++-=+==--+*-:-----::-----::-----::::.....
+:::...::::.   .::::::..........:-:-==++++--=+===+-..:.:---------::::-------:....
+::.......:.  ...:::..    ......:=:-====+=-------=-..:.:::-------::::----::--:::.
+:........::...::::::.    .......--:===++===----==-:.::::::------:.:---:::::-----
+::.....::...::::::::.    .......:.:==+++==-=----:::::::::-------::---:::::::----
+::::..::... .:::::::.  .........:.:===++======:::.::::::::--------::---::::::---
+:..::::.. .  .::::::::.........::--==++==-===-::::::::::::-------::::--::::---::
+.....::.... .:::::..:::......:-----++++++====-=-:::::::----------:::.::---::--::
+......::... .:::::...::::::::------+++======--**=:::::----:------:::..:::..::---
+:.....::.....:::::.:::::::----:::===+++=====:-####*++=---:::-----:::.:-:...:::--
+::....::.....:::::::::...:-===-::=====+++=-::+###%%%###***++=----:::.:-:....:---
+:::....::....-:--::::::-=+*##+-:-=+++=+=-:::=####%%%%%%%%%%%###*=::::--:...:----
+::::..:::::::------==+*##%%#%*---=+++--::::+#####%%%%%%%%%%%%%###=:::--.:.:---:-
+::-::::::::-------+####%%%%%%#+*=++++===--+####%%%%%%%%%%%%%%%##%+:----:::---:::
+------:.....::----*#%##%%%%%%%%%+++++=++++*%%%%%%%%%%%%%%%%%%%%%##=::--------::.
+------:.....::::--*%%%#%%%%%%%%#++++++++++##%%%%%%%%%%%%%%#%%%%%%%#-:::--------:
+------:.....:-:---*%%%%%%%%%%%%#*+==+++++#%%%%%%%%%%%%%%%%#%%%%%%%#-:::---------
+--:----:.:..:-----*%%%%%%%%%%%%#*+--++++*#%%%%%%%%%%%%%%%%%%%%%%%%%*-::------:::
+--::----:...:----=#%%%%%%%%%%%%#*+--++++#%%%%%%%%%%%%%%%%%%%%%%%%%%%+:::-----:..
+-::::---:...::---=#%%%%%%%%%%%%#*+=-++++#%%%%%#%%%%%%%%%%%%%%%%%%%%%#*+=-:::-:..
+:::.:--:::..::---=##%%%%%%%%%%%%*+++****%%%%%#++=+++**#%%%%%%%%%%%%%%%%#*-:.:-:.
+::::--::-:..:----=#%%%%%%%%%%%%%#*++***#%%%%%%+++======#%%%%%%%%%%%%%%%%%%*+-:::
+::----:.:-:.:-----#%%%%%%%%%%%%%#*++***%%%%%%%#*++======*%%%%%%%%%%%%%%%%%%%#---
+:------:::-:------#%%%%%%%%%%%%%#******%%%%%%%%#+++++====#%%%%%%%%%%%%%%%%%%#---
+---::.:::::::-----#%%%%%%%%%%%%%#*++**#%%%%%%%%%#*+++====*################%%#---
+--:.....::::::---=###%%%%%%%%%%##*++**#%%%%%%%%%%%%%%#+==+#%#################+--
+:::::...:::------+#*#####*******#*****#%%%%%%%%%%%%%@@%%%%%%%#**############%*--
+---::::::::------=*#%#+====+++*%%*****%%%%%%%%%%%@%@@@@@@@%%%%###%%%%%%%%%%%*===
+--::::::::--------*%#**++******#%#***#%%%%%%%%%%%%@@@@@@@@@@@%##%%%%%%%###*=--==
+=--::::-----------+#*#%#+******%%#**##%%%%%@%%%%%%%%%@@@@@@@@%+-=======---:---==
+==--::---------====+###%#*****#%%#**#%@@@@@@@@@%%%%@@@@@@@@@*-----===-----======
+===---==-----====--==+*%%####%%%%##*#%@@@@@@@@@@@@@@@@@@%%%%%%#=========---=====
+=======----======---===+*###%%%%@%##%%@@@@@@@@@@@%%%%%%%%%%%%%%=================
+--===----:-======-----=====*%%%%%###%@@@@@@@@@@@%%%%%%%%%%%%%%%+================
+-====------======-----=+==+#%%%#****#%@@@@@@@@@@%%%%%%%%%%%%%%%#================
+=======---=======---===+=+*%%%%#****#%%%@@@@@@@@@%%%%%%%%%%%%%%%+===============
+
+Liste des adresses : [172.29.41.9] (1) [2025-05-20T16:41:43.757942037] (1)
+fps: 7   ^C[pi4j-shutdown] INFO com.pi4j.runtime.impl.DefaultRuntime - Shutting down Pi4J context/runtime...
+[pi4j-shutdown] INFO com.pi4j.runtime.impl.DefaultRuntime - Shutting down Pi4J context/runtime...
+[pi4j-shutdown] INFO com.pi4j.runtime.impl.DefaultRuntime - Shutting down Pi4J context/runtime...
+[pi4j-shutdown] INFO com.pi4j.runtime.impl.DefaultRuntime - Shutting down Pi4J context/runtime...
+[pi4j-shutdown] INFO com.pi4j.runtime.impl.DefaultRuntime - Shutting down Pi4J context/runtime...
+[pi4j-shutdown] INFO com.pi4j.runtime.impl.DefaultRuntime - Shutting down Pi4J context/runtime...
+[pi4j-shutdown] INFO com.pi4j.util.ExecutorPool - Shutting down executor pool Pi4J.RUNTIME
+Erreur lors de la lecture des donnees du MPU6050 : Failed to execute action for device 105 on bus 1
+[pi4j-shutdown] INFO com.pi4j.util.ExecutorPool - Shutting down executor pool Pi4J.RUNTIME
+Erreur lors de l'execution de la boucle principale
+[pi4j-shutdown] INFO com.pi4j.util.ExecutorPool - Shutting down executor pool Pi4J.RUNTIME
+[pi4j-shutdown] INFO com.pi4j.util.ExecutorPool - Shutting down executor pool Pi4J.RUNTIME
+com.pi4j.exception.Pi4JException: Failed to execute action for device 105 on bus 1
+        at com.pi4j.plugin.linuxfs.provider.i2c.LinuxFsI2CBus.executeIOCTL(LinuxFsI2CBus.java:106)
+        at com.pi4j.plugin.linuxfs.provider.i2c.LinuxFsI2C.readRegister(LinuxFsI2C.java:312)
+        at com.pi4j.plugin.linuxfs.provider.i2c.LinuxFsI2C.readRegister(LinuxFsI2C.java:174)
+        at capteurs.I2C_MPU6050.readSensorData(I2C_MPU6050.java:116)
+        at capteurs.I2C_MPU6050.run(I2C_MPU6050.java:88)
+        at main.drone_telemetrie.lambda$new$2(drone_telemetrie.java:102)
+        at java.base/java.lang.Thread.run(Thread.java:840)
+Caused by: java.io.IOException: failed to get POSIX file descriptor!
+        at com.pi4j.library.linuxfs.LinuxFile.getPosixFD(LinuxFile.java:197)
+        at com.pi4j.library.linuxfs.LinuxFile.ioctl(LinuxFile.java:167)
+        at com.pi4j.plugin.linuxfs.provider.i2c.LinuxFsI2CBus.executeIOCTL(LinuxFsI2CBus.java:90)
+        ... 6 more
+com.pi4j.exception.Pi4JException: Failed to execute action for device 118 on bus 1
+        at com.pi4j.plugin.linuxfs.provider.i2c.LinuxFsI2CBus.executeIOCTL(LinuxFsI2CBus.java:106)
+        at com.pi4j.plugin.linuxfs.provider.i2c.LinuxFsI2C.readRegister(LinuxFsI2C.java:312)
+        at com.pi4j.plugin.linuxfs.provider.i2c.LinuxFsI2C.readRegister(LinuxFsI2C.java:174)
+        at capteurs.I2C_BMP280.CalculPression(I2C_BMP280.java:248)
+        at capteurs.I2C_BMP280.getAltitude(I2C_BMP280.java:202)
+        at main.drone_telemetrie.mainLoop(drone_telemetrie.java:177)
+        at main.drone_telemetrie.<init>(drone_telemetrie.java:125)
+        at main.drone_video.lambda$new$0(drone_video.java:138)
+        at java.base/java.lang.Thread.run(Thread.java:840)
+Caused by: java.io.IOException: failed to get POSIX file descriptor!
+        at com.pi4j.library.linuxfs.LinuxFile.getPosixFD(LinuxFile.java:197)
+        at com.pi4j.library.linuxfs.LinuxFile.ioctl(LinuxFile.java:167)
+        at com.pi4j.plugin.linuxfs.provider.i2c.LinuxFsI2CBus.executeIOCTL(LinuxFsI2CBus.java:90)
+        ... 8 more
+[pi4j-shutdown] INFO com.pi4j.runtime.impl.DefaultRuntime - Pi4J context/runtime successfully shutdown. Dispatching shutdown event.
+Erreur lors de la lecture des donnees du MPU6050 : Failed to execute action for device 105 on bus 1
+com.pi4j.exception.Pi4JException: Failed to execute action for device 105 on bus 1
+        at com.pi4j.plugin.linuxfs.provider.i2c.LinuxFsI2CBus.executeIOCTL(LinuxFsI2CBus.java:106)
+        at com.pi4j.plugin.linuxfs.provider.i2c.LinuxFsI2C.readRegister(LinuxFsI2C.java:312)
+        at com.pi4j.plugin.linuxfs.provider.i2c.LinuxFsI2C.readRegister(LinuxFsI2C.java:174)
+        at capteurs.I2C_MPU6050.readSensorData(I2C_MPU6050.java:116)
+        at capteurs.I2C_MPU6050.run(I2C_MPU6050.java:88)
+        at main.drone_telemetrie.lambda$new$2(drone_telemetrie.java:102)
+        at java.base/java.lang.Thread.run(Thread.java:840)
+Caused by: java.io.IOException: failed to get POSIX file descriptor!
+        at com.pi4j.library.linuxfs.LinuxFile.getPosixFD(LinuxFile.java:197)
+        at com.pi4j.library.linuxfs.LinuxFile.ioctl(LinuxFile.java:167)
+        at com.pi4j.plugin.linuxfs.provider.i2c.LinuxFsI2CBus.executeIOCTL(LinuxFsI2CBus.java:90)
+        ... 6 more
+[pi4j-shutdown] INFO com.pi4j.util.ExecutorPool - Shutting down executor pool Pi4J.RUNTIME
+Erreur lors de la lecture des donnees du MPU6050 : Failed to execute action for device 105 on bus 1
+com.pi4j.exception.Pi4JException: Failed to execute action for device 105 on bus 1
+        at com.pi4j.plugin.linuxfs.provider.i2c.LinuxFsI2CBus.executeIOCTL(LinuxFsI2CBus.java:106)
+        at com.pi4j.plugin.linuxfs.provider.i2c.LinuxFsI2C.readRegister(LinuxFsI2C.java:312)
+        at com.pi4j.plugin.linuxfs.provider.i2c.LinuxFsI2C.readRegister(LinuxFsI2C.java:174)
+        at capteurs.I2C_MPU6050.readSensorData(I2C_MPU6050.java:116)
+        at capteurs.I2C_MPU6050.run(I2C_MPU6050.java:88)
+        at main.drone_telemetrie.lambda$new$2(drone_telemetrie.java:102)
+        at java.base/java.lang.Thread.run(Thread.java:840)
+Caused by: java.io.IOException: failed to get POSIX file descriptor!
+        at com.pi4j.library.linuxfs.LinuxFile.getPosixFD(LinuxFile.java:197)
+        at com.pi4j.library.linuxfs.LinuxFile.ioctl(LinuxFile.java:167)
+        at com.pi4j.plugin.linuxfs.provider.i2c.LinuxFsI2CBus.executeIOCTL(LinuxFsI2CBus.java:90)
+        ... 6 more
+Erreur lors de la lecture des donnees du MPU6050 : Failed to execute action for device 105 on bus 1
+com.pi4j.exception.Pi4JException: Failed to execute action for device 105 on bus 1
+        at com.pi4j.plugin.linuxfs.provider.i2c.LinuxFsI2CBus.executeIOCTL(LinuxFsI2CBus.java:106)
+        at com.pi4j.plugin.linuxfs.provider.i2c.LinuxFsI2C.readRegister(LinuxFsI2C.java:312)
+        at com.pi4j.plugin.linuxfs.provider.i2c.LinuxFsI2C.readRegister(LinuxFsI2C.java:174)
+        at capteurs.I2C_MPU6050.readSensorData(I2C_MPU6050.java:116)
+        at capteurs.I2C_MPU6050.run(I2C_MPU6050.java:88)
+        at main.drone_telemetrie.lambda$new$2(drone_telemetrie.java:102)
+        at java.base/java.lang.Thread.run(Thread.java:840)
+Caused by: java.io.IOException: failed to get POSIX file descriptor!
+        at com.pi4j.library.linuxfs.LinuxFile.getPosixFD(LinuxFile.java:197)
+        at com.pi4j.library.linuxfs.LinuxFile.ioctl(LinuxFile.java:167)
+        at com.pi4j.plugin.linuxfs.provider.i2c.LinuxFsI2CBus.executeIOCTL(LinuxFsI2CBus.java:90)
+        ... 6 more
+Erreur lors de la lecture des donnees du MPU6050 : Failed to execute action for device 105 on bus 1
+[pi4j-shutdown] INFO com.pi4j.util.ExecutorPool - Shutting down executor pool Pi4J.RUNTIME
+Erreur lors de la lecture des donnees du MPU6050 : Failed to execute action for device 105 on bus 1
+com.pi4j.exception.Pi4JException: Failed to execute action for device 105 on bus 1
+        at com.pi4j.plugin.linuxfs.provider.i2c.LinuxFsI2CBus.executeIOCTL(LinuxFsI2CBus.java:106)
+        at com.pi4j.plugin.linuxfs.provider.i2c.LinuxFsI2C.readRegister(LinuxFsI2C.java:312)
+        at com.pi4j.plugin.linuxfs.provider.i2c.LinuxFsI2C.readRegister(LinuxFsI2C.java:174)
+        at capteurs.I2C_MPU6050.readSensorData(I2C_MPU6050.java:116)
+        at capteurs.I2C_MPU6050.run(I2C_MPU6050.java:88)
+        at main.drone_telemetrie.lambda$start$5(drone_telemetrie.java:136)
+        at java.base/java.lang.Thread.run(Thread.java:840)
+Caused by: java.io.IOException: failed to get POSIX file descriptor!
+        at com.pi4j.library.linuxfs.LinuxFile.getPosixFD(LinuxFile.java:197)
+        at com.pi4j.library.linuxfs.LinuxFile.ioctl(LinuxFile.java:167)
+        at com.pi4j.plugin.linuxfs.provider.i2c.LinuxFsI2CBus.executeIOCTL(LinuxFsI2CBus.java:90)
+        ... 6 more
+com.pi4j.exception.Pi4JException: Failed to execute action for device 118 on bus 1
+        at com.pi4j.plugin.linuxfs.provider.i2c.LinuxFsI2CBus.executeIOCTL(LinuxFsI2CBus.java:106)
+        at com.pi4j.plugin.linuxfs.provider.i2c.LinuxFsI2C.readRegister(LinuxFsI2C.java:312)
+        at com.pi4j.plugin.linuxfs.provider.i2c.LinuxFsI2C.readRegister(LinuxFsI2C.java:174)
+        at capteurs.I2C_BMP280.CalculTemperature(I2C_BMP280.java:221)
+        at capteurs.I2C_BMP280.run(I2C_BMP280.java:141)
+        at main.drone_telemetrie.lambda$start$4(drone_telemetrie.java:135)
+        at java.base/java.lang.Thread.run(Thread.java:840)
+Caused by: java.io.IOException: failed to get POSIX file descriptor!
+        at com.pi4j.library.linuxfs.LinuxFile.getPosixFD(LinuxFile.java:197)
+        at com.pi4j.library.linuxfs.LinuxFile.ioctl(LinuxFile.java:167)
+        at com.pi4j.plugin.linuxfs.provider.i2c.LinuxFsI2CBus.executeIOCTL(LinuxFsI2CBus.java:90)
+        ... 6 more
+Erreur lors de la lecture des donnees du MPU6050 : Failed to execute action for device 105 on bus 1
+com.pi4j.exception.Pi4JException: Failed to execute action for device 105 on bus 1
+        at com.pi4j.plugin.linuxfs.provider.i2c.LinuxFsI2CBus.executeIOCTL(LinuxFsI2CBus.java:106)
+        at com.pi4j.plugin.linuxfs.provider.i2c.LinuxFsI2C.readRegister(LinuxFsI2C.java:312)
+        at com.pi4j.plugin.linuxfs.provider.i2c.LinuxFsI2C.readRegister(LinuxFsI2C.java:174)
+        at capteurs.I2C_MPU6050.readSensorData(I2C_MPU6050.java:116)
+        at capteurs.I2C_MPU6050.run(I2C_MPU6050.java:88)
+        at main.drone_telemetrie.lambda$new$2(drone_telemetrie.java:102)
+        at java.base/java.lang.Thread.run(Thread.java:840)
+Caused by: java.io.IOException: failed to get POSIX file descriptor!
+Distance mesuree : 8190 mm
+        at com.pi4j.library.linuxfs.LinuxFile.getPosixFD(LinuxFile.java:197)
+        at com.pi4j.library.linuxfs.LinuxFile.ioctl(LinuxFile.java:167)
+fps: 7          at com.pi4j.plugin.linuxfs.provider.i2c.LinuxFsI2CBus.executeIOCTL(LinuxFsI2CBus.java:90)
+        ... 6 more
+[pi4j-shutdown] INFO com.pi4j.runtime.impl.DefaultRuntime - Pi4J context/runtime successfully shutdown. Dispatching shutdown event.
+[pi4j-shutdown] INFO com.pi4j.runtime.impl.DefaultRuntime - Pi4J context/runtime successfully shutdown. Dispatching shutdown event.
+com.pi4j.exception.Pi4JException: Failed to execute action for device 118 on bus 1
+        at com.pi4j.plugin.linuxfs.provider.i2c.LinuxFsI2CBus.executeIOCTL(LinuxFsI2CBus.java:106)
+        at com.pi4j.plugin.linuxfs.provider.i2c.LinuxFsI2C.readRegister(LinuxFsI2C.java:312)
+        at com.pi4j.plugin.linuxfs.provider.i2c.LinuxFsI2C.readRegister(LinuxFsI2C.java:174)
+        at capteurs.I2C_BMP280.CalculTemperature(I2C_BMP280.java:221)
+        at capteurs.I2C_BMP280.run(I2C_BMP280.java:141)
+        at main.drone_telemetrie.lambda$start$4(drone_telemetrie.java:135)
+        at java.base/java.lang.Thread.run(Thread.java:840)
+Caused by: java.io.IOException: failed to get POSIX file descriptor!
+        at com.pi4j.library.linuxfs.LinuxFile.getPosixFD(LinuxFile.java:197)
+        at com.pi4j.library.linuxfs.LinuxFile.ioctl(LinuxFile.java:167)
+        at com.pi4j.plugin.linuxfs.provider.i2c.LinuxFsI2CBus.executeIOCTL(LinuxFsI2CBus.java:90)
+        ... 6 more
+com.pi4j.exception.Pi4JException: Failed to execute action for device 118 on bus 1
+        at com.pi4j.plugin.linuxfs.provider.i2c.LinuxFsI2CBus.executeIOCTL(LinuxFsI2CBus.java:106)
+        at com.pi4j.plugin.linuxfs.provider.i2c.LinuxFsI2C.readRegister(LinuxFsI2C.java:312)
+        at com.pi4j.plugin.linuxfs.provider.i2c.LinuxFsI2C.readRegister(LinuxFsI2C.java:174)
+        at capteurs.I2C_BMP280.CalculTemperature(I2C_BMP280.java:221)
+        at capteurs.I2C_BMP280.run(I2C_BMP280.java:141)
+        at main.drone_telemetrie.lambda$start$4(drone_telemetrie.java:135)
+        at java.base/java.lang.Thread.run(Thread.java:840)
+Caused by: java.io.IOException: failed to get POSIX file descriptor!
+        at com.pi4j.library.linuxfs.LinuxFile.getPosixFD(LinuxFile.java:197)
+        at com.pi4j.library.linuxfs.LinuxFile.ioctl(LinuxFile.java:167)
+        at com.pi4j.plugin.linuxfs.provider.i2c.LinuxFsI2CBus.executeIOCTL(LinuxFsI2CBus.java:90)
+        ... 6 more
+com.pi4j.exception.Pi4JException: Failed to execute action for device 105 on bus 1
+        at com.pi4j.plugin.linuxfs.provider.i2c.LinuxFsI2CBus.executeIOCTL(LinuxFsI2CBus.java:106)
+        at com.pi4j.plugin.linuxfs.provider.i2c.LinuxFsI2C.readRegister(LinuxFsI2C.java:312)
+        at com.pi4j.plugin.linuxfs.provider.i2c.LinuxFsI2C.readRegister(LinuxFsI2C.java:174)
+        at capteurs.I2C_MPU6050.readSensorData(I2C_MPU6050.java:116)
+        at capteurs.I2C_MPU6050.run(I2C_MPU6050.java:88)
+        at main.drone_telemetrie.lambda$start$5(drone_telemetrie.java:136)
+        at java.base/java.lang.Thread.run(Thread.java:840)
+Caused by: java.io.IOException: failed to get POSIX file descriptor!
+        at com.pi4j.library.linuxfs.LinuxFile.getPosixFD(LinuxFile.java:197)
+        at com.pi4j.library.linuxfs.LinuxFile.ioctl(LinuxFile.java:167)
+        at com.pi4j.plugin.linuxfs.provider.i2c.LinuxFsI2CBus.executeIOCTL(LinuxFsI2CBus.java:90)
+        ... 6 more
+Erreur lors de la lecture des donnees du MPU6050 : Failed to execute action for device 105 on bus 1
+com.pi4j.exception.Pi4JException: Failed to execute action for device 105 on bus 1
+        at com.pi4j.plugin.linuxfs.provider.i2c.LinuxFsI2CBus.executeIOCTL(LinuxFsI2CBus.java:106)
+        at com.pi4j.plugin.linuxfs.provider.i2c.LinuxFsI2C.readRegister(LinuxFsI2C.java:312)
+        at com.pi4j.plugin.linuxfs.provider.i2c.LinuxFsI2C.readRegister(LinuxFsI2C.java:174)
+        at capteurs.I2C_MPU6050.readSensorData(I2C_MPU6050.java:116)
+        at capteurs.I2C_MPU6050.run(I2C_MPU6050.java:88)
+        at main.drone_telemetrie.lambda$start$5(drone_telemetrie.java:136)
+        at java.base/java.lang.Thread.run(Thread.java:840)
+Caused by: java.io.IOException: failed to get POSIX file descriptor!
+        at com.pi4j.library.linuxfs.LinuxFile.getPosixFD(LinuxFile.java:197)
+        at com.pi4j.library.linuxfs.LinuxFile.ioctl(LinuxFile.java:167)
+        at com.pi4j.plugin.linuxfs.provider.i2c.LinuxFsI2CBus.executeIOCTL(LinuxFsI2CBus.java:90)
+        ... 6 more
+com.pi4j.exception.Pi4JException: Failed to execute action for device 118 on bus 1
+        at com.pi4j.plugin.linuxfs.provider.i2c.LinuxFsI2CBus.executeIOCTL(LinuxFsI2CBus.java:106)
+        at com.pi4j.plugin.linuxfs.provider.i2c.LinuxFsI2C.readRegister(LinuxFsI2C.java:312)
+        at com.pi4j.plugin.linuxfs.provider.i2c.LinuxFsI2C.readRegister(LinuxFsI2C.java:174)
+        at capteurs.I2C_BMP280.CalculTemperature(I2C_BMP280.java:221)
+        at capteurs.I2C_BMP280.run(I2C_BMP280.java:141)
+        at main.drone_telemetrie.lambda$start$4(drone_telemetrie.java:135)
+        at java.base/java.lang.Thread.run(Thread.java:840)
+Caused by: java.io.IOException: failed to get POSIX file descriptor!
+        at com.pi4j.library.linuxfs.LinuxFile.getPosixFD(LinuxFile.java:197)
+        at com.pi4j.library.linuxfs.LinuxFile.ioctl(LinuxFile.java:167)
+        at com.pi4j.plugin.linuxfs.provider.i2c.LinuxFsI2CBus.executeIOCTL(LinuxFsI2CBus.java:90)
+        ... 6 more
+[pi4j-shutdown] INFO com.pi4j.runtime.impl.DefaultRuntime - Pi4J context/runtime successfully shutdown. Dispatching shutdown event.
+Erreur lors de la lecture des donnees du MPU6050 : Failed to execute action for device 105 on bus 1
+[pi4j-shutdown] INFO com.pi4j.runtime.impl.DefaultRuntime - Pi4J context/runtime successfully shutdown. Dispatching shutdown event.
+[pi4j-shutdown] INFO com.pi4j.runtime.impl.DefaultRuntime - Pi4J context/runtime successfully shutdown. Dispatching shutdown event.
+Erreur lors de la lecture des donnees du MPU6050 : Failed to execute action for device 105 on bus 1
+com.pi4j.exception.Pi4JException: Failed to execute action for device 105 on bus 1
+        at com.pi4j.plugin.linuxfs.provider.i2c.LinuxFsI2CBus.executeIOCTL(LinuxFsI2CBus.java:106)
+admin@raspberrypi:~/Projet/_drone_full $

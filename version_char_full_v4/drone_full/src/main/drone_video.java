@@ -144,6 +144,7 @@ public class drone_video {
         }, "Thread-Drone-Telemetrie");
         telemetrieThread.start();
 
+        new tempo(2);
         try {
             Serveur_Char_GPIO gpio = new Serveur_Char_GPIO(telemetrie);
             gpio.start();
