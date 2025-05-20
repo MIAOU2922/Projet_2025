@@ -1,0 +1,38 @@
+compile:
+
+mkdir bin
+
+windows :
+javac -cp "lib/opencv-4100.jar" -d "bin" src/_start/*.java src/thread/*.java src/util/*.java src/main/*.java src/*.java
+
+
+linux:
+javac -cp "lib/opencv-454.jar" -d "bin" src/_start/*.java src/thread/*.java src/util/*.java src/main/*.java src/*.java
+
+
+-----------------
+lancer tous ( deprecated ):
+
+java -Djava.library.path="lib" -cp "lib/opencv-4100.jar;bin" _start._start_all
+
+-----------------
+lancer drone :
+windows :
+
+java -Djava.library.path="lib" -cp "lib/opencv-4100.jar;bin" _start._start_drone_W
+
+
+linux :
+
+java -Djava.library.path=lib -cp "lib/opencv-4100.jar:bin" _start._start_drone_L
+
+
+-----------------
+lancer client :
+
+java -Djava.library.path="lib" -cp "lib/opencv-4100.jar;bin" _start._start_client
+
+-----------------
+lancer traitement :
+
+java -Djava.library.path="lib" -cp "lib/opencv-4100.jar;bin" _start_traitement

@@ -1,0 +1,34 @@
+@startuml traitement_sequence
+participant "Traitement" as T
+participant "FenetreTraitement" as GUI
+participant "thread_detection_\ncontours/formes" as Detection
+participant "FileMapping" as FM
+participant "thread_reception_\nimage/string" as Threads
+
+== Initialisation ==
+T -> FM: serveur_filemap_image.OpenServer()
+T -> GUI: new FenetreTraitement("drone/traitement")
+T -> Detection: detection_contours/formes.start()
+T -> Threads: reception/commande.start()
+
+== Boucle Principale == 
+loop mainLoop()
+    Threads -> T: reception.getImageRecu()
+    
+    alt Si Image Reçue
+        T -> Detection: Process(imageRecu)
+        Detection -> T: Return processedImage
+        T -> FM: WriteToFileMapping(processedImage)
+        T -> GUI: updateImage(processedImage)
+    end
+    
+    alt Si Commande Reçue
+        Threads -> T: commande.getMessageRecu()
+        T -> Detection: updateProcessingMode()
+    end
+end
+
+== Arrêt ==
+T -> FM: CloseFileMapping()
+T -> Detection: Stop Threads
+@enduml
