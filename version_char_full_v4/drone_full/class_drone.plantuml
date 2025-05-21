@@ -1,0 +1,233 @@
+@startuml drone_video_class
+
+class drone_video {
+    - Mat frame
+    - VideoCapture capture
+    - int[] imgSize
+    - int initial_quality
+    - int quality
+    - byte[] encodedData
+    - int[] port
+    - String address
+    - DatagramSocket socketCmd
+    - thread_reception_string commande
+    - thread_list_dynamic_ip listDynamicIp
+    - drone_telemetrie telemetrie
+    - Serveur_Char_GPIO gpio
+
+    + drone_video()
+    - void mainLoop()
+    - void sendImage()
+    - void sendImageUDP(byte[] imageData, String address, int port)
+    + static byte[] encodeImageToJPEG(Mat image, int quality)
+}
+
+class drone_telemetrie {
+    - thread_reception_string commande
+    - thread_list_dynamic_ip listDynamicIp
+    - I2C_BMP280 bmp280
+    - I2C_MPU6050 mpu6050
+    - I2C_GNSS gnss
+    - I2C_VL53L0X vl53l0x
+    - String telemetrie_data
+    + drone_telemetrie(thread_reception_string, thread_list_dynamic_ip)
+    + void start()
+    - void mainLoop()
+    - void sendText()
+    - void sendTextUDP(String text, String address, int port)
+    + double getTemperature()
+    + double getAltitude()
+    + double getPression()
+    + double getAgx()
+    + double getAgy()
+    + double getAgz()
+    + double getGyrox()
+    + double getGyroy()
+    + double getGyroz()
+    + double getLatitude()
+    + double getLongitude()
+    + double getGnssAltitude()
+    + double getGnssSpeed()
+    + int getGnssSatellites()
+    + int getDistance()
+}
+
+class Serveur_Char_GPIO {
+    - drone_telemetrie drone
+    - int intPort
+    - ServerSocket Serveur
+    - Socket Client
+    - InputStream FluxEntreeEthernet
+    - OutputStream FluxSortieEthernet
+    - boolean ServeurUp
+    - boolean ClientConnect
+    - boolean StopAuto
+    + Serveur_Char_GPIO(drone_telemetrie)
+    + void run()
+    - void controleMoteur(double x, double y)
+    - void stopMotors()
+}
+
+class thread_reception_string {
+    - String messageRecu
+    - DatagramSocket socket
+    - byte[] buffer
+    - boolean running
+    + thread_reception_string(String name, DatagramSocket socket)
+    + void run()
+    + void stopThread()
+    + String getMessageRecu()
+}
+
+class thread_list_dynamic_ip {
+    - List<String> client_address
+    - List<String> client_time
+    - String name
+    - LocalDateTime clientTime
+    - LocalDateTime now
+    + thread_list_dynamic_ip(String name)
+    + void run()
+    + void addClient(String address, String time)
+    + void removeClient(String address)
+    + void updateClient(String address)
+    + List<String> getClientAddress()
+}
+
+class I2C_BMP280 {
+    - double temperature
+    - double pressure
+    - double altitude
+    + double getTemperature()
+    + double getPressure()
+    + double getAltitude()
+}
+
+class I2C_MPU6050 {
+    - double agx, agy, agz
+    - double gyrox, gyroy, gyroz
+    + double getAccX()
+    + double getAccY()
+    + double getAccZ()
+    + double getGyroX()
+    + double getGyroY()
+    + double getGyroZ()
+}
+
+class I2C_GNSS {
+    - double latitude
+    - double longitude
+    - double altitude
+    - double speed
+    - int satellites
+    + double getLatitude()
+    + double getLongitude()
+    + double getAltitude()
+    + double getSpeed()
+    + int getSatellites()
+}
+
+class I2C_VL53L0X {
+    - int distance
+    + int getDistance()
+    + void startRanging()
+    + void stopRanging()
+}
+
+class DistanceTracker {
+    - boolean running
+    - long LongueurCible
+    - long LargeurCible
+    - int NombreDePassage
+    - double distanceParcourue
+    - drone_telemetrie drone
+    + DistanceTracker(long, long, int, drone_telemetrie)
+    + void run()
+    - void tournerRobot(boolean)
+    - void parcoureLargeur()
+    - void parcoureLongueur()
+    - double calculerDistance(long)
+    - void arreterMoteur()
+}
+
+drone_video --> VideoCapture : uses
+drone_video --> thread_reception_string : uses
+drone_video --> thread_list_dynamic_ip : uses
+drone_video --> drone_telemetrie : uses
+drone_video --> Serveur_Char_GPIO : uses
+
+drone_telemetrie --> I2C_BMP280 : uses
+drone_telemetrie --> I2C_MPU6050 : uses
+drone_telemetrie --> I2C_GNSS : uses
+drone_telemetrie --> I2C_VL53L0X : uses
+
+Serveur_Char_GPIO --> DistanceTracker : creates
+DistanceTracker --> drone_telemetrie : uses
+
+note left of drone_video
+  Classe principale qui gère :
+  - La capture vidéo via OpenCV
+  - L'envoi des images via UDP
+  - La réception des commandes
+  - La coordination des différents threads
+end note
+
+note right of drone_telemetrie
+  Gère la télémétrie du drone :
+  - Lecture des capteurs
+  - Fusion des données
+  - Envoi des données via UDP
+end note
+
+note right of Serveur_Char_GPIO
+  Gère le contrôle du robot :
+  - Communication TCP avec le client
+  - Contrôle des moteurs
+  - Mode automatique
+end note
+
+note right of thread_reception_string
+  Thread pour la réception des commandes :
+  - Écoute UDP
+  - Traitement des messages
+  - Communication avec le drone
+end note
+
+note right of thread_list_dynamic_ip
+  Gère la liste des clients :
+  - Ajout/suppression dynamique
+  - Vérification de la connexion
+  - Gestion du timeout
+end note
+
+note right of DistanceTracker
+  Gère le mode patrouille :
+  - Navigation autonome
+  - Calcul des distances
+  - Gestion des virages
+end note
+
+note right of I2C_BMP280
+  Capteur de pression et température :
+  - Mesure de l'altitude
+  - Surveillance environnementale
+end note
+
+note right of I2C_MPU6050
+  Capteur inertiel :
+  - Mesure des accélérations
+  - Mesure des rotations
+end note
+
+note right of I2C_GNSS
+  Capteur de positionnement :
+  - Position GPS
+  - Vitesse de déplacement
+end note
+
+note right of I2C_VL53L0X
+  Capteur de distance :
+  - Mesure laser
+  - Détection d'obstacles
+end note
+
+@enduml

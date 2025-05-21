@@ -1,34 +1,76 @@
-@startuml traitement_sequence
+@startuml traitement_sequence_detailed
 participant "Traitement" as T
-participant "FenetreTraitement" as GUI
-participant "thread_detection_\ncontours/formes" as Detection
+participant "FenetreTraitement\n(drone/traitement)" as GUI
+participant "thread_reception_\nimage" as TRI
+participant "thread_reception_\nstring" as TRS 
+participant "thread_detection_\ncontours" as TDC
+participant "thread_detection_\nformes" as TDF
 participant "FileMapping" as FM
-participant "thread_reception_\nimage/string" as Threads
+participant "Clients" as C
 
 == Initialisation ==
-T -> FM: serveur_filemap_image.OpenServer()
-T -> GUI: new FenetreTraitement("drone/traitement")
-T -> Detection: detection_contours/formes.start()
-T -> Threads: reception/commande.start()
+T -> FM: serveur_filemap_image.OpenServer("img_java_to_c")
+T -> FM: client_filemap_image.OpenClient()
 
-== Boucle Principale == 
+T -> GUI: new FenetreTraitement("drone", icon, 0, 0)
+T -> GUI: new FenetreTraitement("traitement", icon, 640, 0)
+
+T -> TRI: new thread_reception_image("traitement_UDP_image", socketImage, imageRecu)
+T -> TRS: new thread_reception_string("reception_cmd_traitement", socketCmd)
+T -> TDC: new thread_detection_contours(imageRecu, false)
+T -> TDF: new thread_detection_formes(imageRecu, false)
+
+T -> TRI: start()
+T -> TRS: start()
+T -> TDC: start()
+T -> TDF: start()
+
+== Boucle Principale ==
 loop mainLoop()
-    Threads -> T: reception.getImageRecu()
+    TRI -> T: imageRecu = reception.getImageRecu()
     
-    alt Si Image Reçue
-        T -> Detection: Process(imageRecu)
-        Detection -> T: Return processedImage
-        T -> FM: WriteToFileMapping(processedImage)
-        T -> GUI: updateImage(processedImage)
+    alt Si Image Reçue (!imageRecu.empty())
+        T -> T: dermiereImageValide = imageRecu.clone()
+        
+        TRS -> T: commandeRecu = commande.getMessageRecu()
+        alt Si Commande Client Reçue
+            T -> T: updateClientSettings()
+            note right: Met à jour Client_Time et Client_traitement
+        end
+        
+        T -> T: determineProcessingMode()
+        note right: Compare timestamps drone/traitement/client
+        
+        alt Selon Mode Traitement
+            alt case 0: Pas de traitement
+                T -> T: imageEnvoyer = imageRecu
+            else case 1: Contours
+                T -> TDC: setFrame(imageRecu)
+                TDC -> T: imageEnvoyer = getFrame()
+            else case 2: Formes
+                T -> TDF: setFrame(imageRecu)
+                TDF -> T: imageEnvoyer = getFrame()
+            else case 3: Contours + Formes
+                T -> TDC: setFrame(imageRecu)
+                T -> TDF: setFrame(imageRecu)
+                T -> T: imageEnvoyer = additionDesDifferences()
+        end
+        
+        T -> T: calculateFPS()
+        
+        T -> FM: writeToFileMapping(imageEnvoyer)
+        T -> GUI: updateDisplays(imageEnvoyer)
+        T -> C: sendImageUDP(imageEnvoyer)
     end
     
-    alt Si Commande Reçue
-        Threads -> T: commande.getMessageRecu()
-        T -> Detection: updateProcessingMode()
-    end
+    T -> T: new tempo(1)
 end
 
 == Arrêt ==
-T -> FM: CloseFileMapping()
-T -> Detection: Stop Threads
+T -> FM: closeFileMapping()
+T -> TRI: stopThread()
+T -> TRS: stopThread()
+T -> TDC: stopThread()
+T -> TDF: stopThread()
+
 @enduml

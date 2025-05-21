@@ -1,0 +1,61 @@
+@startuml drone_sequence
+participant "drone_video" as Drone
+participant "VideoCapture" as Camera
+participant "thread_reception_string" as CmdThread 
+participant "thread_list_dynamic_ip" as IpThread
+participant "drone_telemetrie" as Telemetry
+participant "Serveur_Char_GPIO" as GPIO
+participant "UDP\nService" as UDP
+
+== Initialisation ==
+Drone -> Camera: capture.open(0, CAP_V4L2)
+Drone -> CmdThread: commande.start()
+Drone -> IpThread: listDynamicIp.start()
+Drone -> Telemetry: telemetrie.start()
+Drone -> GPIO: gpio.start()
+
+== Boucle Principale ==
+loop mainLoop()
+    Drone -> Camera: capture.read(frame)
+    Drone -> Drone: processReceivedMessage()
+    Drone -> Drone: sendImage()
+    alt If clients connected
+        Drone -> UDP: sendImageUDP(encodedData, addr, port[0])
+    end
+end
+
+== Télémétrie (thread) ==
+loop telemetrie.mainLoop()
+    group Capteurs acquisition & fusion
+        Telemetry -> Telemetry: Collect sensor data (BMP280, MPU6050, GNSS, VL53L0X)
+        Telemetry -> Telemetry: Build telemetry string
+    end
+    group Envoi UDP
+        Telemetry -> UDP: sendTextUDP(telemetrie_data, addr, port[1])
+    end
+end
+
+== Serveur Char GPIO (thread) ==
+loop gpio.run()
+    group Attente de connexion TCP
+        GPIO -> GPIO: Listen for TCP client
+    end
+    group Réception commandes
+        GPIO -> GPIO: Read and decode client commands
+        alt Commande joystick
+            GPIO -> GPIO: controleMoteur(x, y)
+        else Commande patrouille auto
+            GPIO -> GPIO: Start DistanceTracker
+        else Commande STOP
+            GPIO -> GPIO: Stop auto mode
+        end
+    end
+    group Sécurité
+        GPIO -> GPIO: Stop motors on disconnect or shutdown
+    end
+end
+
+== Arrêt ==
+Drone -> Camera: capture.release()
+Drone -> CmdThread: commande.stopThread()
+@enduml
