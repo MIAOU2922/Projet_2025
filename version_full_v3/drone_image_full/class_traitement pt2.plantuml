@@ -1,0 +1,52 @@
+@startuml traitement_class_pt2
+
+class traitement {
+    // ...attributs et méthodes communs...
+}
+
+class thread_envoie_cmd {
+    -DatagramSocket socket
+    -String commandeAEnvoyer
+    -String address
+    -int port
+    -boolean running
+    
+    +thread_envoie_cmd(String name, DatagramSocket socket)
+    +void run()
+    +void stopThread()
+    +void setCommande(String cmd)
+}
+
+class thread_list_dynamic_ip {
+    -List<String> client_address
+    -List<String> client_time
+    -String name
+    -LocalDateTime clientTime
+    -LocalDateTime now
+    
+    +thread_list_dynamic_ip(String name)
+    +void run()
+    +void addClient(String address, String time)
+    +void removeClient(String address)
+    +void updateClient(String address)
+    +List<String> getClientAddress()
+}
+
+traitement --> thread_envoie_cmd : uses
+traitement --> thread_list_dynamic_ip : uses
+
+
+note top of thread_envoie_cmd
+    Envoi des commandes:
+    - Vers le drone
+    - Format spécifique
+    - UDP
+end note
+
+note top of thread_list_dynamic_ip
+    Gestion des clients:
+    - Liste des IPs
+    - Timeouts
+    - Mises à jour
+end note
+@enduml

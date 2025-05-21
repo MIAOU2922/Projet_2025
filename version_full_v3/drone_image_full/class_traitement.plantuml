@@ -91,7 +91,7 @@ class thread_detection_contours {
     
     +thread_detection_contours()
     +void run()
-    +void stopThread()
+    +void srightThread()
     +void setFrame(Mat frame)
     +Mat getFrame_process()
     -void processFrame()
@@ -108,7 +108,7 @@ class thread_detection_formes {
     
     +thread_detection_formes()
     +void run()
-    +void stopThread()
+    +void srightThread()
     +void setFrame(Mat frame)
     +Mat getFrame_process()
     -void detectShapes()
@@ -124,7 +124,7 @@ class thread_envoie_cmd {
     
     +thread_envoie_cmd(String name, DatagramSocket socket)
     +void run()
-    +void stopThread()
+    +void srightThread()
     +void setCommande(String cmd)
 }
 

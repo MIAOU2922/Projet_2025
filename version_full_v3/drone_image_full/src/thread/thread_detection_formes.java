@@ -72,13 +72,8 @@ public class thread_detection_formes extends Thread {
                     // Identifier la forme selon le nombre de sommets
                     int vertexCount = approx.toArray().length;
                     String shapeType = switch (vertexCount) {
-                        case 3 -> "Triangle";
-                        case 4 -> "Rectangle";
-                        case 5 -> "Pentagone";
-                        case 6 -> "Hexagone";
-                        case 7 -> "Heptagone";
-                        case 8 -> "Octogone";
-                        default -> (vertexCount > 8) ? "Cercle" : "?";
+                        case 3 -> "Triangle"; case 4 -> "Rectangle"; case 5 -> "Pentagone"; case 6 -> "Hexagone";
+                        case 7 -> "Heptagone"; case 8 -> "Octogone"; default -> (vertexCount > 8) ? "Cercle" : "?";
                     };
 
                     // Dessiner les contours et afficher la forme détectée

@@ -74,12 +74,12 @@ note left of drone
   - La réception des commandes
 end note
 
-note right of thread_reception_string
+note top of thread_reception_string
   Thread pour la réception
   des commandes UDP
 end note
 
-note right of thread_list_dynamic_ip
+note top of thread_list_dynamic_ip
   Thread pour la gestion dynamique
   des clients connectés
 end note

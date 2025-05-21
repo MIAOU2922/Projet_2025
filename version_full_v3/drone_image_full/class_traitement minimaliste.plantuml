@@ -1,0 +1,124 @@
+@startuml traitement_class
+
+class traitement {
+    ' Fenêtres
+    -FenetreTraitement droneFenetre
+    -FenetreTraitement fenetreTraitement
+    ' Threads
+    -thread_reception_image reception
+    -thread_reception_string commande
+    -thread_detection_contours detection_contours
+    -thread_detection_formes detection_formes
+    -thread_traitement_telemtrie telemetrie_traitement
+    ' Attributs image
+    -Mat dermiereImageValide
+    -Mat imageRecu
+    -Mat imageEnvoyer
+    -int traitements
+    -LocalDateTime Client_Time
+    -int Client_traitement
+    +traitement()
+    -void mainLoop()
+    -void sendImageUDP(byte[] imageData, String address, int port)
+    -void sendTextUDP(String data, String address, int port)
+    -byte[] encodeImageToJPEG(Mat image, int quality)
+}
+
+class FenetreTraitement {
+    +void run()
+}
+
+class thread_reception_image {
+    +void run()
+}
+
+class thread_reception_string {
+    +void run()
+}
+
+class thread_traitement_telemtrie {
+    +void run()
+    }
+
+class thread_detection_contours {
+    +void run()
+}
+
+class thread_detection_formes {
+    +void run()
+}
+
+class thread_envoie_cmd {
+    +void run()
+}
+
+class thread_list_dynamic_ip {
+    +void run()
+}
+
+' Relations
+traitement --> FenetreTraitement : "2" uses
+traitement --> thread_reception_image : uses
+traitement --> thread_reception_string : uses
+traitement --> thread_traitement_telemtrie : uses
+traitement --> thread_detection_contours : uses
+traitement --> thread_detection_formes : uses
+traitement --> thread_envoie_cmd : uses
+traitement --> thread_list_dynamic_ip : uses
+thread_traitement_telemtrie --> thread_reception_string : uses
+
+note top of FenetreTraitement
+    Gère l'interface graphique avec:
+    - Affichage vidéo
+    - Options de traitement
+    - 2 instances : drone et traitement
+end note
+
+note top of thread_reception_string
+    Gère la réception des:
+    - Commandes
+    - Données télémétriques
+end note
+
+note top of thread_reception_image
+    Gère la réception des:
+    - Images du drone
+    - Affiche image noire si erreur
+end note
+
+note top of thread_traitement_telemtrie
+    Gère la télémétrie:
+    - Réception données
+    - Mise à jour FileMapping
+    - 16 valeurs télémétriques
+end note
+
+note top of thread_detection_contours
+    Détection des contours:
+    - Seuillage HSV
+    - Recherche contours
+    - Dessin des contours
+end note
+
+note top of thread_detection_formes
+    Détection des formes:
+    - Cercles (Hough)
+    - Polygones
+    - Classification
+end note
+
+note top of thread_envoie_cmd
+    Envoi des commandes:
+    - Vers le drone
+    - Format spécifique
+    - UDP
+end note
+
+note top of thread_list_dynamic_ip
+    Gestion des clients:
+    - Liste des IPs
+    - Timeouts
+    - Mises à jour
+end note
+
+@enduml

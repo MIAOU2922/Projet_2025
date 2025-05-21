@@ -1,0 +1,94 @@
+@startuml traitement_class_pt1
+
+class traitement {
+    // ...attributs et méthodes communs...
+}
+
+class thread_reception_image {
+    -DatagramSocket socket
+    -Mat imageRecu
+    -Mat blackImage
+    -String name
+    
+    +thread_reception_image(String name, DatagramSocket socket, Mat imageRecu)
+    +void run()
+    +Mat getImageRecu()
+}
+
+class thread_reception_string {
+    -DatagramSocket socket
+    -String messageRecu
+    -String name
+    
+    +thread_reception_string(String name, DatagramSocket socket)
+    +void run()
+    +String getMessageRecu()
+}
+
+class thread_detection_contours {
+    -Mat frame
+    -Mat frame_process
+    -boolean running
+    -Scalar lowerBound
+    -Scalar upperBound
+    -List<MatOfPoint> contours
+    
+    +thread_detection_contours()
+    +void run()
+    +void stopThread()
+    +void setFrame(Mat frame)
+    +Mat getFrame_process()
+    -void processFrame()
+    -void findContours()
+    -void drawContours()
+}
+
+class thread_detection_formes {
+    -Mat frame
+    -Mat frame_process
+    -boolean running
+    -double[] circles
+    -MatOfPoint2f approxCurve
+    
+    +thread_detection_formes()
+    +void run()
+    +void stopThread()
+    +void setFrame(Mat frame)
+    +Mat getFrame_process()
+    -void detectShapes()
+    -void drawShapes()
+}
+
+traitement --> thread_reception_image : uses
+traitement --> thread_reception_string : uses
+traitement --> thread_detection_contours : uses
+traitement --> thread_detection_formes : uses
+
+
+note top of thread_reception_string
+    Gère la réception des:
+    - Commandes
+    - Données télémétriques
+end note
+
+note top of thread_reception_image
+    Gère la réception des:
+    - Images du drone
+    - Affiche image noire si erreur
+end note
+
+note top of thread_detection_contours
+    Détection des contours:
+    - Seuillage HSV
+    - Recherche contours
+    - Dessin des contours
+end note
+
+note top of thread_detection_formes
+    Détection des formes:
+    - Cercles (Hough)
+    - Polygones
+    - Classification
+end note
+
+@enduml

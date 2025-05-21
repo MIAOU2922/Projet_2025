@@ -94,27 +94,27 @@ note right of client
     - Traitement d'image
 end note
 
-note right of FenetreTraitement
+note top of FenetreTraitement
     Interface graphique avec:
     - Affichage vidéo
     - Boutons de contrôle
     - Options de traitement
 end note
 
-note right of thread_reception_image
+note top of thread_reception_image
     Thread dédié à:
     - Réception UDP des images
     - Décodage JPEG
     - Conversion en Mat
 end note
 
-note right of thread_reception_string
+note top of thread_reception_string
     Thread dédié à:
     - Réception des messages
     - Commandes et statuts
 end note
 
-note right of tempo
+note top of tempo
     Classe utilitaire pour:
     - Gestion des délais
     - Synchronisation

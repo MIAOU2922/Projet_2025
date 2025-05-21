@@ -1,0 +1,91 @@
+@startuml traitement_class_pt3
+
+class traitement {
+    -FenetreTraitement droneFenetre
+    -FenetreTraitement fenetreTraitement
+    -Mat dermiereImageValide
+    -Mat imageRecu
+    -Mat imageEnvoyer
+    -int traitements
+    -LocalDateTime Client_Time
+    -int Client_traitement
+    +traitement()
+    -void mainLoop()
+    -void sendImageUDP(byte[] imageData, String address, int port)
+    -void sendTextUDP(String data, String address, int port)
+    -byte[] encodeImageToJPEG(Mat image, int quality)
+}
+
+class FenetreTraitement {
+    -JFrame frame
+    -JPanel panel
+    -JPanel panelOptions
+    -JButton buttonForme
+    -JButton buttonContours
+    -JButton buttonFormeContours
+    -JButton buttonRien
+    -BufferedImage image
+    -int traitement
+    -LocalDateTime lastModifiedTime
+    
+    +FenetreTraitement(String titre, ImageIcon icon, int x, int y)
+    +void setImage(BufferedImage newImage)
+    -void setTraitement(int traitement)
+    +int getTraitement()
+    +LocalDateTime getLastModifiedTime()
+    +void run()
+}
+class thread_reception_string {
+    -DatagramSocket socket
+    -String messageRecu
+    -String name
+    
+    +thread_reception_string(String name, DatagramSocket socket)
+    +void run()
+    +String getMessageRecu()
+}
+class thread_traitement_telemtrie {
+    -cFileMappingDroneCharTelemetryServeur serveur_filemap_telemetrie
+    -String address_local_str
+    -String text
+    -byte[] data
+    -DatagramSocket socketTelemetrie
+    -thread_reception_string telemetrie
+    -String telemetryRecu
+    -String name
+    -String[] parts
+    
+    +thread_traitement_telemtrie(String name, DatagramSocket socket)
+    +void run()
+    -void mainLoop()
+}
+
+traitement --> FenetreTraitement : "2" uses
+traitement --> thread_traitement_telemtrie : uses
+traitement --> thread_reception_string : uses
+thread_traitement_telemtrie --> thread_reception_string : uses
+
+note right of FenetreTraitement
+    Gère l'interface graphique avec:
+    - Affichage vidéo
+    - Options de traitement
+    - 2 instances : drone et traitement
+end note
+
+note right of thread_reception_string
+    Gère la réception des:
+    - Commandes
+    - Données télémétriques
+end note
+
+
+note right of thread_traitement_telemtrie
+    Gère la télémétrie:
+    - Réception données
+    - Mise à jour FileMapping
+    - 16 valeurs télémétriques
+end note
+
+
+
+@enduml
