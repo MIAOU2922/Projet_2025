@@ -47,7 +47,10 @@ public class thread_list_dynamic_ip extends Thread {
                 }
                 System.out.print("\033[F");  // Déplace le curseur à la ligne précédente
                 System.out.print("\033[K");  // Efface la ligne
-                System.out.println("Liste des adresses : " + client_address + " (" + client_address.size() + ") "+ client_time + " (" + client_time.size() + ")");
+                System.out.println("Liste des adresses : " + client_address +
+                                " (" + client_address.size() +
+                                ") "+ client_time +
+                                " (" + client_time.size() + ")");
                 Thread.sleep(10000); // Vérification toutes les 10 secondes
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
